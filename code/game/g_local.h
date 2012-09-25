@@ -654,7 +654,7 @@ void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
 
 void	G_InitGentity( gentity_t *e );
 gentity_t	*G_Spawn (void);
-gentity_t *G_TempEntity( vec3_t origin, int event );
+gentity_t *G_TempEntity( const vec3_t origin, int event );
 void	G_Sound( gentity_t *ent, int channel, int soundIndex );
 
 //KK-OAX For Playing Sounds Globally
@@ -818,7 +818,7 @@ void G_SetStats (gentity_t *ent);
 // Also another place /Sago
 
 void DoubleDominationScoreTimeMessage( gentity_t *ent );
-void YourTeamMessage( gentity_t *ent);
+void YourTeamMessage( const gentity_t *ent);
 void AttackingTeamMessage( gentity_t *ent );
 void ObeliskHealthMessage( void );
 void DeathmatchScoreboardMessage (gentity_t *client);
@@ -843,14 +843,14 @@ void CheckTeamLeader( int team );
 void G_RunThink (gentity_t *ent);
 void AddTournamentQueue(gclient_t *client);
 void ExitLevel( void );
-void QDECL G_LogPrintf( const char *fmt, ... );
+void QDECL G_LogPrintf( const char *fmt, ... ) __attribute__((format (printf, 1, 2)));
 void SendScoreboardMessageToAllClients( void );
 void SendEliminationMessageToAllClients( void );
 void SendDDtimetakenMessageToAllClients( void );
 void SendDominationPointsStatusMessageToAllClients( void );
 void SendYourTeamMessageToTeam( team_t team );
-void QDECL G_Printf( const char *fmt, ... );
-void QDECL G_Error( const char *fmt, ... ) __attribute__((noreturn));
+void QDECL G_Printf( const char *fmt, ... ) __attribute__((format (printf, 1, 2)));
+void QDECL G_Error( const char *fmt, ... ) __attribute__((noreturn,format (printf, 1, 2)));
 //KK-OAX Made Accessible for g_admin.c
 void LogExit( const char *string ); 
 void CheckTeamVote( int team );
@@ -874,9 +874,9 @@ void G_RunClient( gentity_t *ent );
 //
 // g_team.c
 //
-qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
-void Team_CheckDroppedItem( gentity_t *dropped );
-qboolean CheckObeliskAttack( gentity_t *obelisk, gentity_t *attacker );
+qboolean OnSameTeam( const gentity_t *ent1, const gentity_t *ent2 );
+void Team_CheckDroppedItem( const gentity_t *dropped );
+qboolean CheckObeliskAttack( const gentity_t *obelisk, const gentity_t *attacker );
 void ShuffleTeams(void);
 //KK-OAX Added for Command Handling Changes (r24)
 team_t G_TeamFromString( char *str );
@@ -927,13 +927,13 @@ void BotInterbreedEndMatch( void );
 
 void LogAcc(int clientNum);
 void PlayerStoreInit( void );
-void PlayerStore_store(char* guid, playerState_t ps);
-void PlayerStore_restore(char* guid, playerState_t *ps);
+void PlayerStore_store(const char* guid, playerState_t ps);
+void PlayerStore_restore(const char* guid, playerState_t *ps);
 
 //
 // g_vote.c
 //
-int allowedVote(char *commandStr);
+int allowedVote(const char *commandStr);
 void CheckVote( void );
 void CountVotes( void );
 void ClientLeaving(int clientNumber);
@@ -960,8 +960,8 @@ typedef struct {
 extern char custom_vote_info[1024];
 
 extern t_mappage getMappage(int page);
-extern int allowedMap(char *mapname);
-extern int allowedGametype(char *gametypeStr);
+extern int allowedMap(const char *mapname);
+extern int allowedGametype(const char *gametypeStr);
 extern int allowedTimelimit(int limit);
 extern int allowedFraglimit(int limit);
 extern int VoteParseCustomVotes( void );

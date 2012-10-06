@@ -211,6 +211,31 @@ static void CG_CalcVrect (void) {
 //==============================================================================
 
 
+#ifndef MISSIONPACK
+void CG_EventHandling(int type)
+{
+}
+
+void CG_KeyEvent(int key, qboolean down)
+{
+}
+
+void CG_MouseEvent(int x, int y)
+{
+	vec3_t viewangles;
+	viewangles[YAW] = - x / 3;
+	viewangles[PITCH] = - y / 2;
+	viewangles[ROLL] = 0.0f;
+	// TODO: calculate pro leet swipe-less aim angles
+	trap_SetViewAngles(viewangles);
+}
+
+void CG_Mouse2Event(int x, int y)
+{
+	// TODO: add pro leet multitouch weapon selection controls
+}
+#endif
+
 /*
 ===============
 CG_OffsetThirdPersonView

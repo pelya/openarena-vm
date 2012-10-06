@@ -1719,8 +1719,16 @@ void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y
 void CG_MouseEvent(int x, int y) {
 	int n;
 
+	CG_Printf( "VM: CG_MouseEvent %d %d\n", x, y );
 	if ( (cg.predictedPlayerState.pm_type == PM_NORMAL || cg.predictedPlayerState.pm_type == PM_SPECTATOR) && cg.showScores == qfalse) {
-    trap_Key_SetCatcher(0);
+		// TODO: calculate pro leet swipe-less aim angles
+		vec3_t viewangles;
+		viewangles[0] = - x / 3;
+		viewangles[1] = - y / 2;
+		viewangles[2] = 0;
+		CG_Printf( "VM: trap_SetViewAngles\n" );
+		trap_SetViewAngles(viewangles);
+		trap_Key_SetCatcher(0);
 		return;
 	}
 

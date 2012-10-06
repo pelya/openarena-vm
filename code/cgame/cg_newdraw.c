@@ -1752,6 +1752,43 @@ void CG_MouseEvent(int x, int y) {
 
 }
 
+void CG_Mouse2Event(int x, int y) {
+	/*
+	int n;
+
+	if ( (cg.predictedPlayerState.pm_type == PM_NORMAL || cg.predictedPlayerState.pm_type == PM_SPECTATOR) && cg.showScores == qfalse) {
+    trap_Key_SetCatcher(0);
+		return;
+	}
+
+	cgs.cursorX+= x;
+	if (cgs.cursorX < 0)
+		cgs.cursorX = 0;
+	else if (cgs.cursorX > 640)
+		cgs.cursorX = 640;
+
+	cgs.cursorY += y;
+	if (cgs.cursorY < 0)
+		cgs.cursorY = 0;
+	else if (cgs.cursorY > 480)
+		cgs.cursorY = 480;
+
+	n = Display_CursorType(cgs.cursorX, cgs.cursorY);
+	cgs.activeCursor = 0;
+	if (n == CURSOR_ARROW) {
+		cgs.activeCursor = cgs.media.selectCursor;
+	} else if (n == CURSOR_SIZER) {
+		cgs.activeCursor = cgs.media.sizeCursor;
+	}
+
+  if (cgs.capturedItem) {
+	  Display_MouseMove(cgs.capturedItem, x, y);
+  } else {
+	  Display_MouseMove(NULL, cgs.cursorX, cgs.cursorY);
+  }
+	*/
+}
+
 /*
 ==================
 CG_HideTeamMenus

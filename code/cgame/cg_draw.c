@@ -2725,7 +2725,6 @@ static void CG_DrawCrosshairNames( void ) {
 		return;
 	}
 	if ( cg.renderingThirdPerson ) {
-		// This cannot be considered a hack if you're using touchscreen. No amount of hacks will compensate absence of a mouse.
 		//return;
 	}
 

@@ -220,14 +220,13 @@ void CG_KeyEvent(int key, qboolean down)
 {
 }
 
+static float mouseX, mouseY;
+
+
 void CG_MouseEvent(int x, int y)
 {
-	vec3_t viewangles;
-	viewangles[YAW] = - x / 3;
-	viewangles[PITCH] = - y / 2;
-	viewangles[ROLL] = 0.0f;
-	// TODO: calculate pro leet swipe-less aim angles
-	trap_SetViewAngles(viewangles);
+	mouseX = - (x - cgs.glconfig.vidWidth / 2) * 1.0f;
+	mouseY = - (y - cgs.glconfig.vidHeight / 2) * 1.0f;
 }
 
 void CG_Mouse2Event(int x, int y)
@@ -242,6 +241,38 @@ CG_OffsetThirdPersonView
 
 ===============
 */
+
+static void CG_DrawCrosshairDebug(vec3_t coord, int ca)
+{
+	qhandle_t	hShader;
+	refEntity_t ent;
+
+	if ( !cg_drawCrosshair.integer ) {
+		return;
+	}
+
+	if (ca < 0) {
+		ca = 0;
+	}
+	hShader = cgs.media.crosshairShader[ ca % NUM_CROSSHAIRS ];
+
+	if(!hShader)
+		hShader = cgs.media.crosshairShader[ ca % 10 ];
+
+	memset(&ent, 0, sizeof(ent));
+	ent.reType = RT_SPRITE;
+	ent.renderfx = RF_DEPTHHACK /* | RF_CROSSHAIR */;
+	
+	VectorCopy(coord, ent.origin);
+	
+	// scale the crosshair so it appears the same size for all distances
+	ent.radius = 40;
+	ent.customShader = hShader;
+
+	trap_R_AddRefEntityToScene(&ent);
+}
+
+
 #define	FOCUS_DISTANCE	512
 static void CG_OffsetThirdPersonView( void ) {
 	vec3_t		forward, right, up;
@@ -253,6 +284,9 @@ static void CG_OffsetThirdPersonView( void ) {
 	vec3_t		focusPoint;
 	float		focusDist;
 	float		forwardScale, sideScale;
+
+	cg.refdefViewAngles[PITCH] = cg_thirdPersonAnglePitch.value;
+	cg.refdefViewAngles[YAW] = cg_thirdPersonAngleYaw.value;
 
 	cg.refdef.vieworg[2] += cg.predictedPlayerState.viewheight;
 
@@ -302,7 +336,6 @@ static void CG_OffsetThirdPersonView( void ) {
 		}
 	}
 
-
 	VectorCopy( view, cg.refdef.vieworg );
 
 	// select pitch to look at focus point from vieword
@@ -313,8 +346,57 @@ static void CG_OffsetThirdPersonView( void ) {
 	}
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2( focusPoint[2], focusDist );
 	cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
-}
 
+	{
+	vec3_t angles;
+	vec3_t viewPoint, tracePoint, anglesVector;
+	vec3_t forward, right, up;
+	trace_t trace;
+	
+	// Calculate a point where our mouse currently points to
+	//VectorCopy(cg.predictedPlayerState.origin, playerOrigin);
+	//VectorCopy(cg.refdef.vieworg, playerOrigin);
+	
+	//angles[PITCH] = cg_thirdPersonAnglePitch.value;
+	//angles[YAW] = cg_thirdPersonAngleYaw.value;
+	//angles[ROLL] = 0;
+
+	AngleVectors( cg.refdefViewAngles, forward, right, up );
+
+	VectorMA( view, -100.0f, forward, viewPoint );
+
+	//VectorMA( view, cg_thirdPersonRange.value, forward, tracePoint );
+	VectorCopy( view, tracePoint );
+	VectorMA( tracePoint, mouseX, right, tracePoint );
+	VectorMA( tracePoint, mouseY, up, tracePoint );
+	CG_DrawCrosshairDebug( tracePoint, 2 );
+
+	VectorSubtract( tracePoint, viewPoint, anglesVector );
+	VectorAdd( tracePoint, anglesVector, viewPoint );
+
+	CG_DrawCrosshairDebug( viewPoint, 8 );
+
+	CG_Trace( &trace, tracePoint, NULL, NULL, viewPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
+	CG_DrawCrosshairDebug( trace.endpos, 6 );
+
+	// Calculate player aim angles
+	VectorSubtract( trace.endpos, cg.predictedPlayerState.origin, anglesVector );
+	//VectorNegate( anglesVector, anglesVector );
+	vectoangles( anglesVector, angles );
+	CG_Printf("Mouse: %4.0f %4.0f player a %4.0f %4.0f v %4.0f %4.0f %4.0f c %4.0f %4.0f %4.0f view %4.0f %4.0f %4.0f trace %4.0f %4.0f %4.0f\n",
+		mouseX, mouseY,
+		angles[0], angles[1],
+		anglesVector[0], anglesVector[1], anglesVector[2],
+		cg.predictedPlayerState.origin[0], cg.predictedPlayerState.origin[1], cg.predictedPlayerState.origin[2],
+		viewPoint[0], viewPoint[1], viewPoint[2],
+		tracePoint[0], tracePoint[1], tracePoint[2]);
+	
+	//playerAngles[YAW] = cg_thirdPersonAngleYaw.value - x / 2;
+	//playerAngles[PITCH] = cg_thirdPersonAnglePitch.value - y / 2;
+	//playerAngles[ROLL] = 0.0f;
+	trap_SetViewAngles(angles);
+	}
+}
 
 // this causes a compiler bug on mac MrC compiler
 static void CG_StepOffset( void ) {

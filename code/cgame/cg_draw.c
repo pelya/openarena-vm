@@ -2478,11 +2478,6 @@ static void CG_DrawCrosshair(void)
 		return;
 	}
 
-	if ( cg.renderingThirdPerson ) {
-		// This cannot be considered a hack if you're using touchscreen. No amount of hacks will compensate absence of a mouse.
-		//return;
-	}
-
 	// set color based on health
 	if ( cg_crosshairHealth.integer ) {
 		vec4_t		hcolor;
@@ -2616,11 +2611,6 @@ static void CG_DrawCrosshair3D(void)
 		return;
 	}
 
-	if ( cg.renderingThirdPerson ) {
-		// This cannot be considered a hack if you're using touchscreen. No amount of hacks will compensate absence of a mouse.
-		//return;
-	}
-
 	w = h = cg_crosshairSize.value;
 
 	// pulse the size of the crosshair when picking up items
@@ -2669,6 +2659,7 @@ static void CG_DrawCrosshair3D(void)
 
 	trap_R_AddRefEntityToScene(&ent);
 }
+
 
 
 

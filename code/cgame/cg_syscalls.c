@@ -445,6 +445,6 @@ qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 ) {
 	return syscall( CG_R_INPVS, p1, p2 );
 }
 
-qboolean trap_SetViewAngles( const vec3_t a ) {
+void trap_SetViewAngles( const vec3_t a ) {
 	return syscall( CG_SET_VIEW_ANGLES, a );
 }

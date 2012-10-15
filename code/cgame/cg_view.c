@@ -241,39 +241,8 @@ CG_OffsetThirdPersonView
 
 ===============
 */
-
-static void CG_DrawCrosshairDebug(vec3_t coord, int ca)
-{
-	qhandle_t	hShader;
-	refEntity_t ent;
-
-	if ( !cg_drawCrosshair.integer ) {
-		return;
-	}
-
-	if (ca < 0) {
-		ca = 0;
-	}
-	hShader = cgs.media.crosshairShader[ ca % NUM_CROSSHAIRS ];
-
-	if(!hShader)
-		hShader = cgs.media.crosshairShader[ ca % 10 ];
-
-	memset(&ent, 0, sizeof(ent));
-	ent.reType = RT_SPRITE;
-	ent.renderfx = RF_DEPTHHACK /* | RF_CROSSHAIR */;
-	
-	VectorCopy(coord, ent.origin);
-	
-	// scale the crosshair so it appears the same size for all distances
-	ent.radius = 40;
-	ent.customShader = hShader;
-
-	trap_R_AddRefEntityToScene(&ent);
-}
-
-
 #define	FOCUS_DISTANCE	512
+extern vec3_t crosshairDebug[3];
 static void CG_OffsetThirdPersonView( void ) {
 	vec3_t		forward, right, up;
 	vec3_t		view;
@@ -369,15 +338,15 @@ static void CG_OffsetThirdPersonView( void ) {
 	VectorCopy( view, tracePoint );
 	VectorMA( tracePoint, mouseX, right, tracePoint );
 	VectorMA( tracePoint, mouseY, up, tracePoint );
-	CG_DrawCrosshairDebug( tracePoint, 2 );
+	VectorCopy( tracePoint, crosshairDebug[0] ); //CG_DrawCrosshairDebug( tracePoint, 2 );
 
 	VectorSubtract( tracePoint, viewPoint, anglesVector );
 	VectorAdd( tracePoint, anglesVector, viewPoint );
 
-	CG_DrawCrosshairDebug( viewPoint, 8 );
+	VectorCopy( viewPoint, crosshairDebug[1] ); //CG_DrawCrosshairDebug( viewPoint, 8 );
 
 	CG_Trace( &trace, tracePoint, NULL, NULL, viewPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
-	CG_DrawCrosshairDebug( trace.endpos, 6 );
+	VectorCopy( trace.endpos, crosshairDebug[2] ); //CG_DrawCrosshairDebug( trace.endpos, 6 );
 
 	// Calculate player aim angles
 	VectorSubtract( trace.endpos, cg.predictedPlayerState.origin, anglesVector );

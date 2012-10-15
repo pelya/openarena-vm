@@ -2459,6 +2459,33 @@ CROSSHAIR
 CG_DrawCrosshair
 =================
 */
+extern vec3_t crosshairDebug[3];
+vec3_t crosshairDebug[3];
+static void CG_DrawCrosshairDebug(vec3_t coord, int ca)
+{
+	qhandle_t	hShader;
+	refEntity_t ent;
+
+	if (ca < 0) {
+		ca = 0;
+	}
+	hShader = cgs.media.crosshairShader[ ca % NUM_CROSSHAIRS ];
+
+	if(!hShader)
+		hShader = cgs.media.crosshairShader[ ca % 10 ];
+
+	memset(&ent, 0, sizeof(ent));
+	ent.reType = RT_SPRITE;
+	ent.renderfx = RF_DEPTHHACK /* | RF_CROSSHAIR */;
+	
+	VectorCopy(coord, ent.origin);
+	
+	// scale the crosshair so it appears the same size for all distances
+	ent.radius = 40;
+	ent.customShader = hShader;
+
+	trap_R_AddRefEntityToScene(&ent);
+}
 static void CG_DrawCrosshair(void)
 {
 	float		w, h;
@@ -2469,6 +2496,10 @@ static void CG_DrawCrosshair(void)
 	int 		currentWeapon;
 	
 	currentWeapon = cg.predictedPlayerState.weapon;
+
+	CG_DrawCrosshairDebug( crosshairDebug[0], 2 );
+	CG_DrawCrosshairDebug( crosshairDebug[1], 8 );
+	CG_DrawCrosshairDebug( crosshairDebug[2], 6 );
 
 	if ( !cg_drawCrosshair.integer ) {
 		return;

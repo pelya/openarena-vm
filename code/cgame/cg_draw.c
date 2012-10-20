@@ -2580,8 +2580,8 @@ static void CG_DrawCrosshair(void)
         if(!hShader)
             hShader = cgs.media.crosshairShader[ ca % 10 ];
 
-	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (cg.refdef.width - w), 
-		y + cg.refdef.y + 0.5 * (cg.refdef.height - h), 
+	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (cg.refdef.width - w) + cg.mouseX,
+		y + cg.refdef.y + 0.5 * (cg.refdef.height - h) + cg.mouseY,
 		w, h, 0, 0, 1, 1, hShader );
 }
 
@@ -3387,7 +3387,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	// clear around the rendered view if sized down
 	CG_TileClear();
 
-	//if(stereoView != STEREO_CENTER)
+	if(stereoView != STEREO_CENTER)
 		CG_DrawCrosshair3D();
 
 	// draw 3D view
@@ -3397,6 +3397,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
  	CG_Draw2D(stereoView);
 }
 
+/*
 extern vec3_t crosshairDebug[20];
 vec3_t crosshairDebug[20];
 void CG_DrawCrosshairDebug2(vec3_t coord, int ca)
@@ -3424,3 +3425,4 @@ void CG_DrawCrosshairDebug()
 	for(i = 0; i < 20; i++)
 		CG_DrawCrosshairDebug2( crosshairDebug[i], i );
 }
+*/

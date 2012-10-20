@@ -220,12 +220,10 @@ void CG_KeyEvent(int key, qboolean down)
 {
 }
 
-static float mouseX, mouseY;
-
 void CG_MouseEvent(int x, int y)
 {
-	mouseX = - (x - cgs.glconfig.vidWidth / 2) * 1.0f;
-	mouseY = - (y - cgs.glconfig.vidHeight / 2) * 1.0f;
+	cg.mouseX = (x - cgs.glconfig.vidWidth / 2);
+	cg.mouseY = (y - cgs.glconfig.vidHeight / 2);
 }
 
 void CG_Mouse2Event(int x, int y)
@@ -234,7 +232,7 @@ void CG_Mouse2Event(int x, int y)
 }
 #endif
 
-extern vec3_t crosshairDebug[10];
+//extern vec3_t crosshairDebug[10];
 
 static void calculateTouchscreenAimingAngles()
 {
@@ -243,15 +241,16 @@ static void calculateTouchscreenAimingAngles()
 	vec3_t tracePoint, anglesVector;
 	vec3_t forward, right, up;
 	trace_t trace;
-	int i; // Debug
-	vec3_t vi; // Debug
+	//int i; // Debug
+	//vec3_t vi; // Debug
+	static vec3_t teleportDeltaAngles, prevAngles[4];
 
 	// First we calculate a distant point, where we'd be aiming if there are no walls around
 	AngleVectors( cg.refdefViewAngles, forward, right, up );
 
 	VectorMA( cg.refdef.vieworg, 10000.0f, forward, tracePoint );
-	VectorMA( tracePoint, -mouseX*25.0f, right, tracePoint );
-	VectorMA( tracePoint, mouseY*25.0f, up, tracePoint );
+	VectorMA( tracePoint, cg.mouseX*25.0f, right, tracePoint );
+	VectorMA( tracePoint, -cg.mouseY*25.0f, up, tracePoint );
 
 	// Bump it against the level walls
 	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL, tracePoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
@@ -260,13 +259,45 @@ static void calculateTouchscreenAimingAngles()
 	VectorSubtract( trace.endpos, cg.predictedPlayerState.origin, anglesVector );
 	anglesVector[2] -= cg.predictedPlayerState.viewheight;
 	vectoangles( anglesVector, angles );
+
+	// Now the bad news: the server adds delta to the client view angles, so we need to compensate for that delta
+	// This code fails
+	//if( cg.thisFrameTeleport )
+	//	VectorCopy( cg.snap->ps.viewangles, teleportDeltaAngles );
+
+	// Wicked self-adjusting values
+	VectorCopy(prevAngles[2], prevAngles[3]);
+	VectorCopy(prevAngles[1], prevAngles[2]);
+	VectorCopy(prevAngles[0], prevAngles[1]);
+	VectorCopy(angles, prevAngles[0]);
+
+	if( prevAngles[0][YAW] == prevAngles[1][YAW] &&
+		prevAngles[0][YAW] == prevAngles[2][YAW] &&
+		prevAngles[0][YAW] == prevAngles[3][YAW] )
+		teleportDeltaAngles[YAW] += AngleSubtract(cg.predictedPlayerState.viewangles[YAW], prevAngles[0][YAW]) / 2.0f;
+	if( prevAngles[0][PITCH] == prevAngles[1][PITCH] &&
+		prevAngles[0][PITCH] == prevAngles[2][PITCH] &&
+		prevAngles[0][PITCH] == prevAngles[3][PITCH] )
+		teleportDeltaAngles[PITCH] += AngleSubtract(cg.predictedPlayerState.viewangles[PITCH], prevAngles[0][PITCH]) / 2.0f;
+
+	angles[YAW] = AngleSubtract( angles[YAW], teleportDeltaAngles[YAW] );
+	angles[PITCH] = AngleSubtract( angles[PITCH], teleportDeltaAngles[PITCH] );
+
 	trap_SetViewAngles( angles );
-	
+
 	// DEBUG
+	/*
+	CG_Printf ("angles %+04.0f snap viewangles %+04.0f pps viewangles %+04.0f prev %+04.0f\n",
+		angles[YAW],
+		cg.snap->ps.viewangles[YAW],
+		cg.predictedPlayerState.viewangles[YAW],
+		prevAngles[0][YAW]);
+
 	VectorSubtract( cg.predictedPlayerState.origin, trace.endpos, vi );
 	VectorScale( vi, 1.0f/9, vi );
 	for( i = 0; i < 10; i++ )
 		VectorMA( trace.endpos, i, vi, crosshairDebug[i] );
+	*/
 }
 
 
@@ -348,7 +379,7 @@ static void CG_OffsetThirdPersonView( void ) {
 		focusDist = 1;	// should never happen
 	}
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2( focusPoint[2], focusDist );
-	cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
+	//cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
 	cg.refdefViewAngles[ROLL] = 0;
 
 	calculateTouchscreenAimingAngles();

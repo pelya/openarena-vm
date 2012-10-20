@@ -674,6 +674,9 @@ typedef struct {
         
         int redObeliskHealth;
         int blueObeliskHealth;
+
+        float mouseX;
+        float mouseY;
 } cg_t;
 
 

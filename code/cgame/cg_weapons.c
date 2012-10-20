@@ -1200,7 +1200,7 @@ static void CG_LightningBolt( centity_t *cent, vec3_t origin ) {
 	}
 
 	// FIXME: crouch
-	muzzlePoint[2] += DEFAULT_VIEWHEIGHT;
+	muzzlePoint[2] += cg.predictedPlayerState.viewheight;
 
 	VectorMA( muzzlePoint, 14, forward, muzzlePoint );
 

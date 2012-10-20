@@ -1046,7 +1046,6 @@ CG_AddPacketEntities
 
 ===============
 */
-//extern void CG_DrawCrosshairDebug();
 
 void CG_AddPacketEntities( void ) {
 	int					num;

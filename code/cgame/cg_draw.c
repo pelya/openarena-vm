@@ -3397,9 +3397,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
  	CG_Draw2D(stereoView);
 }
 
-/*
-extern vec3_t crosshairDebug[20];
-vec3_t crosshairDebug[20];
+vec3_t crosshairDebug[10];
 void CG_DrawCrosshairDebug2(vec3_t coord, int ca)
 {
 	refEntity_t ent;
@@ -3417,12 +3415,9 @@ void CG_DrawCrosshairDebug2(vec3_t coord, int ca)
 	trap_R_AddRefEntityToScene( &ent );
 }
 
-extern void CG_DrawCrosshairDebug();
-
-void CG_DrawCrosshairDebug()
+void CG_DrawCrosshairDebug(void)
 {
 	int i;
-	for(i = 0; i < 20; i++)
+	for(i = 0; i < 10; i++)
 		CG_DrawCrosshairDebug2( crosshairDebug[i], i );
 }
-*/

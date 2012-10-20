@@ -232,25 +232,25 @@ void CG_Mouse2Event(int x, int y)
 }
 #endif
 
-//extern vec3_t crosshairDebug[10];
+extern vec3_t crosshairDebug[10];
 
-static void calculateTouchscreenAimingAngles()
+static void calculateTouchscreenAimingAngles(void);
+void calculateTouchscreenAimingAngles(void)
 {
 	// Calculate touchscreen aiming, that will honor level walls and other players
 	vec3_t angles;
 	vec3_t tracePoint, anglesVector;
 	vec3_t forward, right, up;
 	trace_t trace;
-	//int i; // Debug
-	//vec3_t vi; // Debug
+	float fovCoeff = cg.zoomed ? 5.0f : 25.0f; // TODO: hardcoded values, use cg_fov and cg_zoomFov
 	static vec3_t teleportDeltaAngles, prevAngles[4];
 
 	// First we calculate a distant point, where we'd be aiming if there are no walls around
 	AngleVectors( cg.refdefViewAngles, forward, right, up );
 
 	VectorMA( cg.refdef.vieworg, 10000.0f, forward, tracePoint );
-	VectorMA( tracePoint, cg.mouseX*25.0f, right, tracePoint );
-	VectorMA( tracePoint, -cg.mouseY*25.0f, up, tracePoint );
+	VectorMA( tracePoint, cg.mouseX * fovCoeff, right, tracePoint );
+	VectorMA( tracePoint, -cg.mouseY * fovCoeff, up, tracePoint );
 
 	// Bump it against the level walls
 	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL, tracePoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
@@ -287,16 +287,15 @@ static void calculateTouchscreenAimingAngles()
 
 	// DEBUG
 	/*
-	CG_Printf ("angles %+04.0f snap viewangles %+04.0f pps viewangles %+04.0f prev %+04.0f\n",
-		angles[YAW],
-		cg.snap->ps.viewangles[YAW],
-		cg.predictedPlayerState.viewangles[YAW],
-		prevAngles[0][YAW]);
-
-	VectorSubtract( cg.predictedPlayerState.origin, trace.endpos, vi );
-	VectorScale( vi, 1.0f/9, vi );
-	for( i = 0; i < 10; i++ )
-		VectorMA( trace.endpos, i, vi, crosshairDebug[i] );
+	{
+		int i;
+		vec3_t vi;
+		CG_Printf ("cg_fov.value %+06.2f cg_zoomFov.value %+06.2f\n", (float)cg_fov.value, (float)cg_zoomFov.value);
+		VectorSubtract( cg.predictedPlayerState.origin, trace.endpos, vi );
+		VectorScale( vi, 1.0f/9, vi );
+		for( i = 0; i < 10; i++ )
+			VectorMA( trace.endpos, i, vi, crosshairDebug[i] );
+	}
 	*/
 }
 

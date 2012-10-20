@@ -222,7 +222,6 @@ void CG_KeyEvent(int key, qboolean down)
 
 static float mouseX, mouseY;
 
-
 void CG_MouseEvent(int x, int y)
 {
 	mouseX = - (x - cgs.glconfig.vidWidth / 2) * 1.0f;
@@ -235,6 +234,42 @@ void CG_Mouse2Event(int x, int y)
 }
 #endif
 
+extern vec3_t crosshairDebug[10];
+
+static void calculateTouchscreenAimingAngles()
+{
+	// Calculate touchscreen aiming, that will honor level walls and other players
+	vec3_t angles;
+	vec3_t tracePoint, anglesVector;
+	vec3_t forward, right, up;
+	trace_t trace;
+	int i; // Debug
+	vec3_t vi; // Debug
+
+	// First we calculate a distant point, where we'd be aiming if there are no walls around
+	AngleVectors( cg.refdefViewAngles, forward, right, up );
+
+	VectorMA( cg.refdef.vieworg, 10000.0f, forward, tracePoint );
+	VectorMA( tracePoint, -mouseX*25.0f, right, tracePoint );
+	VectorMA( tracePoint, mouseY*25.0f, up, tracePoint );
+
+	// Bump it against the level walls
+	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL, tracePoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
+
+	// Calculate player aim angles
+	VectorSubtract( trace.endpos, cg.predictedPlayerState.origin, anglesVector );
+	anglesVector[2] -= cg.predictedPlayerState.viewheight;
+	vectoangles( anglesVector, angles );
+	trap_SetViewAngles( angles );
+	
+	// DEBUG
+	VectorSubtract( cg.predictedPlayerState.origin, trace.endpos, vi );
+	VectorScale( vi, 1.0f/9, vi );
+	for( i = 0; i < 10; i++ )
+		VectorMA( trace.endpos, i, vi, crosshairDebug[i] );
+}
+
+
 /*
 ===============
 CG_OffsetThirdPersonView
@@ -242,7 +277,6 @@ CG_OffsetThirdPersonView
 ===============
 */
 #define	FOCUS_DISTANCE	512
-extern vec3_t crosshairDebug[3];
 static void CG_OffsetThirdPersonView( void ) {
 	vec3_t		forward, right, up;
 	vec3_t		view;
@@ -315,56 +349,9 @@ static void CG_OffsetThirdPersonView( void ) {
 	}
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2( focusPoint[2], focusDist );
 	cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
+	cg.refdefViewAngles[ROLL] = 0;
 
-	{
-	vec3_t angles;
-	vec3_t viewPoint, tracePoint, anglesVector;
-	vec3_t forward, right, up;
-	trace_t trace;
-	
-	// Calculate a point where our mouse currently points to
-	//VectorCopy(cg.predictedPlayerState.origin, playerOrigin);
-	//VectorCopy(cg.refdef.vieworg, playerOrigin);
-	
-	//angles[PITCH] = cg_thirdPersonAnglePitch.value;
-	//angles[YAW] = cg_thirdPersonAngleYaw.value;
-	//angles[ROLL] = 0;
-
-	AngleVectors( cg.refdefViewAngles, forward, right, up );
-
-	VectorMA( view, -100.0f, forward, viewPoint );
-
-	//VectorMA( view, cg_thirdPersonRange.value, forward, tracePoint );
-	VectorCopy( view, tracePoint );
-	VectorMA( tracePoint, mouseX, right, tracePoint );
-	VectorMA( tracePoint, mouseY, up, tracePoint );
-	VectorCopy( tracePoint, crosshairDebug[0] ); //CG_DrawCrosshairDebug( tracePoint, 2 );
-
-	VectorSubtract( tracePoint, viewPoint, anglesVector );
-	VectorAdd( tracePoint, anglesVector, viewPoint );
-
-	VectorCopy( viewPoint, crosshairDebug[1] ); //CG_DrawCrosshairDebug( viewPoint, 8 );
-
-	CG_Trace( &trace, tracePoint, NULL, NULL, viewPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
-	VectorCopy( trace.endpos, crosshairDebug[2] ); //CG_DrawCrosshairDebug( trace.endpos, 6 );
-
-	// Calculate player aim angles
-	VectorSubtract( trace.endpos, cg.predictedPlayerState.origin, anglesVector );
-	//VectorNegate( anglesVector, anglesVector );
-	vectoangles( anglesVector, angles );
-	CG_Printf("Mouse: %4.0f %4.0f player a %4.0f %4.0f v %4.0f %4.0f %4.0f c %4.0f %4.0f %4.0f view %4.0f %4.0f %4.0f trace %4.0f %4.0f %4.0f\n",
-		mouseX, mouseY,
-		angles[0], angles[1],
-		anglesVector[0], anglesVector[1], anglesVector[2],
-		cg.predictedPlayerState.origin[0], cg.predictedPlayerState.origin[1], cg.predictedPlayerState.origin[2],
-		viewPoint[0], viewPoint[1], viewPoint[2],
-		tracePoint[0], tracePoint[1], tracePoint[2]);
-	
-	//playerAngles[YAW] = cg_thirdPersonAngleYaw.value - x / 2;
-	//playerAngles[PITCH] = cg_thirdPersonAnglePitch.value - y / 2;
-	//playerAngles[ROLL] = 0.0f;
-	trap_SetViewAngles(angles);
-	}
+	calculateTouchscreenAimingAngles();
 }
 
 // this causes a compiler bug on mac MrC compiler

@@ -2459,33 +2459,6 @@ CROSSHAIR
 CG_DrawCrosshair
 =================
 */
-extern vec3_t crosshairDebug[3];
-vec3_t crosshairDebug[3];
-static void CG_DrawCrosshairDebug(vec3_t coord, int ca)
-{
-	qhandle_t	hShader;
-	refEntity_t ent;
-
-	if (ca < 0) {
-		ca = 0;
-	}
-	hShader = cgs.media.crosshairShader[ ca % NUM_CROSSHAIRS ];
-
-	if(!hShader)
-		hShader = cgs.media.crosshairShader[ ca % 10 ];
-
-	memset(&ent, 0, sizeof(ent));
-	ent.reType = RT_SPRITE;
-	ent.renderfx = RF_DEPTHHACK /* | RF_CROSSHAIR */;
-	
-	VectorCopy(coord, ent.origin);
-	
-	// scale the crosshair so it appears the same size for all distances
-	ent.radius = 40;
-	ent.customShader = hShader;
-
-	trap_R_AddRefEntityToScene(&ent);
-}
 static void CG_DrawCrosshair(void)
 {
 	float		w, h;
@@ -2496,10 +2469,6 @@ static void CG_DrawCrosshair(void)
 	int 		currentWeapon;
 	
 	currentWeapon = cg.predictedPlayerState.weapon;
-
-	CG_DrawCrosshairDebug( crosshairDebug[0], 2 );
-	CG_DrawCrosshairDebug( crosshairDebug[1], 8 );
-	CG_DrawCrosshairDebug( crosshairDebug[2], 6 );
 
 	if ( !cg_drawCrosshair.integer ) {
 		return;
@@ -3418,7 +3387,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	// clear around the rendered view if sized down
 	CG_TileClear();
 
-	if(stereoView != STEREO_CENTER)
+	//if(stereoView != STEREO_CENTER)
 		CG_DrawCrosshair3D();
 
 	// draw 3D view
@@ -3428,5 +3397,30 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
  	CG_Draw2D(stereoView);
 }
 
+extern vec3_t crosshairDebug[20];
+vec3_t crosshairDebug[20];
+void CG_DrawCrosshairDebug2(vec3_t coord, int ca)
+{
+	refEntity_t ent;
+	memset (&ent, 0, sizeof(ent));
+	VectorCopy( coord, ent.origin);
+	VectorCopy( coord, ent.oldorigin);
 
+	ent.reType = RT_SPRITE;
+	ent.radius = 2;
+	ent.rotation = 0;
+	ent.renderfx |= RF_DEPTHHACK | RF_MINLIGHT;
 
+	ent.customShader = cgs.media.plasmaBallShader;
+
+	trap_R_AddRefEntityToScene( &ent );
+}
+
+extern void CG_DrawCrosshairDebug();
+
+void CG_DrawCrosshairDebug()
+{
+	int i;
+	for(i = 0; i < 20; i++)
+		CG_DrawCrosshairDebug2( crosshairDebug[i], i );
+}

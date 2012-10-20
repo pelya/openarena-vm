@@ -1046,6 +1046,8 @@ CG_AddPacketEntities
 
 ===============
 */
+extern void CG_DrawCrosshairDebug();
+
 void CG_AddPacketEntities( void ) {
 	int					num;
 	centity_t			*cent;
@@ -1111,5 +1113,6 @@ void CG_AddPacketEntities( void ) {
 			CG_AddCEntity( cent );
 		} //Also unlagged
 	}
+	CG_DrawCrosshairDebug();
 }
 

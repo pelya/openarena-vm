@@ -881,17 +881,19 @@ void UI_MouseEvent( int dx, int dy )
 		return;
 
 	// update mouse screen position
-	uis.cursorx += dx;
+	uis.cursorx = dx;
 	if (uis.cursorx < -uis.bias)
 		uis.cursorx = -uis.bias;
 	else if (uis.cursorx > SCREEN_WIDTH+uis.bias)
 		uis.cursorx = SCREEN_WIDTH+uis.bias;
 
-	uis.cursory += dy;
+	uis.cursory = dy;
 	if (uis.cursory < 0)
 		uis.cursory = 0;
 	else if (uis.cursory > SCREEN_HEIGHT)
 		uis.cursory = SCREEN_HEIGHT;
+
+	//Com_Printf("UI_MouseEvent: %d %d\n", uis.cursorx, uis.cursory);
 
 	// region test the active menu items
 	for (i=0; i<uis.activemenu->nitems; i++)
@@ -1095,12 +1097,16 @@ void UI_Init( void ) {
 	// for 640x480 virtualized screen
 	uis.xscale = uis.glconfig.vidWidth * (1.0/640.0);
 	uis.yscale = uis.glconfig.vidHeight * (1.0/480.0);
+	uis.bias = 0;
+/*
 	if ( uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640 ) {
 		// wide screen
 		uis.bias = 0.5 * ( uis.glconfig.vidWidth - ( uis.glconfig.vidHeight * (640.0/480.0) ) );
 		uis.xscale = uis.yscale;
 	}
-	else {
+	else
+*/
+	{
 		// no wide screen
 		uis.bias = 0;
 	}

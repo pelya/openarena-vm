@@ -210,7 +210,6 @@ static void CG_CalcVrect (void) {
 
 //==============================================================================
 
-
 #ifndef MISSIONPACK
 void CG_EventHandling(int type)
 {
@@ -234,23 +233,22 @@ void CG_Mouse2Event(int x, int y)
 
 extern vec3_t crosshairDebug[10];
 
-static void calculateTouchscreenAimingAngles(void);
-void calculateTouchscreenAimingAngles(void)
+static void calculateTouchscreenAimingAngles(void)
 {
 	// Calculate touchscreen aiming, that will honor level walls and other players
 	vec3_t angles;
 	vec3_t tracePoint, anglesVector;
 	vec3_t forward, right, up;
 	trace_t trace;
-	float fovCoeff = cg.zoomed ? 5.0f : 25.0f; // TODO: hardcoded values, use cg_fov and cg_zoomFov
+	float fovCoeff = cg.zoomed ? 6.25f : 31.35f; // TODO: hardcoded values, use cg_fov and cg_zoomFov
 	static vec3_t teleportDeltaAngles, prevAngles[4];
 
 	// First we calculate a distant point, where we'd be aiming if there are no walls around
 	AngleVectors( cg.refdefViewAngles, forward, right, up );
 
 	VectorMA( cg.refdef.vieworg, 10000.0f, forward, tracePoint );
-	VectorMA( tracePoint, cg.mouseX * fovCoeff, right, tracePoint );
-	VectorMA( tracePoint, -cg.mouseY * fovCoeff, up, tracePoint );
+	VectorMA( tracePoint, cg.mouseX * fovCoeff / cgs.screenXScale, right, tracePoint );
+	VectorMA( tracePoint, -cg.mouseY * fovCoeff / cgs.screenXScale, up, tracePoint );
 
 	// Bump it against the level walls
 	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL, tracePoint, cg.predictedPlayerState.clientNum, MASK_SHOT );

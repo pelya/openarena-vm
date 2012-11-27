@@ -241,7 +241,6 @@ static void calculateTouchscreenAimingAngles(void)
 	vec3_t forward, right, up;
 	trace_t trace;
 	float fovCoeff = cg.zoomed ? 6.25f : 31.35f; // TODO: hardcoded values, use cg_fov and cg_zoomFov
-	static vec3_t teleportDeltaAngles, prevAngles[4];
 
 	// First we calculate a distant point, where we'd be aiming if there are no walls around
 	AngleVectors( cg.refdefViewAngles, forward, right, up );
@@ -258,43 +257,39 @@ static void calculateTouchscreenAimingAngles(void)
 	anglesVector[2] -= cg.predictedPlayerState.viewheight;
 	vectoangles( anglesVector, angles );
 
-	// Now the bad news: the server adds delta to the client view angles, so we need to compensate for that delta
-	// This code fails
-	//if( cg.thisFrameTeleport )
-	//	VectorCopy( cg.snap->ps.viewangles, teleportDeltaAngles );
-
 	// Wicked self-adjusting values
-	VectorCopy(prevAngles[2], prevAngles[3]);
+	/*
 	VectorCopy(prevAngles[1], prevAngles[2]);
 	VectorCopy(prevAngles[0], prevAngles[1]);
 	VectorCopy(angles, prevAngles[0]);
 
-	if( prevAngles[0][YAW] == prevAngles[1][YAW] &&
-		prevAngles[0][YAW] == prevAngles[2][YAW] &&
-		prevAngles[0][YAW] == prevAngles[3][YAW] )
-		teleportDeltaAngles[YAW] += AngleSubtract(cg.predictedPlayerState.viewangles[YAW], prevAngles[0][YAW]) / 2.0f;
-	if( prevAngles[0][PITCH] == prevAngles[1][PITCH] &&
-		prevAngles[0][PITCH] == prevAngles[2][PITCH] &&
-		prevAngles[0][PITCH] == prevAngles[3][PITCH] )
-		teleportDeltaAngles[PITCH] += AngleSubtract(cg.predictedPlayerState.viewangles[PITCH], prevAngles[0][PITCH]) / 2.0f;
+	CG_Printf("====== cg.thisFrameTeleport %d cg.nextFrameTeleport %d cg.snap->ps.eFlags %d ps.delta_angles %d %d %d ps.viewangles %f %f %f\n",
+		cg.thisFrameTeleport, cg.nextFrameTeleport, cg.snap->ps.eFlags,
+		cg.snap->ps.delta_angles[0], cg.snap->ps.delta_angles[1], cg.snap->ps.delta_angles[2],
+		(double)cg.snap->ps.viewangles[0], (double)cg.snap->ps.viewangles[1], (double)cg.snap->ps.viewangles[2] );
 
-	angles[YAW] = AngleSubtract( angles[YAW], teleportDeltaAngles[YAW] );
-	angles[PITCH] = AngleSubtract( angles[PITCH], teleportDeltaAngles[PITCH] );
+	if( cg.thisFrameTeleport || cg.nextFrameTeleport || cg.snap->ps.eFlags & EF_TELEPORT_BIT )
+	{
+		teleportUpdateForce = 10;
+	}
+
+	if( teleportUpdateForce > 0 )
+		teleportUpdateForce --;
+
+	if( teleportUpdateForce ||
+		fabs(prevAngles[0][YAW] - prevAngles[1][YAW]) +
+		fabs(prevAngles[0][YAW] - prevAngles[2][YAW]) < 0.001 )
+		teleportDeltaAngles[YAW] += AngleSubtract(cg.predictedPlayerState.viewangles[YAW], prevAngles[0][YAW]) / 2.0f;
+	if( teleportUpdateForce ||
+		fabs(prevAngles[0][PITCH] - prevAngles[1][PITCH]) +
+		fabs(prevAngles[0][PITCH] - prevAngles[2][PITCH]) < 0.001 )
+		teleportDeltaAngles[PITCH] += AngleSubtract(cg.predictedPlayerState.viewangles[PITCH], prevAngles[0][PITCH]) / 2.0f;
+	*/
+
+	angles[YAW] = AngleSubtract( angles[YAW], SHORT2ANGLE(cg.snap->ps.delta_angles[YAW]) );
+	angles[PITCH] = AngleSubtract( angles[PITCH], SHORT2ANGLE(cg.snap->ps.delta_angles[PITCH]) );
 
 	trap_SetViewAngles( angles );
-
-	// DEBUG
-	/*
-	{
-		int i;
-		vec3_t vi;
-		CG_Printf ("cg_fov.value %+06.2f cg_zoomFov.value %+06.2f\n", (float)cg_fov.value, (float)cg_zoomFov.value);
-		VectorSubtract( cg.predictedPlayerState.origin, trace.endpos, vi );
-		VectorScale( vi, 1.0f/9, vi );
-		for( i = 0; i < 10; i++ )
-			VectorMA( trace.endpos, i, vi, crosshairDebug[i] );
-	}
-	*/
 }
 
 

@@ -75,9 +75,6 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 	case CG_EVENT_HANDLING:
 		CG_EventHandling(arg0);
 		return 0;
-	case CG_MOUSE2_EVENT:
-		CG_Mouse2Event(arg0, arg1);
-		return 0;
 	case CG_ADJUST_CAMERA_ANGLES:
 		CG_AdjustCameraAngles(arg0, arg1);
 		return 0;

@@ -225,11 +225,6 @@ void CG_MouseEvent(int x, int y)
 	cg.mouseY = (y - cgs.glconfig.vidHeight / 2);
 }
 
-void CG_Mouse2Event(int x, int y)
-{
-	// TODO: add pro leet multitouch weapon selection controls
-}
-
 void CG_AdjustCameraAngles(int yaw, int pitch)
 {
 	cg.cameraAngles[YAW] = yaw * 0.001f;

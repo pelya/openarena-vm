@@ -229,6 +229,12 @@ void CG_Mouse2Event(int x, int y)
 {
 	// TODO: add pro leet multitouch weapon selection controls
 }
+
+void CG_AdjustCameraAngles(int yaw, int pitch)
+{
+	cg.cameraAngles[YAW] = yaw * 0.001f;
+	cg.cameraAngles[PITCH] = pitch * 0.001f;
+}
 #endif
 
 extern vec3_t crosshairDebug[10];
@@ -257,37 +263,8 @@ static void calculateTouchscreenAimingAngles(void)
 	anglesVector[2] -= cg.predictedPlayerState.viewheight;
 	vectoangles( anglesVector, angles );
 
-	// Wicked self-adjusting values
-	/*
-	VectorCopy(prevAngles[1], prevAngles[2]);
-	VectorCopy(prevAngles[0], prevAngles[1]);
-	VectorCopy(angles, prevAngles[0]);
-
-	CG_Printf("====== cg.thisFrameTeleport %d cg.nextFrameTeleport %d cg.snap->ps.eFlags %d ps.delta_angles %d %d %d ps.viewangles %f %f %f\n",
-		cg.thisFrameTeleport, cg.nextFrameTeleport, cg.snap->ps.eFlags,
-		cg.snap->ps.delta_angles[0], cg.snap->ps.delta_angles[1], cg.snap->ps.delta_angles[2],
-		(double)cg.snap->ps.viewangles[0], (double)cg.snap->ps.viewangles[1], (double)cg.snap->ps.viewangles[2] );
-
-	if( cg.thisFrameTeleport || cg.nextFrameTeleport || cg.snap->ps.eFlags & EF_TELEPORT_BIT )
-	{
-		teleportUpdateForce = 10;
-	}
-
-	if( teleportUpdateForce > 0 )
-		teleportUpdateForce --;
-
-	if( teleportUpdateForce ||
-		fabs(prevAngles[0][YAW] - prevAngles[1][YAW]) +
-		fabs(prevAngles[0][YAW] - prevAngles[2][YAW]) < 0.001 )
-		teleportDeltaAngles[YAW] += AngleSubtract(cg.predictedPlayerState.viewangles[YAW], prevAngles[0][YAW]) / 2.0f;
-	if( teleportUpdateForce ||
-		fabs(prevAngles[0][PITCH] - prevAngles[1][PITCH]) +
-		fabs(prevAngles[0][PITCH] - prevAngles[2][PITCH]) < 0.001 )
-		teleportDeltaAngles[PITCH] += AngleSubtract(cg.predictedPlayerState.viewangles[PITCH], prevAngles[0][PITCH]) / 2.0f;
-	*/
-
-	angles[YAW] = AngleSubtract( angles[YAW], SHORT2ANGLE(cg.snap->ps.delta_angles[YAW]) );
-	angles[PITCH] = AngleSubtract( angles[PITCH], SHORT2ANGLE(cg.snap->ps.delta_angles[PITCH]) );
+	angles[YAW] = AngleSubtract( angles[YAW], SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ) );
+	angles[PITCH] = AngleSubtract( angles[PITCH], SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
 
 	trap_SetViewAngles( angles );
 }
@@ -311,8 +288,8 @@ static void CG_OffsetThirdPersonView( void ) {
 	float		focusDist;
 	float		forwardScale, sideScale;
 
-	cg.refdefViewAngles[PITCH] = cg_thirdPersonAnglePitch.value;
-	cg.refdefViewAngles[YAW] = cg_thirdPersonAngleYaw.value;
+	cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
+	cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];
 
 	cg.refdef.vieworg[2] += cg.predictedPlayerState.viewheight;
 

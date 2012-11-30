@@ -78,6 +78,9 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 	case CG_MOUSE2_EVENT:
 		CG_Mouse2Event(arg0, arg1);
 		return 0;
+	case CG_ADJUST_CAMERA_ANGLES:
+		CG_AdjustCameraAngles(arg0, arg1);
+		return 0;
 	default:
 		CG_Error( "vmMain: unknown command %i", command );
 		break;
@@ -146,8 +149,6 @@ vmCvar_t	cg_zoomFov;
 vmCvar_t	cg_thirdPerson;
 vmCvar_t	cg_thirdPersonRange;
 vmCvar_t	cg_thirdPersonAngle;
-vmCvar_t	cg_thirdPersonAngleYaw;
-vmCvar_t	cg_thirdPersonAnglePitch;
 vmCvar_t	cg_lagometer;
 vmCvar_t	cg_drawAttacker;
 vmCvar_t	cg_drawSpeed;
@@ -339,8 +340,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_tracerLength, "cg_tracerlength", "100", CVAR_CHEAT },
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "120", 0 },
 	{ &cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_CHEAT },
-	{ &cg_thirdPersonAngle, "cg_thirdPersonAnglePitch", "90", 0 },
-	{ &cg_thirdPersonAngle, "cg_thirdPersonAngleYaw", "0", 0 },
 	{ &cg_thirdPerson, "cg_thirdPerson", "1", 0 },
 	{ &cg_teamChatTime, "cg_teamChatTime", "3000", CVAR_ARCHIVE  },
 	{ &cg_teamChatHeight, "cg_teamChatHeight", "0", CVAR_ARCHIVE  },

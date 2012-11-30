@@ -675,8 +675,10 @@ typedef struct {
         int redObeliskHealth;
         int blueObeliskHealth;
 
+        // Android-specific third-person camera view
         float mouseX;
         float mouseY;
+        vec3_t cameraAngles;
 } cg_t;
 
 
@@ -1250,8 +1252,6 @@ extern	vmCvar_t		cg_fov;
 extern	vmCvar_t		cg_zoomFov;
 extern	vmCvar_t		cg_thirdPersonRange;
 extern	vmCvar_t		cg_thirdPersonAngle;
-extern	vmCvar_t		cg_thirdPersonAngleYaw;
-extern	vmCvar_t		cg_thirdPersonAnglePitch;
 extern	vmCvar_t		cg_thirdPerson;
 extern	vmCvar_t		cg_lagometer;
 extern	vmCvar_t		cg_drawAttacker;
@@ -1405,6 +1405,7 @@ void CG_LoadMenus(const char *menuFile);
 void CG_KeyEvent(int key, qboolean down);
 void CG_MouseEvent(int x, int y);
 void CG_Mouse2Event(int x, int y);
+void CG_AdjustCameraAngles(int yaw, int pitch);
 void CG_EventHandling(int type);
 void CG_RankRunFrame( void );
 void CG_SetScoreSelection(void *menu);

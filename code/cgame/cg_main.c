@@ -387,7 +387,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_cameraOrbitDelay, "cg_cameraOrbitDelay", "50", CVAR_ARCHIVE},
 	{ &cg_timescaleFadeEnd, "cg_timescaleFadeEnd", "1", 0},
 	{ &cg_timescaleFadeSpeed, "cg_timescaleFadeSpeed", "0", 0},
-	{ &cg_timescale, "timescale", "1", 0},
+	{ &cg_timescale, "timescale", "0.75", 0},
 	{ &cg_scorePlum, "cg_scorePlums", "1", CVAR_USERINFO | CVAR_ARCHIVE},
 //unlagged - smooth clients #2
 // this is done server-side now

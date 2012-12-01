@@ -1745,7 +1745,7 @@ CG_DrawWeaponBar0
 
 void CG_DrawWeaponBar0(int count, int bits){
 
-	int y = 380;
+	int y = 20;
 	int x = 320 - count * 20;
 	int i;
 	

@@ -517,9 +517,27 @@ void CG_ZoomUp_f( void ) {
 	cg.zoomTime = cg.time;
 }
 
-void CG_ZoomToggle_f( void ) {
+void CG_ZoomToggleDown_f( void ) {
 	cg.zoomed = !cg.zoomed;
 	cg.zoomTime = cg.time;
+
+	if ( cg.zoomed ) {
+		// TODO: hardcoded values
+		trap_Cvar_Set("cl_yawspeed", "40");
+		trap_Cvar_Set("cl_pitchspeed", "40");
+		trap_Cvar_Set("cl_pitchAutoCenter", "0");
+		trap_SendConsoleCommand("weapon 7"); // Select railgun
+	} else {
+		// TODO: hardcoded values
+		trap_Cvar_Set("cl_yawspeed", "140");
+		trap_Cvar_Set("cl_pitchspeed", "140");
+		trap_Cvar_Set("cl_pitchAutoCenter", "1");
+	}
+	// TODO: swim up when under water
+}
+
+void CG_ZoomToggleUp_f( void ) {
+	// TODO: swim up when under water
 }
 
 /*

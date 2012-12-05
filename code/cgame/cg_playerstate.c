@@ -200,8 +200,10 @@ void CG_Respawn( void ) {
 
 	//cg.cameraAngles[YAW] = SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ); // Camera faces the same way as player does
 	//cg.cameraAngles[PITCH] = 0;
+	// Reset sniper view when respawning
+	CG_ZoomToggleDown_f ();
+	CG_ZoomToggleUp_f ();
 	if ( cg.zoomed ) {
-		// Reset sniper view when respawning
 		CG_ZoomToggleDown_f ();
 		CG_ZoomToggleUp_f ();
 	}

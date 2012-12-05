@@ -382,6 +382,9 @@ static void CG_OffsetFirstPersonView( void ) {
 		return;
 	}
 
+	cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
+	cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];
+
 	origin = cg.refdef.vieworg;
 	angles = cg.refdefViewAngles;
 
@@ -497,6 +500,8 @@ static void CG_OffsetFirstPersonView( void ) {
 	VectorMA( cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg );
 	}
 #endif
+
+	calculateTouchscreenAimingAngles();
 }
 
 //======================================================================
@@ -527,11 +532,13 @@ void CG_ZoomToggleDown_f( void ) {
 		trap_Cvar_Set("cl_pitchspeed", "40");
 		trap_Cvar_Set("cl_pitchAutoCenter", "0");
 		trap_SendConsoleCommand("weapon 7"); // Select railgun
+		trap_Cvar_Set("cg_thirdperson", "0");
 	} else {
 		// TODO: hardcoded values
 		trap_Cvar_Set("cl_yawspeed", "140");
 		trap_Cvar_Set("cl_pitchspeed", "140");
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
+		trap_Cvar_Set("cg_thirdperson", "1");
 	}
 	// TODO: swim up when under water
 }

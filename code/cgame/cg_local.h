@@ -1903,6 +1903,7 @@ void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duratio
 extern qboolean		initparticles;
 int CG_NewParticleArea ( int num );
 void	trap_SetViewAngles( const vec3_t a );
+void	trap_ResetViewAngles( const vec3_t a );
 
 
 // LEILEI ENHANCEMENT

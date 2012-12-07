@@ -234,6 +234,24 @@ void CG_AdjustCameraAngles(int yaw, int pitch)
 
 extern vec3_t crosshairDebug[10];
 
+static void adjustAnglesAfterTeleport(void)
+{
+	// The teleport bit is unreliable, so we'll just watch for big change between old and new delta_angles
+	float deltaAngleYaw = SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] );
+	static float oldDeltaAngleYaw = 0;
+
+	//CG_Printf( "Old angle %f new angle %f\n", (double)oldDeltaAngleYaw, (double)deltaAngleYaw );
+	if ( fabs( AngleSubtract( deltaAngleYaw, oldDeltaAngleYaw ) ) > 5.0f ) {
+		vec3_t a;
+		a[YAW] = deltaAngleYaw;
+		a[PITCH] = 0;
+		a[ROLL] = 0;
+		trap_ResetViewAngles( a );
+		//CG_Printf( "Teleported!\n" );
+	}
+	oldDeltaAngleYaw = deltaAngleYaw;
+}
+
 static void calculateTouchscreenAimingAngles(void)
 {
 	// Calculate touchscreen aiming, that will honor level walls and other players
@@ -282,9 +300,6 @@ static void CG_OffsetThirdPersonView( void ) {
 	vec3_t		focusPoint;
 	float		focusDist;
 	float		forwardScale, sideScale;
-
-	cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
-	cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];
 
 	cg.refdef.vieworg[2] += cg.predictedPlayerState.viewheight;
 
@@ -345,8 +360,6 @@ static void CG_OffsetThirdPersonView( void ) {
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2( focusPoint[2], focusDist );
 	//cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
 	cg.refdefViewAngles[ROLL] = 0;
-
-	calculateTouchscreenAimingAngles();
 }
 
 // this causes a compiler bug on mac MrC compiler
@@ -381,9 +394,6 @@ static void CG_OffsetFirstPersonView( void ) {
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION ) {
 		return;
 	}
-
-	cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
-	cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];
 
 	origin = cg.refdef.vieworg;
 	angles = cg.refdefViewAngles;
@@ -500,8 +510,6 @@ static void CG_OffsetFirstPersonView( void ) {
 	VectorMA( cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg );
 	}
 #endif
-
-	calculateTouchscreenAimingAngles();
 }
 
 //======================================================================
@@ -774,6 +782,11 @@ static int CG_CalcViewValues( void ) {
 		}
 	}
 
+	adjustAnglesAfterTeleport();
+
+	cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
+	cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];
+
 	if ( cg.renderingThirdPerson ) {
 		// back away from character
 		CG_OffsetThirdPersonView();
@@ -781,6 +794,8 @@ static int CG_CalcViewValues( void ) {
 		// offset for local bobbing and kicks
 		CG_OffsetFirstPersonView();
 	}
+
+	calculateTouchscreenAimingAngles();
 
 	// position eye reletive to origin
 	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );

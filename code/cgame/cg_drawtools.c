@@ -381,7 +381,7 @@ float *CG_TeamColor( int team ) {
 CG_GetColorForHealth
 =================
 */
-void CG_GetColorForHealth( int health, int armor, vec4_t hcolor ) {
+void CG_GetColorForHealth( int health, int armor, vec4_t hcolor, int canShoot ) {
 	int		count;
 	int		max;
 
@@ -417,6 +417,11 @@ void CG_GetColorForHealth( int health, int armor, vec4_t hcolor ) {
 	} else {
 		hcolor[1] = ( health - 30 ) / 30.0;
 	}
+
+	if ( !canShoot ) {
+		hcolor[2] = 0;
+		hcolor[1] = 1.0;
+	}
 }
 
 /*
@@ -425,9 +430,27 @@ CG_ColorForHealth
 =================
 */
 void CG_ColorForHealth( vec4_t hcolor ) {
+	centity_t	*cent;
+	playerState_t	*ps;
+	int canShoot = 1;
+
+	ps = &cg.snap->ps;
+	cent = &cg_entities[ps->clientNum];
+
+	// Only change color for railgun, because player will release finger to shoot it, and it reloads slowly
+	if ( cent->currentState.weapon == WP_RAILGUN ) {
+		if ( ps->ammo[cent->currentState.weapon] > -1 ) {
+			if ( cg.predictedPlayerState.weaponstate == WEAPON_FIRING
+				&& cg.predictedPlayerState.weaponTime > 100 ) {
+				canShoot = 0;
+			}
+		} else {
+			canShoot = 0;
+		}
+	}
 
 	CG_GetColorForHealth( cg.snap->ps.stats[STAT_HEALTH], 
-		cg.snap->ps.stats[STAT_ARMOR], hcolor );
+		cg.snap->ps.stats[STAT_ARMOR], hcolor, canShoot );
 }
 
 

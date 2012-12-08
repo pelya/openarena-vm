@@ -1300,7 +1300,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 					TEAM_OVERLAY_MAXLOCATION_WIDTH);
 			}
 
-			CG_GetColorForHealth( ci->health, ci->armor, hcolor );
+			CG_GetColorForHealth( ci->health, ci->armor, hcolor, 1 );
 
 			Com_sprintf (st, sizeof(st), "%3i %3i", ci->health,	ci->armor);
 
@@ -2579,6 +2579,8 @@ static void CG_DrawCrosshair(void)
 
         if(!hShader)
             hShader = cgs.media.crosshairShader[ ca % 10 ];
+	if ( currentWeapon == WP_RAILGUN )
+		hShader = cgs.media.crosshairRailgun;
 
 	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (cg.refdef.width - w) + cg.mouseX,
 		y + cg.refdef.y + 0.5 * (cg.refdef.height - h) + cg.mouseY,

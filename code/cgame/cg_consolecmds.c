@@ -154,7 +154,6 @@ static void CG_AccUp_f( void ) {
         }
 }
 
-
 #ifdef MISSIONPACK
 extern menuDef_t *menuScoreboard;
 void Menu_Reset( void );			// FIXME: add to right include file

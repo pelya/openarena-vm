@@ -276,7 +276,7 @@ static bind_t g_bindings[] =
 	{"+lookup", 		"look up",		ID_LOOKUP,		ANIM_LOOKUP,	K_PGDN,			-1,		-1, -1},
 	{"+lookdown", 		"look down",		ID_LOOKDOWN,	ANIM_LOOKDOWN,	K_DEL,			-1,		-1, -1},
 	{"+mlook", 		"mouse look",		ID_MOUSELOOK,	ANIM_IDLE,		'/',			-1,		-1, -1},
-	{"centerview", 		"center view",		ID_CENTERVIEW,	ANIM_IDLE,		K_END,			-1,		-1, -1},
+	{"+centerview",		"center view",		ID_CENTERVIEW,	ANIM_IDLE,		K_END,			-1,		-1, -1},
 	{"+zoom", 		"zoom view",		ID_ZOOMVIEW,	ANIM_IDLE,	-1,	-1,	-1, -1},
 	{"weapon 1",		"gauntlet",		ID_WEAPON1,	ANIM_WEAPON1,	'1',	-1,	-1, -1},
 	{"weapon 2",		"machinegun",		ID_WEAPON2,	ANIM_WEAPON2,	'2',	-1,	-1, -1},

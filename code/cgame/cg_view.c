@@ -277,7 +277,7 @@ static void calculateTouchscreenAimingAngles(void)
 	angles[YAW] = AngleSubtract( angles[YAW], SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ) );
 	angles[PITCH] = AngleSubtract( angles[PITCH], SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
 
-	trap_SetAimingAngles( angles );
+	trap_SetAimingAngles( angles, (int)CG_PointContents( cg.refdef.vieworg, -1 ) & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) );
 	oldAimingAngleYaw = angles[YAW];
 }
 
@@ -547,11 +547,9 @@ void CG_ZoomToggleDown_f( void ) {
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
 		trap_Cvar_Set("cg_thirdperson", "1");
 	}
-	// TODO: swim up when under water
 }
 
 void CG_ZoomToggleUp_f( void ) {
-	// TODO: swim up when under water
 }
 
 /*

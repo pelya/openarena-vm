@@ -890,6 +890,9 @@ typedef struct {
 	qhandle_t	medalAssist;
 	qhandle_t	medalCapture;
 
+	// Android UI
+	qhandle_t	upArrow;
+
 	// sounds
 	sfxHandle_t	quadSound;
 	sfxHandle_t	tracerSound;
@@ -1902,7 +1905,7 @@ void	CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, 
 void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
 extern qboolean		initparticles;
 int CG_NewParticleArea ( int num );
-void	trap_SetAimingAngles( const vec3_t a );
+void	trap_SetAimingAngles( const vec3_t a, int underWater );
 void	trap_SetCameraAngles( const vec3_t a );
 void	CG_AdjustAnglesAfterTeleport(void);
 

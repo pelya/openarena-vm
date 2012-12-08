@@ -3230,6 +3230,18 @@ static void CG_DrawWarmup( void ) {
 #endif
 }
 
+void CG_DrawSwimUpButton( void ) {
+	float x = 0, y = 250, w = 50, h = 50;
+	vec4_t color;
+	color[0]=1.0f;
+	color[1]=1.0f;
+	color[2]=1.0f;
+	color[3]=0.5f;
+	trap_R_SetColor( color );
+
+	CG_AdjustFrom640( &x, &y, &w, &h );
+	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, cgs.media.upArrow );
+}
 //==================================================================================
 #ifdef MISSIONPACK
 /* 
@@ -3306,6 +3318,9 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 				CG_DrawCrosshair();
 			CG_DrawCrosshairNames();
 			CG_DrawWeaponSelect();
+
+			if ( CG_PointContents( cg.refdef.vieworg, -1 ) & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) )
+				CG_DrawSwimUpButton();
 
                         #ifndef MISSIONPACK
 			CG_DrawHoldableItem();

@@ -1719,51 +1719,6 @@ void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y
 void CG_MouseEvent(int x, int y) {
 	int n;
 
-	CG_Printf( "VM: CG_MouseEvent %d %d\n", x, y );
-	if ( (cg.predictedPlayerState.pm_type == PM_NORMAL || cg.predictedPlayerState.pm_type == PM_SPECTATOR) && cg.showScores == qfalse) {
-		// TODO: calculate pro leet swipe-less aim angles
-		vec3_t viewangles;
-		viewangles[0] = - x / 3;
-		viewangles[1] = - y / 2;
-		viewangles[2] = 0;
-		CG_Printf( "VM: trap_SetViewAngles\n" );
-		trap_SetViewAngles(viewangles);
-		trap_Key_SetCatcher(0);
-		return;
-	}
-
-	cgs.cursorX+= x;
-	if (cgs.cursorX < 0)
-		cgs.cursorX = 0;
-	else if (cgs.cursorX > 640)
-		cgs.cursorX = 640;
-
-	cgs.cursorY += y;
-	if (cgs.cursorY < 0)
-		cgs.cursorY = 0;
-	else if (cgs.cursorY > 480)
-		cgs.cursorY = 480;
-
-	n = Display_CursorType(cgs.cursorX, cgs.cursorY);
-	cgs.activeCursor = 0;
-	if (n == CURSOR_ARROW) {
-		cgs.activeCursor = cgs.media.selectCursor;
-	} else if (n == CURSOR_SIZER) {
-		cgs.activeCursor = cgs.media.sizeCursor;
-	}
-
-  if (cgs.capturedItem) {
-	  Display_MouseMove(cgs.capturedItem, x, y);
-  } else {
-	  Display_MouseMove(NULL, cgs.cursorX, cgs.cursorY);
-  }
-
-}
-
-void CG_Mouse2Event(int x, int y) {
-	/*
-	int n;
-
 	if ( (cg.predictedPlayerState.pm_type == PM_NORMAL || cg.predictedPlayerState.pm_type == PM_SPECTATOR) && cg.showScores == qfalse) {
     trap_Key_SetCatcher(0);
 		return;
@@ -1794,7 +1749,7 @@ void CG_Mouse2Event(int x, int y) {
   } else {
 	  Display_MouseMove(NULL, cgs.cursorX, cgs.cursorY);
   }
-	*/
+
 }
 
 /*

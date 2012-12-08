@@ -198,10 +198,11 @@ void CG_Respawn( void ) {
 	// select the weapon the server says we are using
 	cg.weaponSelect = cg.snap->ps.weapon;
 
+	CG_AdjustAnglesAfterTeleport(); // Clear old state
 	cg.cameraAngles[YAW] = SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ); // Camera faces the same way as player does
 	cg.cameraAngles[PITCH] = 0;
 	cg.cameraAngles[ROLL] = 0;
-	trap_ResetViewAngles( cg.cameraAngles );
+	trap_SetCameraAngles( cg.cameraAngles );
 	// Reset sniper view when respawning
 	CG_ZoomToggleDown_f ();
 	CG_ZoomToggleUp_f ();

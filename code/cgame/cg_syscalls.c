@@ -445,10 +445,10 @@ qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 ) {
 	return syscall( CG_R_INPVS, p1, p2 );
 }
 
-void trap_SetViewAngles( const vec3_t a ) {
-	syscall( CG_SET_VIEW_ANGLES, a );
+void trap_SetAimingAngles( const vec3_t a ) {
+	syscall( CG_SET_AIMING_ANGLES, a );
 }
 
-void trap_ResetViewAngles( const vec3_t a ) {
-	syscall( CG_RESET_VIEW_ANGLES, a );
+void trap_SetCameraAngles( const vec3_t a ) {
+	syscall( CG_SET_CAMERA_ANGLES, a );
 }

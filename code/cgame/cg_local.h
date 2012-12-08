@@ -1902,8 +1902,9 @@ void	CG_ParticleMisc (qhandle_t pshader, vec3_t origin, int size, int duration, 
 void	CG_ParticleExplosion (char *animStr, vec3_t origin, vec3_t vel, int duration, int sizeStart, int sizeEnd);
 extern qboolean		initparticles;
 int CG_NewParticleArea ( int num );
-void	trap_SetViewAngles( const vec3_t a );
-void	trap_ResetViewAngles( const vec3_t a );
+void	trap_SetAimingAngles( const vec3_t a );
+void	trap_SetCameraAngles( const vec3_t a );
+void	CG_AdjustAnglesAfterTeleport(void);
 
 
 // LEILEI ENHANCEMENT

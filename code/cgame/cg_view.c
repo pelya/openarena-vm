@@ -233,21 +233,19 @@ void CG_AdjustCameraAngles(int yaw, int pitch)
 #endif
 
 extern vec3_t crosshairDebug[10];
+static float oldAimingAngleYaw = 0; // Needed for teleport camera handling
 
-static void adjustAnglesAfterTeleport(void)
+void CG_AdjustAnglesAfterTeleport(void)
 {
 	// The teleport bit is unreliable, so we'll just watch for big change between old and new delta_angles
 	float deltaAngleYaw = SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] );
 	static float oldDeltaAngleYaw = 0;
 
-	//CG_Printf( "Old angle %f new angle %f\n", (double)oldDeltaAngleYaw, (double)deltaAngleYaw );
-	if ( fabs( AngleSubtract( deltaAngleYaw, oldDeltaAngleYaw ) ) > 5.0f ) {
-		vec3_t a;
-		a[YAW] = deltaAngleYaw;
-		a[PITCH] = 0;
-		a[ROLL] = 0;
-		trap_ResetViewAngles( a );
-		//CG_Printf( "Teleported!\n" );
+	if ( fabs( AngleSubtract( deltaAngleYaw, oldDeltaAngleYaw ) ) > 3.0f ) {
+		cg.cameraAngles[YAW] = AngleSubtract( oldAimingAngleYaw, -deltaAngleYaw );
+		cg.cameraAngles[PITCH] = 0;
+		cg.cameraAngles[ROLL] = 0;
+		trap_SetCameraAngles( cg.cameraAngles );
 	}
 	oldDeltaAngleYaw = deltaAngleYaw;
 }
@@ -279,7 +277,8 @@ static void calculateTouchscreenAimingAngles(void)
 	angles[YAW] = AngleSubtract( angles[YAW], SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ) );
 	angles[PITCH] = AngleSubtract( angles[PITCH], SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
 
-	trap_SetViewAngles( angles );
+	trap_SetAimingAngles( angles );
+	oldAimingAngleYaw = angles[YAW];
 }
 
 
@@ -782,7 +781,7 @@ static int CG_CalcViewValues( void ) {
 		}
 	}
 
-	adjustAnglesAfterTeleport();
+	CG_AdjustAnglesAfterTeleport();
 
 	cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
 	cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];

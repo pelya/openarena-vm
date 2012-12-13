@@ -197,6 +197,12 @@ void MField_KeyDownEvent( mfield_t *edit, int key ) {
 		trap_Key_SetOverstrikeMode( !trap_Key_GetOverstrikeMode() );
 		return;
 	}
+
+	if ( key == K_MOUSE1 ) {
+		trap_ScreenKeyboardTextInput( edit->buffer );
+		MField_Clear( edit );
+		return;
+	}
 }
 
 /*

@@ -289,7 +289,7 @@ typedef struct {
 
 static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_ignore, "cg_ignore", "0", 0 },	// used for debugging
-	{ &cg_autoswitch, "cg_autoswitch", "1", CVAR_ARCHIVE },
+	{ &cg_autoswitch, "cg_autoswitch", "3", CVAR_ARCHIVE },
 	{ &cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE },
 	{ &cg_zoomFov, "cg_zoomfov", "22.5", CVAR_ARCHIVE },
 	{ &cg_fov, "cg_fov", "90", CVAR_ARCHIVE },
@@ -1071,6 +1071,7 @@ static void CG_RegisterGraphics( void ) {
 			cgs.media.crosshairShader[i] = trap_R_RegisterShader( va("gfx/2d/crosshair%02d", i - 10) );
 	}
 	cgs.media.crosshairRailgun = trap_R_RegisterShader( "gfx/2d/crosshair-railgun" );
+	cgs.media.crosshairRailgunReloading = trap_R_RegisterShader( "gfx/2d/crosshair-railgun-reloading" );
 
 	cgs.media.backTileShader = trap_R_RegisterShader( "gfx/2d/backtile" );
 	cgs.media.noammoShader = trap_R_RegisterShader( "icons/noammo" );

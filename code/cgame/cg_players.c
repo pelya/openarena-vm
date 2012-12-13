@@ -2294,7 +2294,8 @@ void CG_Player( centity_t *cent ) {
 		 &torso.oldframe, &torso.frame, &torso.backlerp );
 
 	// add the talk baloon or disconnect icon
-	CG_PlayerSprites( cent );
+	if ( cg.clientNum != cent->currentState.clientNum ) // Do not draw icons for our own player, they obscure screen
+		CG_PlayerSprites( cent );
 
 	// add the shadow
 	shadow = CG_PlayerShadow( cent, &shadowPlane );

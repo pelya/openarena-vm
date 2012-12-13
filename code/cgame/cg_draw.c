@@ -1300,7 +1300,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 					TEAM_OVERLAY_MAXLOCATION_WIDTH);
 			}
 
-			CG_GetColorForHealth( ci->health, ci->armor, hcolor, 1 );
+			CG_GetColorForHealth( ci->health, ci->armor, hcolor );
 
 			Com_sprintf (st, sizeof(st), "%3i %3i", ci->health,	ci->armor);
 
@@ -1977,7 +1977,7 @@ static void CG_DrawReward( void ) {
 	if ( cg.rewardCount[0] >= 10 ) {
 		y = 56;
 		x = 320 - ICON_SIZE/2;
-		CG_DrawPic( x, y, ICON_SIZE-4, ICON_SIZE-4, cg.rewardShader[0] );
+		CG_DrawPic( x + ICON_SIZE / 4, y + ICON_SIZE / 4, ICON_SIZE / 2, ICON_SIZE / 2, cg.rewardShader[0] );
 		Com_sprintf(buf, sizeof(buf), "%d", cg.rewardCount[0]);
 		x = ( SCREEN_WIDTH - SMALLCHAR_WIDTH * CG_DrawStrlen( buf ) ) / 2;
 		CG_DrawStringExt( x, y+ICON_SIZE, buf, color, qfalse, qtrue,
@@ -1990,7 +1990,7 @@ static void CG_DrawReward( void ) {
 		y = 56;
 		x = 320 - count * ICON_SIZE/2;
 		for ( i = 0 ; i < count ; i++ ) {
-			CG_DrawPic( x, y, ICON_SIZE-4, ICON_SIZE-4, cg.rewardShader[0] );
+			CG_DrawPic( x + ICON_SIZE / 4, y + ICON_SIZE / 4, ICON_SIZE / 2, ICON_SIZE / 2, cg.rewardShader[0] );
 			x += ICON_SIZE;
 		}
 	}
@@ -2577,10 +2577,21 @@ static void CG_DrawCrosshair(void)
 	}
 	hShader = cgs.media.crosshairShader[ ca % NUM_CROSSHAIRS ];
 
-        if(!hShader)
-            hShader = cgs.media.crosshairShader[ ca % 10 ];
-	if ( currentWeapon == WP_RAILGUN )
+	if(!hShader)
+		hShader = cgs.media.crosshairShader[ ca % 10 ];
+
+	if ( currentWeapon == WP_RAILGUN ) {
+		// Change crosshair shape for railgun, because player will release finger to shoot it, and it reloads slowly
 		hShader = cgs.media.crosshairRailgun;
+		if ( cg.snap->ps.ammo[currentWeapon] > -1 ) {
+			if ( cg.predictedPlayerState.weaponstate == WEAPON_FIRING
+				&& cg.predictedPlayerState.weaponTime > 100 ) {
+				hShader = cgs.media.crosshairRailgunReloading;
+			}
+		} else {
+			hShader = cgs.media.crosshairRailgunReloading;
+		}
+	}
 
 	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (cg.refdef.width - w) + cg.mouseX,
 		y + cg.refdef.y + 0.5 * (cg.refdef.height - h) + cg.mouseY,

@@ -778,8 +778,8 @@ typedef struct {
 	menufield_s			flaglimit;
 	menuradiobutton_s	friendlyfire;
 	menufield_s			hostname;
-	menuradiobutton_s	pure;
-        menuradiobutton_s	lan;
+	//menuradiobutton_s	pure;
+        //menuradiobutton_s	lan;
         menulist_s		pmove;
         //Here are the elimination stuff
         menuradiobutton_s	oneway;
@@ -894,9 +894,9 @@ static void ServerOptions_Start( void ) {
 //	int		dedicated;
 	int		friendlyfire;
 	int		flaglimit;
-	int		pure;
+	//int		pure;
         int             pmove;
-        int             lan;
+        //int             lan;
         int             instantgib;
         int             rockets;
         int             oneway;
@@ -912,8 +912,8 @@ static void ServerOptions_Start( void ) {
 	flaglimit	 = atoi( s_serveroptions.flaglimit.field.buffer );
 //	dedicated	 = s_serveroptions.dedicated.curvalue;
 	friendlyfire = s_serveroptions.friendlyfire.curvalue;
-	pure		 = s_serveroptions.pure.curvalue;
-        lan              = s_serveroptions.lan.curvalue;
+	//pure		 = s_serveroptions.pure.curvalue;
+        //lan              = s_serveroptions.lan.curvalue;
         pmove            = s_serveroptions.pmove.curvalue;
         instantgib       = s_serveroptions.instantgib.curvalue;
         rockets          = s_serveroptions.rockets.curvalue;
@@ -1005,8 +1005,8 @@ static void ServerOptions_Start( void ) {
 	trap_Cvar_SetValue ("fraglimit", Com_Clamp( 0, fraglimit, fraglimit ) );
 	trap_Cvar_SetValue ("capturelimit", Com_Clamp( 0, flaglimit, flaglimit ) );
 	trap_Cvar_SetValue( "g_friendlyfire", friendlyfire );
-	trap_Cvar_SetValue( "sv_pure", pure );
-        trap_Cvar_SetValue( "sv_lanForceRate", lan );
+	//trap_Cvar_SetValue( "sv_pure", pure );
+        //trap_Cvar_SetValue( "sv_lanForceRate", lan );
         trap_Cvar_SetValue( "g_instantgib", instantgib );
         trap_Cvar_SetValue( "g_rockets", rockets );
         trap_Cvar_SetValue( "g_lms_mode", lmsMode);
@@ -1525,8 +1525,8 @@ static void ServerOptions_SetMenuItems( void ) {
 	}
 
 	Q_strncpyz( s_serveroptions.hostname.field.buffer, UI_Cvar_VariableString( "sv_hostname" ), sizeof( s_serveroptions.hostname.field.buffer ) );
-	s_serveroptions.pure.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_pure" ) );
-        s_serveroptions.lan.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_lanforcerate" ) );
+	//s_serveroptions.pure.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_pure" ) );
+        //s_serveroptions.lan.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_lanforcerate" ) );
         s_serveroptions.instantgib.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "g_instantgib" ) );
         s_serveroptions.rockets.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "g_rockets" ) );
         s_serveroptions.lmsMode.curvalue = Com_Clamp( 0, 3, trap_Cvar_VariableValue("g_lms_mode") );
@@ -1699,7 +1699,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
             s_serveroptions.oneway.generic.name			= "Oneway attack:";
             s_serveroptions.oneway.generic.statusbar  = ServerOptions_StatusBar_Oneway;
         }
-
+	/*
 	y += BIGCHAR_HEIGHT+2;
 	s_serveroptions.pure.generic.type			= MTYPE_RADIOBUTTON;
 	s_serveroptions.pure.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -1716,7 +1716,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.lan.generic.y				= y;
 	s_serveroptions.lan.generic.name			= "Optimize for LAN:";
         }
-        
+    */
         //Insantgib option
         y += BIGCHAR_HEIGHT+2;
 	s_serveroptions.instantgib.generic.type			= MTYPE_RADIOBUTTON;
@@ -1878,7 +1878,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	if( s_serveroptions.gametype >= GT_TEAM && s_serveroptions.gametype != GT_LMS && s_serveroptions.gametype != GT_ELIMINATION && s_serveroptions.gametype != GT_CTF_ELIMINATION) {
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.friendlyfire );
 	}
-	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.pure );
+	//Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.pure );
         Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.instantgib );
         Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.rockets );
         if( s_serveroptions.gametype == GT_LMS) {
@@ -1889,7 +1889,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
         }
         Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.pmove );
 	if( s_serveroptions.multiplayer ) {
-                Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.lan );
+                //Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.lan );
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.hostname );
 	}
 

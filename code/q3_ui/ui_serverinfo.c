@@ -227,7 +227,7 @@ void UI_ServerInfoMenu( void )
 	s_serverinfo.add.generic.callback = ServerInfo_Event;
 	s_serverinfo.add.generic.id	      = ID_ADD;
 	s_serverinfo.add.generic.x		  = 320;
-	s_serverinfo.add.generic.y		  = 371;
+	s_serverinfo.add.generic.y		  = 400;
 	s_serverinfo.add.string  		  = "ADD TO FAVORITES";
 	s_serverinfo.add.style  		  = UI_CENTER|UI_SMALLFONT;
 	s_serverinfo.add.color			  =	color_red;

@@ -445,8 +445,8 @@ qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 ) {
 	return syscall( CG_R_INPVS, p1, p2 );
 }
 
-void trap_SetAimingAngles( const vec3_t a, int underWater ) {
-	syscall( CG_SET_AIMING_ANGLES, a, underWater );
+void trap_SetAimingAngles( const vec3_t a ) {
+	syscall( CG_SET_AIMING_ANGLES, a );
 }
 
 void trap_SetCameraAngles( const vec3_t a ) {

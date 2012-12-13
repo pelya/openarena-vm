@@ -275,6 +275,11 @@ vmCvar_t	cg_weaponBarStyle;
 vmCvar_t	cg_chatBeep;
 vmCvar_t	cg_teamChatBeep;
 
+// Android-specific
+vmCvar_t	cg_underWater;
+vmCvar_t	cg_weaponBarActiveWidth;
+vmCvar_t	cg_weaponBarActiveWeapons;
+
 typedef struct {
 	vmCvar_t	*vmCvar;
 	char		*cvarName;
@@ -459,13 +464,17 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_ch13size, "cg_ch13size", "24", CVAR_ARCHIVE},
 
 	{ &cg_crosshairColorRed, "cg_crosshairColorRed", "1.0", CVAR_ARCHIVE},
-        { &cg_crosshairColorGreen, "cg_crosshairColorGreen", "1.0", CVAR_ARCHIVE},
-        { &cg_crosshairColorBlue, "cg_crosshairColorBlue", "1.0", CVAR_ARCHIVE},
+	{ &cg_crosshairColorGreen, "cg_crosshairColorGreen", "1.0", CVAR_ARCHIVE},
+	{ &cg_crosshairColorBlue, "cg_crosshairColorBlue", "1.0", CVAR_ARCHIVE},
 
 	{ &cg_weaponBarStyle, "cg_weaponBarStyle", "0", CVAR_ARCHIVE},
-        { &cg_weaponOrder,"cg_weaponOrder", "/1/2/4/3/6/7/8/9/5/", CVAR_ARCHIVE},
-        {&cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE },
-        {&cg_teamChatBeep, "cg_teamChatBeep", "1", CVAR_ARCHIVE },
+	{ &cg_weaponOrder,"cg_weaponOrder", "/1/2/4/3/6/7/8/9/5/", CVAR_ARCHIVE},
+	{&cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE },
+	{&cg_teamChatBeep, "cg_teamChatBeep", "1", CVAR_ARCHIVE },
+
+	{&cg_underWater, "cg_underWater", "0", 0 },
+	{&cg_weaponBarActiveWidth, "cg_weaponBarActiveWidth", "0", 0 },
+	{&cg_weaponBarActiveWeapons, "cg_weaponBarActiveWeapons", "0", 0 },
 };
 
 static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );

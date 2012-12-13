@@ -1691,6 +1691,8 @@ void CG_DrawWeaponSelect( void ) {
 	}
 
 	if ( !color ) {
+		if( cg_weaponBarActiveWidth.integer != 0 )
+			trap_Cvar_Set("cg_weaponBarActiveWidth", "0");
 		return;
 	}
 	trap_R_SetColor( color );
@@ -1734,6 +1736,25 @@ void CG_DrawWeaponSelect( void ) {
 			break;
 	}
 	trap_R_SetColor(NULL);
+
+	if( cg_weaponBarActiveWidth.integer != count * 20 ) {
+		char weapons[128] = ""; // We have to use string instead of bitmask, because of stupid grapple hook
+		trap_Cvar_Set("cg_weaponBarActiveWidth", va("%d", count * 20)); // Weapon bar width, counting from the center
+		for ( i = 0 ; i < MAX_WEAPONS ; i++ ) {
+			//Sago: Do mad change of grapple placement:
+			if(i==10)
+				continue;
+			if(i==0)
+				i=10;
+			if ( bits & ( 1 << i ) )
+				strcat( weapons, va("%d/", i) );
+			//Sago: Undo mad change of weapons
+			if(i==10)
+				i=0;
+		}
+		trap_Cvar_Set("cg_weaponBarActiveWeapons", weapons); // Weapon list to select from
+	}
+
 	return;
 }
 

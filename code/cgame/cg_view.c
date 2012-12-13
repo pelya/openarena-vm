@@ -277,7 +277,7 @@ static void calculateTouchscreenAimingAngles(void)
 	angles[YAW] = AngleSubtract( angles[YAW], SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ) );
 	angles[PITCH] = AngleSubtract( angles[PITCH], SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
 
-	trap_SetAimingAngles( angles, (int)CG_PointContents( cg.refdef.vieworg, -1 ) & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) );
+	trap_SetAimingAngles( angles );
 	oldAimingAngleYaw = angles[YAW];
 }
 

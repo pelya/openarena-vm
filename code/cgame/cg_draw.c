@@ -3303,6 +3303,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	} else {
 		// don't draw any status if dead or the scoreboard is being explicitly shown
 		if ( !cg.showScores && cg.snap->ps.stats[STAT_HEALTH] > 0 ) {
+			int underWater = CG_PointContents( cg.refdef.vieworg, -1 ) & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA );
 
 #ifdef MISSIONPACK
 			if ( cg_drawStatus.integer ) {
@@ -3321,8 +3322,11 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 			CG_DrawCrosshairNames();
 			CG_DrawWeaponSelect();
 
-			if ( CG_PointContents( cg.refdef.vieworg, -1 ) & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) )
+			if ( underWater )
 				CG_DrawSwimUpButton();
+
+			if( cg_underWater.integer != underWater )
+				trap_Cvar_Set("cg_underWater", va("%d", underWater));
 
                         #ifndef MISSIONPACK
 			CG_DrawHoldableItem();

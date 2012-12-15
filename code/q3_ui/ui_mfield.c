@@ -197,12 +197,6 @@ void MField_KeyDownEvent( mfield_t *edit, int key ) {
 		trap_Key_SetOverstrikeMode( !trap_Key_GetOverstrikeMode() );
 		return;
 	}
-
-	if ( key == K_MOUSE1 ) {
-		trap_ScreenKeyboardTextInput( edit->buffer );
-		MField_Clear( edit );
-		return;
-	}
 }
 
 /*
@@ -433,7 +427,14 @@ sfxHandle_t MenuField_Key( menufield_s* m, int* key )
 				MField_CharEvent( &m->field, keycode);
 			}
 			else
-				MField_KeyDownEvent( &m->field, keycode );
+			{
+				if ( key == K_MOUSE1 && (m->generic.flags & QMF_HASMOUSEFOCUS) ) {
+					trap_ScreenKeyboardTextInput( m->field.buffer );
+					MField_Clear( &m->field );
+				} else {
+					MField_KeyDownEvent( &m->field, keycode );
+				}
+			}
 			break;
 	}
 

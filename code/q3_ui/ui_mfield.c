@@ -428,7 +428,7 @@ sfxHandle_t MenuField_Key( menufield_s* m, int* key )
 			}
 			else
 			{
-				if ( key == K_MOUSE1 && (m->generic.flags & QMF_HASMOUSEFOCUS) ) {
+				if ( key == K_MOUSE1 /* && (m->generic.flags & QMF_HASMOUSEFOCUS) */ ) {
 					trap_ScreenKeyboardTextInput( m->field.buffer );
 					MField_Clear( &m->field );
 				} else {

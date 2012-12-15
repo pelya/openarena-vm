@@ -1632,7 +1632,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.list.generic.x				= 22;
 	g_arenaservers.list.generic.y				= y;
 	g_arenaservers.list.width					= MAX_LISTBOXWIDTH;
-	g_arenaservers.list.height					= 11;
+	g_arenaservers.list.height					= 8;
 	g_arenaservers.list.itemnames				= (const char **)g_arenaservers.items;
 	for( i = 0; i < MAX_LISTBOXITEMS; i++ ) {
 		g_arenaservers.items[i] = g_arenaservers.table[i].buff;
@@ -1675,7 +1675,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.down.height					= 64;
 	g_arenaservers.down.focuspic				= ART_ARROWS_DOWN;
 
-	y = 376;
+	y = 383;
 	g_arenaservers.status.generic.type		= MTYPE_TEXT;
 	g_arenaservers.status.generic.x			= 320;
 	g_arenaservers.status.generic.y			= y;

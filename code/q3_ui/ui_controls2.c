@@ -127,7 +127,7 @@ typedef struct
 #define ID_JOYTHRESHOLD	45
 #define ID_SMOOTHMOUSE	46
 #define ID_VOIP_TEAMONLY 47
-
+#define ID_AIMING_MODE	48
 
 
 #define ANIM_IDLE		0
@@ -207,7 +207,7 @@ typedef struct
 	menuaction_s		lookup;
 	menuaction_s		lookdown;
 	menuaction_s		mouselook;
-	menuradiobutton_s	freelook;
+	menuradiobutton_s	aimingmode;
 	menuaction_s		centerview;
 	menuaction_s		zoomview;
 	menuaction_s		gesture;
@@ -312,7 +312,7 @@ static configcvar_t g_configcvars[] =
 	{"in_joystick",		0,					0},
 	{"joy_threshold",	0,					0},
 	{"m_filter",		0,					0},
-	{"cl_freelook",		0,					0},
+	{"cg_swipeFreeAiming",	0,					0},
         {"cg_voipTeamOnly",	0,					0},
 	{NULL,				0,					0}
 };
@@ -361,7 +361,7 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.lookup,
 	(menucommon_s *)&s_controls.lookdown,
 	(menucommon_s *)&s_controls.mouselook,
-	(menucommon_s *)&s_controls.freelook,
+	(menucommon_s *)&s_controls.aimingmode,
 	(menucommon_s *)&s_controls.centerview,
 	(menucommon_s *)&s_controls.zoomview,
 	(menucommon_s *)&s_controls.joyenable,
@@ -871,7 +871,7 @@ static void Controls_GetConfig( void )
 	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 30, Controls_GetCvarValue( "sensitivity" ) );
 	s_controls.joyenable.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_joystick" ) );
 	s_controls.joythreshold.curvalue = UI_ClampCvar( 0.05f, 0.75f, Controls_GetCvarValue( "joy_threshold" ) );
-	s_controls.freelook.curvalue     = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_freelook" ) );
+	s_controls.aimingmode.curvalue     = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_swipeFreeAiming" ) );
         s_controls.voip_teamonly.curvalue= UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_voipTeamOnly" ) );
 }
 
@@ -914,7 +914,7 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "sensitivity", s_controls.sensitivity.curvalue );
 	trap_Cvar_SetValue( "in_joystick", s_controls.joyenable.curvalue );
 	trap_Cvar_SetValue( "joy_threshold", s_controls.joythreshold.curvalue );
-	trap_Cvar_SetValue( "cl_freelook", s_controls.freelook.curvalue );
+	trap_Cvar_SetValue( "cg_swipeFreeAiming", s_controls.aimingmode.curvalue );
         trap_Cvar_SetValue( "cg_voipTeamOnly", s_controls.voip_teamonly.curvalue);
 	trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
 }
@@ -949,7 +949,7 @@ static void Controls_SetDefaults( void )
 	s_controls.sensitivity.curvalue  = Controls_GetCvarDefault( "sensitivity" );
 	s_controls.joyenable.curvalue    = Controls_GetCvarDefault( "in_joystick" );
 	s_controls.joythreshold.curvalue = Controls_GetCvarDefault( "joy_threshold" );
-	s_controls.freelook.curvalue     = Controls_GetCvarDefault( "cl_freelook" );
+	s_controls.aimingmode.curvalue     = Controls_GetCvarDefault( "cg_swipeFreeAiming" );
         s_controls.voip_teamonly.curvalue= Controls_GetCvarDefault( "cg_voipTeamOnly");
 }
 
@@ -1173,7 +1173,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 			}
 			break;
 
-		case ID_FREELOOK:
+		case ID_AIMING_MODE:
 		case ID_MOUSESPEED:
 		case ID_INVERTMOUSE:
 		case ID_SMOOTHMOUSE:
@@ -1517,13 +1517,13 @@ static void Controls_MenuInit( void )
 	s_controls.mouselook.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_controls.mouselook.generic.id        = ID_MOUSELOOK;
 
-	s_controls.freelook.generic.type		= MTYPE_RADIOBUTTON;
-	s_controls.freelook.generic.flags		= QMF_SMALLFONT;
-	s_controls.freelook.generic.x			= SCREEN_WIDTH/2;
-	s_controls.freelook.generic.name		= "free look";
-	s_controls.freelook.generic.id			= ID_FREELOOK;
-	s_controls.freelook.generic.callback	= Controls_MenuEvent;
-	s_controls.freelook.generic.statusbar	= Controls_StatusBar;
+	s_controls.aimingmode.generic.type		= MTYPE_RADIOBUTTON;
+	s_controls.aimingmode.generic.flags		= QMF_SMALLFONT;
+	s_controls.aimingmode.generic.x			= SCREEN_WIDTH/2;
+	s_controls.aimingmode.generic.name		= "Swipe-free aiming";
+	s_controls.aimingmode.generic.id			= ID_AIMING_MODE;
+	s_controls.aimingmode.generic.callback	= Controls_MenuEvent;
+	s_controls.aimingmode.generic.statusbar	= Controls_StatusBar;
 
 	s_controls.centerview.generic.type	    = MTYPE_ACTION;
 	s_controls.centerview.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
@@ -1679,7 +1679,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.lookup );
 	Menu_AddItem( &s_controls.menu, &s_controls.lookdown );
 	Menu_AddItem( &s_controls.menu, &s_controls.mouselook );
-	Menu_AddItem( &s_controls.menu, &s_controls.freelook );
+	Menu_AddItem( &s_controls.menu, &s_controls.aimingmode );
 	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
 	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
 	Menu_AddItem( &s_controls.menu, &s_controls.joyenable );

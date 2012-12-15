@@ -279,6 +279,7 @@ vmCvar_t	cg_teamChatBeep;
 vmCvar_t	cg_underWater;
 vmCvar_t	cg_weaponBarActiveWidth;
 vmCvar_t	cg_weaponBarActiveWeapons;
+vmCvar_t	cg_swipeFreeAiming;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -475,6 +476,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{&cg_underWater, "cg_underWater", "0", 0 },
 	{&cg_weaponBarActiveWidth, "cg_weaponBarActiveWidth", "0", 0 },
 	{&cg_weaponBarActiveWeapons, "cg_weaponBarActiveWeapons", "0", 0 },
+	{&cg_swipeFreeAiming, "cg_swipeFreeAiming", "1", CVAR_ARCHIVE },
 };
 
 static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );

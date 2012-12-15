@@ -779,10 +779,12 @@ static int CG_CalcViewValues( void ) {
 		}
 	}
 
-	CG_AdjustAnglesAfterTeleport();
+	if ( cg_swipeFreeAiming.integer ) {
+		CG_AdjustAnglesAfterTeleport();
 
-	cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
-	cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];
+		cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
+		cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];
+	}
 
 	if ( cg.renderingThirdPerson ) {
 		// back away from character
@@ -792,7 +794,8 @@ static int CG_CalcViewValues( void ) {
 		CG_OffsetFirstPersonView();
 	}
 
-	calculateTouchscreenAimingAngles();
+	if ( cg_swipeFreeAiming.integer )
+		calculateTouchscreenAimingAngles();
 
 	// position eye reletive to origin
 	AnglesToAxis( cg.refdefViewAngles, cg.refdef.viewaxis );

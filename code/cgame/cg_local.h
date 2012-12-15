@@ -1389,6 +1389,7 @@ extern vmCvar_t			cg_teamChatBeep;
 extern vmCvar_t			cg_underWater;
 extern vmCvar_t			cg_weaponBarActiveWidth;
 extern vmCvar_t			cg_weaponBarActiveWeapons;
+extern vmCvar_t			cg_swipeFreeAiming;
 
 //unlagged - cg_unlagged.c
 void CG_PredictWeaponEffects( centity_t *cent );

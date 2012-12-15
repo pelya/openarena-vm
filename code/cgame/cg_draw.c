@@ -2593,9 +2593,13 @@ static void CG_DrawCrosshair(void)
 		}
 	}
 
-	trap_R_DrawStretchPic( x + cg.refdef.x + 0.5 * (cg.refdef.width - w) + cg.mouseX,
-		y + cg.refdef.y + 0.5 * (cg.refdef.height - h) + cg.mouseY,
-		w, h, 0, 0, 1, 1, hShader );
+	x += cg.refdef.x + 0.5 * (cg.refdef.width - w);
+	y += cg.refdef.y + 0.5 * (cg.refdef.height - h);
+	if ( cg_swipeFreeAiming.integer ) {
+		x += cg.mouseX;
+		y += cg.mouseY;
+	}
+	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, hShader );
 }
 
 /*

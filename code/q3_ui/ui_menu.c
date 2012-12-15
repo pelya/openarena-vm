@@ -41,6 +41,7 @@ MAIN MENU
 #define ID_TEAMARENA		15
 #define ID_MODS					16
 #define ID_EXIT					17
+#define ID_AIMING_MODE			18
 
 #define MAIN_BANNER_MODEL				"models/mapobjects/banner/banner5.md3"
 #define MAIN_MENU_VERTICAL_SPACING		34
@@ -58,6 +59,7 @@ typedef struct {
 	menutext_s		teamArena;
 	menutext_s		mods;
 	menutext_s		exit;
+	menuradiobutton_s	aimingmode; // Hack for lazy Android users, who cannot change game settings
 
 	qhandle_t		bannerModel;
 } mainmenu_t;
@@ -138,6 +140,10 @@ void Main_MenuEvent (void* ptr, int event) {
 	case ID_EXIT:
 		//UI_ConfirmMenu( "EXIT GAME?", 0, MainMenu_ExitAction );
                 UI_CreditMenu();
+		break;
+
+	case ID_AIMING_MODE:
+			trap_Cvar_SetValue( "cg_swipeFreeAiming", s_main.aimingmode.curvalue );
 		break;
 	}
 }
@@ -345,7 +351,7 @@ void UI_MainMenu( void ) {
 	s_main.setup.generic.y					= y;
 	s_main.setup.generic.id					= ID_SETUP;
 	s_main.setup.generic.callback			= Main_MenuEvent; 
-	s_main.setup.string						= "SETUP";
+	s_main.setup.string						= "SETTINGS"; //"SETUP"; // Well, "Settings" is more used nowadays
 	s_main.setup.color						= color_red;
 	s_main.setup.style						= style;
 
@@ -418,6 +424,15 @@ void UI_MainMenu( void ) {
 	s_main.exit.color						= color_red;
 	s_main.exit.style						= style;
 
+	s_main.aimingmode.generic.type		= MTYPE_RADIOBUTTON;
+	s_main.aimingmode.generic.flags		= QMF_SMALLFONT;
+	s_main.aimingmode.generic.x			= SCREEN_WIDTH - 60;
+	s_main.aimingmode.generic.y			= 15;
+	s_main.aimingmode.generic.name		= "Swipe-free aiming";
+	s_main.aimingmode.generic.id		= ID_AIMING_MODE;
+	s_main.aimingmode.generic.callback	= Main_MenuEvent;
+	s_main.aimingmode.curvalue			= trap_Cvar_VariableValue( "cg_swipeFreeAiming" );
+
 	Menu_AddItem( &s_main.menu,	&s_main.singleplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
@@ -428,7 +443,8 @@ void UI_MainMenu( void ) {
 		Menu_AddItem( &s_main.menu,	&s_main.teamArena );
 	}
 	Menu_AddItem( &s_main.menu,	&s_main.mods );
-	Menu_AddItem( &s_main.menu,	&s_main.exit );             
+	Menu_AddItem( &s_main.menu,	&s_main.exit );
+	Menu_AddItem( &s_main.menu,	&s_main.aimingmode );
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;

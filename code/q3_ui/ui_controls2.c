@@ -355,13 +355,13 @@ static menucommon_s *g_weapons_controls[] = {
 };
 
 static menucommon_s *g_looking_controls[] = {
+	(menucommon_s *)&s_controls.aimingmode,
 	(menucommon_s *)&s_controls.sensitivity,
 	(menucommon_s *)&s_controls.smoothmouse,
 	(menucommon_s *)&s_controls.invertmouse,
 	(menucommon_s *)&s_controls.lookup,
 	(menucommon_s *)&s_controls.lookdown,
 	(menucommon_s *)&s_controls.mouselook,
-	(menucommon_s *)&s_controls.aimingmode,
 	(menucommon_s *)&s_controls.centerview,
 	(menucommon_s *)&s_controls.zoomview,
 	(menucommon_s *)&s_controls.joyenable,
@@ -1521,7 +1521,7 @@ static void Controls_MenuInit( void )
 	s_controls.aimingmode.generic.flags		= QMF_SMALLFONT;
 	s_controls.aimingmode.generic.x			= SCREEN_WIDTH/2;
 	s_controls.aimingmode.generic.name		= "Swipe-free aiming";
-	s_controls.aimingmode.generic.id			= ID_AIMING_MODE;
+	s_controls.aimingmode.generic.id		= ID_AIMING_MODE;
 	s_controls.aimingmode.generic.callback	= Controls_MenuEvent;
 	s_controls.aimingmode.generic.statusbar	= Controls_StatusBar;
 
@@ -1585,7 +1585,7 @@ static void Controls_MenuInit( void )
 	s_controls.sensitivity.generic.type	     = MTYPE_SLIDER;
 	s_controls.sensitivity.generic.x		 = SCREEN_WIDTH/2;
 	s_controls.sensitivity.generic.flags	 = QMF_SMALLFONT;
-	s_controls.sensitivity.generic.name	     = "mouse speed";
+	s_controls.sensitivity.generic.name	     = "aiming sensitivity";
 	s_controls.sensitivity.generic.id 	     = ID_MOUSESPEED;
 	s_controls.sensitivity.generic.callback  = Controls_MenuEvent;
 	s_controls.sensitivity.minvalue		     = 2;
@@ -1673,13 +1673,13 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.weapons );
 	Menu_AddItem( &s_controls.menu, &s_controls.misc );
 
+	Menu_AddItem( &s_controls.menu, &s_controls.aimingmode );
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.lookup );
 	Menu_AddItem( &s_controls.menu, &s_controls.lookdown );
 	Menu_AddItem( &s_controls.menu, &s_controls.mouselook );
-	Menu_AddItem( &s_controls.menu, &s_controls.aimingmode );
 	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
 	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
 	Menu_AddItem( &s_controls.menu, &s_controls.joyenable );

@@ -807,6 +807,7 @@ typedef struct {
 	char				newBotName[16];
 	
 	//menulist_s		punkbuster;
+	menuslider_s		timescale;
 } serveroptions_t;
 
 static serveroptions_t s_serveroptions;
@@ -1036,6 +1037,7 @@ static void ServerOptions_Start( void ) {
                 break;
         };
 	trap_Cvar_Set("sv_hostname", s_serveroptions.hostname.field.buffer );
+	trap_Cvar_SetValue("timescale", s_serveroptions.timescale.curvalue);
 
 	// the wait commands will allow the dedicated to take effect
 	info = UI_GetArenaInfoByNumber( s_startserver.maplist[ s_startserver.currentmap ]);
@@ -1525,6 +1527,7 @@ static void ServerOptions_SetMenuItems( void ) {
 	}
 
 	Q_strncpyz( s_serveroptions.hostname.field.buffer, UI_Cvar_VariableString( "sv_hostname" ), sizeof( s_serveroptions.hostname.field.buffer ) );
+	s_serveroptions.timescale.curvalue = Com_Clamp( 0.5, 1, trap_Cvar_VariableValue( "timescale" ) );
 	//s_serveroptions.pure.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_pure" ) );
         //s_serveroptions.lan.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_lanforcerate" ) );
         s_serveroptions.instantgib.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "g_instantgib" ) );
@@ -1649,7 +1652,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.picframe.height  			= 320;
 	s_serveroptions.picframe.focuspic			= GAMESERVER_SELECT;
 
-	y = 268;
+	y = 265;
 	if( s_serveroptions.gametype < GT_CTF || s_serveroptions.gametype== GT_LMS) {
 		s_serveroptions.fraglimit.generic.type       = MTYPE_FIELD;
 		s_serveroptions.fraglimit.generic.name       = "Frag Limit:";
@@ -1767,7 +1770,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.hostname.field.maxchars     = 64;
 	}
 	
-	y = 80;
+	y = 70;
 	s_serveroptions.botSkill.generic.type			= MTYPE_SPINCONTROL;
 	s_serveroptions.botSkill.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_serveroptions.botSkill.generic.name			= "Bot Skill:";
@@ -1776,7 +1779,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	s_serveroptions.botSkill.itemnames				= botSkill_list;
 	s_serveroptions.botSkill.curvalue				= 1;
 
-	y += ( 2 * SMALLCHAR_HEIGHT );
+	y += ( 1.3 * SMALLCHAR_HEIGHT );
 	s_serveroptions.player0.generic.type			= MTYPE_TEXT;
 	s_serveroptions.player0.generic.flags			= QMF_SMALLFONT;
 	s_serveroptions.player0.generic.x				= 32 + SMALLCHAR_WIDTH;
@@ -1816,6 +1819,16 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 
 		y += ( SMALLCHAR_HEIGHT + 4 );
 	}
+
+	y += ( SMALLCHAR_HEIGHT * 0.3f );
+	s_serveroptions.timescale.generic.type		= MTYPE_SLIDER;
+	s_serveroptions.timescale.generic.flags		= QMF_SMALLFONT;
+	s_serveroptions.timescale.generic.x			= 128;
+	s_serveroptions.timescale.generic.y			= y;
+	s_serveroptions.timescale.generic.name		= "Game speed";
+	s_serveroptions.timescale.minvalue			= 0.5;
+	s_serveroptions.timescale.maxvalue			= 1;
+	//s_serveroptions.timescale.curvalue			= 0.75;
 
 	s_serveroptions.back.generic.type	  = MTYPE_BITMAP;
 	s_serveroptions.back.generic.name     = GAMESERVER_BACK0;
@@ -1892,6 +1905,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
                 //Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.lan );
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.hostname );
 	}
+	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.timescale );
 
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.back );
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.next );

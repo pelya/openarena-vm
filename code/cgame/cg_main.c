@@ -476,7 +476,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{&cg_underWater, "cg_underWater", "0", 0 },
 	{&cg_weaponBarActiveWidth, "cg_weaponBarActiveWidth", "0", 0 },
 	{&cg_weaponBarActiveWeapons, "cg_weaponBarActiveWeapons", "0", 0 },
-	{&cg_swipeFreeAiming, "cg_swipeFreeAiming", "1", CVAR_ARCHIVE },
+	{&cg_swipeFreeAiming, "cg_swipeFreeAiming", "0", CVAR_ARCHIVE },
 };
 
 static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );

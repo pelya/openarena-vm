@@ -281,11 +281,11 @@ static void ArenaServers_StartRefresh( void );
 
 static int LAN_GetServerCount( int servertype ) {
 	if( servertype == UIAS_ALL_LOCAL )
-		servertype = UIAS_LOCAL;
-	else if( servertype == UIAS_ALL_GLOBAL )
-		servertype = UIAS_GLOBAL1;
-	else if( servertype >= UIAS_LOCAL )
-		servertype -= UIAS_LOCAL;
+		servertype = AS_LOCAL;
+	else if( (servertype >= UIAS_GLOBAL1 && servertype <= UIAS_GLOBAL5) || servertype == UIAS_ALL_GLOBAL )
+		servertype = AS_GLOBAL;
+	else if( servertype == UIAS_FAVORITES )
+		servertype = AS_FAVORITES;
 	return trap_LAN_GetServerCount(servertype);
 }
 
@@ -1081,11 +1081,11 @@ static void ArenaServers_DoRefresh( void )
 	{
 	  if (g_servertype != UIAS_FAVORITES) {
 			if (g_servertype == UIAS_LOCAL || g_servertype == UIAS_ALL_LOCAL) {
-				if (!trap_LAN_GetServerCount(g_servertype)) {
+				if (!LAN_GetServerCount(g_servertype)) {
 					return;
 				}
 			}
-			if (trap_LAN_GetServerCount(g_servertype - UIAS_LOCAL) < 0) {
+			if (LAN_GetServerCount(g_servertype) < 0) {
 			  // still waiting for response
 			  return;
 			}
@@ -1157,7 +1157,7 @@ static void ArenaServers_DoRefresh( void )
 	if (g_servertype == UIAS_FAVORITES) {
 	  g_arenaservers.numqueriedservers = g_arenaservers.numfavoriteaddresses;
 	} else {
-	  g_arenaservers.numqueriedservers = trap_LAN_GetServerCount(g_servertype - UIAS_LOCAL);
+	  g_arenaservers.numqueriedservers = LAN_GetServerCount(g_servertype);
 	}
 
 //	if (g_arenaservers.numqueriedservers > g_arenaservers.maxservers)
@@ -1185,9 +1185,9 @@ static void ArenaServers_DoRefresh( void )
 		// get an address to ping
 
 		if (g_servertype == UIAS_FAVORITES) {
-		  strcpy( adrstr, g_arenaservers.favoriteaddresses[g_arenaservers.currentping] ); 		
+		  strcpy( adrstr, g_arenaservers.favoriteaddresses[g_arenaservers.currentping] );
 		} else {
-		  trap_LAN_GetServerAddressString(g_servertype, g_arenaservers.currentping, adrstr, MAX_ADDRESSLENGTH );
+		  trap_LAN_GetServerAddressString(g_servertype, g_arenaservers.currentping, adrstr, MAX_ADDRESSLENGTH);
 		}
 
 		strcpy( g_arenaservers.pinglist[j].adrstr, adrstr );
@@ -1827,12 +1827,14 @@ static void ArenaServers_MenuInit( void ) {
 	
 	ArenaServers_LoadFavorites();
 
-	g_servertype = Com_Clamp( 0, 3, ui_browserMaster.integer );
+	g_servertype = Com_Clamp( UIAS_ALL_LOCAL, UIAS_FAVORITES, ui_browserMaster.integer );
+	if( g_servertype == UIAS_ALL_GLOBAL )
+		g_servertype = UIAS_ALL_LOCAL;
 	// hack to get rid of MPlayer stuff
-	value = g_servertype;
-	if (value >= 1)
-		value--;
-	g_arenaservers.master.curvalue = value;
+	//value = g_servertype;
+	//if (value >= 1)
+	//	value--;
+	g_arenaservers.master.curvalue = g_servertype;
 
 	g_gametype = Com_Clamp( 0, 12, ui_browserGameType.integer );
 	g_arenaservers.gametype.curvalue = g_gametype;

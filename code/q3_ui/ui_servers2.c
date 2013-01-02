@@ -279,14 +279,18 @@ static int                              g_hideprivate;
 
 static void ArenaServers_StartRefresh( void );
 
-static int LAN_GetServerCount( int servertype ) {
+static int ConvertServerTypeToEngine( int servertype ) {
 	if( servertype == UIAS_ALL_LOCAL )
 		servertype = AS_LOCAL;
 	else if( (servertype >= UIAS_GLOBAL1 && servertype <= UIAS_GLOBAL5) || servertype == UIAS_ALL_GLOBAL )
 		servertype = AS_GLOBAL;
 	else if( servertype == UIAS_FAVORITES )
 		servertype = AS_FAVORITES;
-	return trap_LAN_GetServerCount(servertype);
+	return servertype;
+}
+
+static int LAN_GetServerCount( int servertype ) {
+	return trap_LAN_GetServerCount( ConvertServerTypeToEngine(servertype) );
 }
 
 /*
@@ -1187,7 +1191,7 @@ static void ArenaServers_DoRefresh( void )
 		if (g_servertype == UIAS_FAVORITES) {
 		  strcpy( adrstr, g_arenaservers.favoriteaddresses[g_arenaservers.currentping] );
 		} else {
-		  trap_LAN_GetServerAddressString(g_servertype, g_arenaservers.currentping, adrstr, MAX_ADDRESSLENGTH);
+		  trap_LAN_GetServerAddressString(ConvertServerTypeToEngine(g_servertype), g_arenaservers.currentping, adrstr, MAX_ADDRESSLENGTH);
 		}
 
 		strcpy( g_arenaservers.pinglist[j].adrstr, adrstr );

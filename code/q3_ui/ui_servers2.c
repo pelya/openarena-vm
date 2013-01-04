@@ -616,6 +616,7 @@ static void ArenaServers_UpdateMenu( void ) {
 	if( !g_arenaservers.refreshservers && g_servertype == UIAS_ALL_LOCAL ) {
 		g_servertype = UIAS_ALL_GLOBAL;
 		ArenaServers_StartRefresh();
+		return;
 	}
 
 	if( g_arenaservers.numqueriedservers <= 0 ) {
@@ -1049,6 +1050,8 @@ static void ArenaServers_StopRefresh( void )
 		// not currently refreshing
 		return;
 
+	Com_Printf("ArenaServers_StopRefresh: numservers %d\n", *g_arenaservers.numservers);
+
 	g_arenaservers.refreshservers = qfalse;
 
 	if (g_servertype == UIAS_FAVORITES)
@@ -1207,9 +1210,21 @@ static void ArenaServers_DoRefresh( void )
 		g_arenaservers.currentping++;
 	}
 
+	if (g_servertype == UIAS_LOCAL || g_servertype == UIAS_ALL_LOCAL)
+	{
+		if (uis.realtime > g_arenaservers.refreshtime)
+		{
+			// timeout reached for local pings
+			Com_Printf("ArenaServers_DoRefresh: local ping done\n");
+			ArenaServers_StopRefresh();
+			return;
+		}
+	}
+	else
 	if (!trap_LAN_GetPingQueueCount())
 	{
-		// all pings completed
+		// all internet pings completed
+		Com_Printf("ArenaServers_DoRefresh: internet ping done\n");
 		ArenaServers_StopRefresh();
 		return;
 	}
@@ -1229,18 +1244,18 @@ static void ArenaServers_StartRefresh( void )
 	int		i;
 	char	myargs[32], protocol[32];
 
-	memset( g_arenaservers.serverlist, 0, g_arenaservers.maxservers*sizeof(table_t) );
-
-	for (i=0; i<MAX_PINGREQUESTS; i++)
-	{
-		g_arenaservers.pinglist[i].adrstr[0] = '\0';
-		trap_LAN_ClearPing( i );
-	}
+	Com_Printf("ArenaServers_StartRefresh: g_servertype %d\n", g_servertype);
 
 	g_arenaservers.refreshservers    = qtrue;
-	g_arenaservers.currentping       = 0;
 	g_arenaservers.nextpingtime      = 0;
 	if( g_servertype != UIAS_ALL_GLOBAL ) {
+		for (i=0; i<MAX_PINGREQUESTS; i++)
+		{
+			g_arenaservers.pinglist[i].adrstr[0] = '\0';
+			trap_LAN_ClearPing( i );
+		}
+		memset( g_arenaservers.serverlist, 0, g_arenaservers.maxservers*sizeof(table_t) );
+		g_arenaservers.currentping       = 0;
 		*g_arenaservers.numservers       = 0;
 		g_arenaservers.numqueriedservers = 0;
 	}
@@ -1251,8 +1266,9 @@ static void ArenaServers_StartRefresh( void )
 	// place menu in zeroed state
 	ArenaServers_UpdateMenu();
 
-	if( g_servertype == UIAS_LOCAL || g_servertype == UIAS_ALL_LOCAL ) {
-		g_arenaservers.refreshtime = uis.realtime + 2000; // Less time for local servers
+	if (g_servertype == UIAS_LOCAL || g_servertype == UIAS_ALL_LOCAL) {
+		if (g_servertype == UIAS_ALL_LOCAL)
+			g_arenaservers.refreshtime = uis.realtime + 2000; // Less ping time for local servers
 		trap_Cmd_ExecuteText( EXEC_APPEND, "localservers\n" );
 		return;
 	}

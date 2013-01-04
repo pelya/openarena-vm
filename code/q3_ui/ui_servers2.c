@@ -858,8 +858,6 @@ static void ArenaServers_Insert( char* adrstr, char* info, int pingtime )
 	char*			s;
 	int				i;
 
-	Com_Printf("ArenaServers_Insert: %s ping %d: %s\n", adrstr, pingtime, info);
-
 	if ((pingtime >= ArenaServers_MaxPing()) && (g_servertype != UIAS_FAVORITES))
 	{
 		// slow global or local servers do not get entered
@@ -1050,8 +1048,6 @@ static void ArenaServers_StopRefresh( void )
 		// not currently refreshing
 		return;
 
-	Com_Printf("ArenaServers_StopRefresh: numservers %d\n", *g_arenaservers.numservers);
-
 	g_arenaservers.refreshservers = qfalse;
 
 	if (g_servertype == UIAS_FAVORITES)
@@ -1215,7 +1211,6 @@ static void ArenaServers_DoRefresh( void )
 		if (uis.realtime > g_arenaservers.refreshtime)
 		{
 			// timeout reached for local pings
-			Com_Printf("ArenaServers_DoRefresh: local ping done\n");
 			ArenaServers_StopRefresh();
 			return;
 		}
@@ -1224,7 +1219,6 @@ static void ArenaServers_DoRefresh( void )
 	if (!trap_LAN_GetPingQueueCount())
 	{
 		// all internet pings completed
-		Com_Printf("ArenaServers_DoRefresh: internet ping done\n");
 		ArenaServers_StopRefresh();
 		return;
 	}
@@ -1243,8 +1237,6 @@ static void ArenaServers_StartRefresh( void )
 {
 	int		i;
 	char	myargs[32], protocol[32];
-
-	Com_Printf("ArenaServers_StartRefresh: g_servertype %d\n", g_servertype);
 
 	g_arenaservers.refreshservers    = qtrue;
 	g_arenaservers.nextpingtime      = 0;

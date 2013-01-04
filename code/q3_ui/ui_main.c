@@ -191,6 +191,9 @@ vmCvar_t        ui_browserOnlyHumans;
 //new in beta 37:
 vmCvar_t        ui_setupchecked;
 
+vmCvar_t	cg_drawFPS;
+vmCvar_t	cg_lagometer;
+
 // bk001129 - made static to avoid aliasing.
 static cvarTable_t		cvarTable[] = {
 	{ &ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", CVAR_ARCHIVE },
@@ -284,6 +287,9 @@ static cvarTable_t		cvarTable[] = {
 
         //new in beta 37:
         { &ui_setupchecked, "ui_setupchecked", "0", CVAR_ARCHIVE },
+	// Init some cvars from cgame, so that we can configure them in options
+	{ &cg_drawFPS, "cg_drawFPS", "0", CVAR_ARCHIVE  },
+	{ &cg_lagometer, "cg_lagometer", "0", CVAR_ARCHIVE },
 };
 
 // bk001129 - made static to avoid aliasing

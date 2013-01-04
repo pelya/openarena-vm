@@ -1607,6 +1607,17 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 
 	// route key stimulus to widget
 	item = Menu_ItemAtCursor( m );
+
+	if (key == K_MOUSE1 && item &&
+		(uis.cursorx < item->left) ||
+		(uis.cursorx > item->right) ||
+		(uis.cursory < item->top) ||
+		(uis.cursory > item->bottom))
+	{
+		// cursor out of item bounds, ignore the mouse click, to prevent misclicks on touchscreen
+		return 0;
+	}
+
 	if (item && !(item->flags & (QMF_GRAYED|QMF_INACTIVE)))
 	{
 		switch (item->type)

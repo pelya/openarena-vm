@@ -33,7 +33,10 @@ MULTIPLAYER MENU (SERVER BROWSER)
 
 
 #define MAX_GLOBALSERVERS		384
-#define MAX_PINGREQUESTS		32
+// When we're behind NAT (most common case) we can only send ONE ping request at a time
+// If we'll send 32 pings in parallel we'll get response only from the last server
+// or we need to open 32 separate sockets to make this work behind NAT
+#define MAX_PINGREQUESTS		1 //32
 #define MAX_ADDRESSLENGTH		64
 #define MAX_HOSTNAMELENGTH		31
 #define MAX_MAPNAMELENGTH		20

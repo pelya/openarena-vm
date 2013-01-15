@@ -267,7 +267,7 @@ void InGame_MenuInit( void ) {
 	s_ingame.setup.generic.y			= y;
 	s_ingame.setup.generic.id			= ID_SETUP;
 	s_ingame.setup.generic.callback		= InGame_Event; 
-	s_ingame.setup.string				= "SETUP";
+	s_ingame.setup.string				= "SETTINGS";
 	s_ingame.setup.color				= color_red;
 	s_ingame.setup.style				= UI_CENTER|UI_SMALLFONT;
 

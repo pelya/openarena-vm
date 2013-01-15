@@ -128,6 +128,8 @@ typedef struct
 #define ID_SMOOTHMOUSE	46
 #define ID_VOIP_TEAMONLY 47
 #define ID_AIMING_MODE	48
+#define ID_THIRD_PERSON	49
+#define ID_WIDE_FOV		50
 
 
 #define ANIM_IDLE		0
@@ -208,6 +210,8 @@ typedef struct
 	menuaction_s		lookdown;
 	menuaction_s		mouselook;
 	menuradiobutton_s	aimingmode;
+	menuradiobutton_s	thirdperson;
+	menuradiobutton_s	widefov;
 	menuaction_s		centerview;
 	menuaction_s		zoomview;
 	menuaction_s		gesture;
@@ -312,7 +316,9 @@ static configcvar_t g_configcvars[] =
 	{"in_joystick",		0,					0},
 	{"joy_threshold",	0,					0},
 	{"m_filter",		0,					0},
-	{"cg_swipeFreeAiming",	0,					0},
+	{"cg_swipeFreeAiming",	0,				0},
+	{"cg_thirdPersonConfigOptionInSettings",	1,	1},
+	{"cg_fov",			90,					90},
         {"cg_voipTeamOnly",	0,					0},
 	{NULL,				0,					0}
 };
@@ -356,6 +362,7 @@ static menucommon_s *g_weapons_controls[] = {
 
 static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.aimingmode,
+	(menucommon_s *)&s_controls.thirdperson,
 	(menucommon_s *)&s_controls.sensitivity,
 	(menucommon_s *)&s_controls.smoothmouse,
 	(menucommon_s *)&s_controls.invertmouse,
@@ -366,6 +373,7 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.zoomview,
 	(menucommon_s *)&s_controls.joyenable,
 	(menucommon_s *)&s_controls.joythreshold,
+	(menucommon_s *)&s_controls.widefov,
 	NULL,
 };
 
@@ -868,10 +876,12 @@ static void Controls_GetConfig( void )
 	s_controls.smoothmouse.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "m_filter" ) );
 	s_controls.alwaysrun.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_run" ) );
 	s_controls.autoswitch.curvalue   = UI_ClampCvar( 0, 4, Controls_GetCvarValue( "cg_autoswitch" ) );
-	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 30, Controls_GetCvarValue( "sensitivity" ) );
+	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 10, Controls_GetCvarValue( "sensitivity" ) );
 	s_controls.joyenable.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_joystick" ) );
 	s_controls.joythreshold.curvalue = UI_ClampCvar( 0.05f, 0.75f, Controls_GetCvarValue( "joy_threshold" ) );
-	s_controls.aimingmode.curvalue     = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_swipeFreeAiming" ) );
+	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_swipeFreeAiming" ) );
+	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
+	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
         s_controls.voip_teamonly.curvalue= UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_voipTeamOnly" ) );
 }
 
@@ -915,6 +925,8 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "in_joystick", s_controls.joyenable.curvalue );
 	trap_Cvar_SetValue( "joy_threshold", s_controls.joythreshold.curvalue );
 	trap_Cvar_SetValue( "cg_swipeFreeAiming", s_controls.aimingmode.curvalue );
+	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
+	trap_Cvar_SetValue( "cg_fov", (s_controls.widefov.curvalue == 0 ? 90 : 140) );
         trap_Cvar_SetValue( "cg_voipTeamOnly", s_controls.voip_teamonly.curvalue);
 	trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
 }
@@ -1174,6 +1186,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 			break;
 
 		case ID_AIMING_MODE:
+		case ID_THIRD_PERSON:
 		case ID_MOUSESPEED:
 		case ID_INVERTMOUSE:
 		case ID_SMOOTHMOUSE:
@@ -1182,6 +1195,7 @@ static void Controls_MenuEvent( void* ptr, int event )
                 case ID_VOIP_TEAMONLY:
 		case ID_JOYENABLE:
 		case ID_JOYTHRESHOLD:
+		case ID_WIDE_FOV:
 			if (event == QM_ACTIVATED)
 			{
 				s_controls.changesmade = qtrue;
@@ -1520,10 +1534,26 @@ static void Controls_MenuInit( void )
 	s_controls.aimingmode.generic.type		= MTYPE_RADIOBUTTON;
 	s_controls.aimingmode.generic.flags		= QMF_SMALLFONT;
 	s_controls.aimingmode.generic.x			= SCREEN_WIDTH/2;
-	s_controls.aimingmode.generic.name		= "Swipe-free aiming";
+	s_controls.aimingmode.generic.name		= "swipe-free aiming";
 	s_controls.aimingmode.generic.id		= ID_AIMING_MODE;
 	s_controls.aimingmode.generic.callback	= Controls_MenuEvent;
 	s_controls.aimingmode.generic.statusbar	= Controls_StatusBar;
+
+	s_controls.thirdperson.generic.type		= MTYPE_RADIOBUTTON;
+	s_controls.thirdperson.generic.flags	= QMF_SMALLFONT;
+	s_controls.thirdperson.generic.x		= SCREEN_WIDTH/2;
+	s_controls.thirdperson.generic.name		= "third-person view";
+	s_controls.thirdperson.generic.id		= ID_THIRD_PERSON;
+	s_controls.thirdperson.generic.callback	= Controls_MenuEvent;
+	s_controls.thirdperson.generic.statusbar	= Controls_StatusBar;
+
+	s_controls.widefov.generic.type			= MTYPE_RADIOBUTTON;
+	s_controls.widefov.generic.flags		= QMF_SMALLFONT;
+	s_controls.widefov.generic.x			= SCREEN_WIDTH/2;
+	s_controls.widefov.generic.name			= "wide field of view";
+	s_controls.widefov.generic.id			= ID_WIDE_FOV;
+	s_controls.widefov.generic.callback		= Controls_MenuEvent;
+	s_controls.widefov.generic.statusbar	= Controls_StatusBar;
 
 	s_controls.centerview.generic.type	    = MTYPE_ACTION;
 	s_controls.centerview.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
@@ -1589,7 +1619,7 @@ static void Controls_MenuInit( void )
 	s_controls.sensitivity.generic.id 	     = ID_MOUSESPEED;
 	s_controls.sensitivity.generic.callback  = Controls_MenuEvent;
 	s_controls.sensitivity.minvalue		     = 2;
-	s_controls.sensitivity.maxvalue		     = 30;
+	s_controls.sensitivity.maxvalue		     = 10;
 	s_controls.sensitivity.generic.statusbar = Controls_StatusBar;
 
 	s_controls.gesture.generic.type	     = MTYPE_ACTION;
@@ -1674,6 +1704,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.misc );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.aimingmode );
+	Menu_AddItem( &s_controls.menu, &s_controls.thirdperson );
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
@@ -1684,6 +1715,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
 	Menu_AddItem( &s_controls.menu, &s_controls.joyenable );
 	Menu_AddItem( &s_controls.menu, &s_controls.joythreshold );
+	Menu_AddItem( &s_controls.menu, &s_controls.widefov );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.alwaysrun );
 	Menu_AddItem( &s_controls.menu, &s_controls.run );

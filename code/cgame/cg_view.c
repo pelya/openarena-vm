@@ -257,7 +257,7 @@ static void calculateTouchscreenAimingAngles(void)
 	vec3_t tracePoint, anglesVector;
 	vec3_t forward, right, up;
 	trace_t trace;
-	float fovCoeff = cg.zoomed ? 6.25f : 31.35f; // TODO: hardcoded values, use cg_fov and cg_zoomFov
+	float fovCoeff = cg.zoomed ? 6.25f : (cg_fov.integer == 90 ? 31.35f : 85.5f); // TODO: hardcoded values, use cg_fov and cg_zoomFov
 
 	// First we calculate a distant point, where we'd be aiming if there are no walls around
 	AngleVectors( cg.refdefViewAngles, forward, right, up );
@@ -545,7 +545,10 @@ void CG_ZoomToggleDown_f( void ) {
 		trap_Cvar_Set("cl_yawspeed", "140");
 		trap_Cvar_Set("cl_pitchspeed", "140");
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
-		trap_Cvar_Set("cg_thirdperson", "1");
+		if( cg_thirdPersonConfigOptionInSettings.integer )
+			trap_Cvar_Set("cg_thirdperson", "1");
+		else
+			trap_Cvar_Set("cg_thirdperson", "0");
 	}
 }
 

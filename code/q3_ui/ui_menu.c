@@ -42,6 +42,7 @@ MAIN MENU
 #define ID_MODS					16
 #define ID_EXIT					17
 #define ID_AIMING_MODE			18
+#define ID_THIRD_PERSON			19
 
 #define MAIN_BANNER_MODEL				"models/mapobjects/banner/banner5.md3"
 #define MAIN_MENU_VERTICAL_SPACING		34
@@ -59,7 +60,8 @@ typedef struct {
 	menutext_s		teamArena;
 	menutext_s		mods;
 	menutext_s		exit;
-	menuradiobutton_s	aimingmode; // Hack for lazy Android users, who cannot change game settings
+	menuradiobutton_s	aimingmode; // Hack for lazy Android users, who are too ignorant change game settings, but quick to downvote
+	menuradiobutton_s	thirdperson; // Another hack
 
 	qhandle_t		bannerModel;
 } mainmenu_t;
@@ -144,6 +146,10 @@ void Main_MenuEvent (void* ptr, int event) {
 
 	case ID_AIMING_MODE:
 			trap_Cvar_SetValue( "cg_swipeFreeAiming", s_main.aimingmode.curvalue );
+		break;
+
+	case ID_THIRD_PERSON:
+			trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_main.thirdperson.curvalue );
 		break;
 	}
 }
@@ -428,10 +434,19 @@ void UI_MainMenu( void ) {
 	s_main.aimingmode.generic.flags		= QMF_SMALLFONT;
 	s_main.aimingmode.generic.x			= SCREEN_WIDTH - 60;
 	s_main.aimingmode.generic.y			= 15;
-	s_main.aimingmode.generic.name		= "Swipe-free aiming";
+	s_main.aimingmode.generic.name		= "swipe-free aiming";
 	s_main.aimingmode.generic.id		= ID_AIMING_MODE;
 	s_main.aimingmode.generic.callback	= Main_MenuEvent;
 	s_main.aimingmode.curvalue			= trap_Cvar_VariableValue( "cg_swipeFreeAiming" );
+
+	s_main.thirdperson.generic.type		= MTYPE_RADIOBUTTON;
+	s_main.thirdperson.generic.flags	= QMF_SMALLFONT;
+	s_main.thirdperson.generic.x		= SCREEN_WIDTH - 60;
+	s_main.thirdperson.generic.y		= 15 + SMALLCHAR_HEIGHT + 2;
+	s_main.thirdperson.generic.name		= "third-person view";
+	s_main.thirdperson.generic.id		= ID_THIRD_PERSON;
+	s_main.thirdperson.generic.callback	= Main_MenuEvent;
+	s_main.thirdperson.curvalue			= trap_Cvar_VariableValue( "cg_thirdPersonConfigOptionInSettings" );
 
 	Menu_AddItem( &s_main.menu,	&s_main.singleplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
@@ -445,6 +460,7 @@ void UI_MainMenu( void ) {
 	Menu_AddItem( &s_main.menu,	&s_main.mods );
 	Menu_AddItem( &s_main.menu,	&s_main.exit );
 	Menu_AddItem( &s_main.menu,	&s_main.aimingmode );
+	Menu_AddItem( &s_main.menu,	&s_main.thirdperson );
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;

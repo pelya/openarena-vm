@@ -163,7 +163,7 @@ static void UI_SetupMenu_Init( void ) {
 	setupMenuInfo.banner.generic.type				= MTYPE_BTEXT;
 	setupMenuInfo.banner.generic.x					= 320;
 	setupMenuInfo.banner.generic.y					= 16;
-	setupMenuInfo.banner.string						= "SETUP";
+	setupMenuInfo.banner.string						= "SETTINGS";
 	setupMenuInfo.banner.color						= color_white;
 	setupMenuInfo.banner.style						= UI_CENTER;
 

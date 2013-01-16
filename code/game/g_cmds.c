@@ -362,6 +362,32 @@ char	*ConcatArgs( int start ) {
 	return line;
 }
 
+
+/*
+==================
+StringIsInteger
+==================
+*/
+qboolean StringIsInteger( const char * s ) {
+	int			i;
+	int			len;
+	qboolean	foundDigit;
+
+	len = strlen( s );
+	foundDigit = qfalse;
+
+	for ( i=0 ; i < len ; i++ ) {
+		if ( !isdigit( s[i] ) ) {
+			return qfalse;
+		}
+
+		foundDigit = qtrue;
+	}
+
+	return foundDigit;
+}
+
+
 /*
 ==================
 ClientNumberFromString
@@ -375,20 +401,15 @@ int ClientNumberFromString( gentity_t *to, char *s ) {
 	int			idnum;
     char        cleanName[MAX_STRING_CHARS];
 
-	// numeric values are just slot numbers
-	if (s[0] >= '0' && s[0] <= '9') {
+	// numeric values could be slot numbers
+	if ( StringIsInteger( s ) ) {
 		idnum = atoi( s );
-		if ( idnum < 0 || idnum >= level.maxclients ) {
-			trap_SendServerCommand( to-g_entities, va("print \"Bad client slot: %i\n\"", idnum));
-			return -1;
+		if ( idnum >= 0 && idnum < level.maxclients ) {
+			cl = &level.clients[idnum];
+			if ( cl->pers.connected == CON_CONNECTED ) {
+				return idnum;
+			}
 		}
-
-		cl = &level.clients[idnum];
-		if ( cl->pers.connected != CON_CONNECTED ) {
-			trap_SendServerCommand( to-g_entities, va("print \"Client %i is not active\n\"", idnum));
-			return -1;
-		}
-		return idnum;
 	}
 
 	// check for a name match
@@ -1041,6 +1062,16 @@ void Cmd_FollowCycle_f( gentity_t *ent ) {
 		G_Error( "Cmd_FollowCycle_f: bad dir %i", dir );
 	}
 
+	// if dedicated follow client, just switch between the two auto clients
+	if (ent->client->sess.spectatorClient < 0) {
+		if (ent->client->sess.spectatorClient == -1) {
+			ent->client->sess.spectatorClient = -2;
+		} else if (ent->client->sess.spectatorClient == -2) {
+			ent->client->sess.spectatorClient = -1;
+		}
+		return;
+	}
+
 	clientnum = ent->client->sess.spectatorClient;
 	original = clientnum;
         count = 0;
@@ -1156,7 +1187,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		color = COLOR_CYAN;
 		break;
 	case SAY_TELL:
-		if (target && g_gametype.integer >= GT_TEAM && g_ffa_gt != 1 &&
+		if (target && target->inuse && target->client && g_gametype.integer >= GT_TEAM && g_ffa_gt != 1 &&
 			target->client->sess.sessionTeam == ent->client->sess.sessionTeam &&
 			Team_GetLocationMsg(ent, location, sizeof(location)))
 			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"] (%s)"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location );
@@ -1244,13 +1275,14 @@ static void Cmd_Tell_f( gentity_t *ent ) {
 	char		*p;
 	char		arg[MAX_TOKEN_CHARS];
 
-	if ( trap_Argc () < 2 ) {
+	if ( trap_Argc () < 3 ) {
+		trap_SendServerCommand( ent-g_entities, "print \"Usage: tell <player id> <message>\n\"" );
 		return;
 	}
 
 	trap_Argv( 1, arg, sizeof( arg ) );
-	targetNum = atoi( arg );
-	if ( targetNum < 0 || targetNum >= level.maxclients ) {
+	targetNum = ClientNumberFromString( ent, arg );
+	if ( targetNum == -1 ) {
 		return;
 	}
 
@@ -1504,24 +1536,45 @@ static char	*gc_orders[] = {
 	"report"
 };
 
+static const int numgc_orders = ARRAY_LEN( gc_orders );
+
 void Cmd_GameCommand_f( gentity_t *ent ) {
-	int		player;
-	int		order;
-	char	str[MAX_TOKEN_CHARS];
-
-	trap_Argv( 1, str, sizeof( str ) );
-	player = atoi( str );
-	trap_Argv( 2, str, sizeof( str ) );
-	order = atoi( str );
-
-	if ( player < 0 || player >= MAX_CLIENTS ) {
+	int			targetNum;
+	gentity_t	*target;
+	int			order;
+	char		arg[MAX_TOKEN_CHARS];
+ 
+	if ( trap_Argc() != 3 ) {
+		trap_SendServerCommand( ent-g_entities, va( "print \"Usage: gc <player id> <order 0-%d>\n\"", numgc_orders - 1 ) );
 		return;
 	}
-	if ( order < 0 || order > sizeof(gc_orders)/sizeof(char *) ) {
+ 
+	trap_Argv( 1, arg, sizeof( arg ) );
+	targetNum = ClientNumberFromString( ent, arg );
+	if ( targetNum == -1 ) {
+ 		return;
+ 	}
+
+	target = &g_entities[targetNum];
+	if ( !target || !target->inuse || !target->client ) {
+ 		return;
+ 	}
+
+	trap_Argv( 2, arg, sizeof( arg ) );
+	order = atoi( arg );
+
+	if ( order < 0 || order >= numgc_orders ) {
+		trap_SendServerCommand( ent-g_entities, va("print \"Bad order: %i\n\"", order));
 		return;
 	}
-	G_Say( ent, &g_entities[player], SAY_TELL, gc_orders[order] );
-	G_Say( ent, ent, SAY_TELL, gc_orders[order] );
+
+	G_LogPrintf( "tell: %s to %s: %s\n", ent->client->pers.netname, target->client->pers.netname, gc_orders[order] );
+	G_Say( ent, target, SAY_TELL, gc_orders[order] );
+	// don't tell to the player self if it was already directed to this player
+	// also don't send the chat back to a bot
+	if ( ent != target && !(ent->r.svFlags & SVF_BOT)) {
+		G_Say( ent, ent, SAY_TELL, gc_orders[order] );
+	}
 }
 
 /*

@@ -892,9 +892,6 @@ typedef struct {
 	qhandle_t	medalAssist;
 	qhandle_t	medalCapture;
 
-	// Android UI
-	qhandle_t	upArrow;
-
 	// sounds
 	sfxHandle_t	quadSound;
 	sfxHandle_t	tracerSound;

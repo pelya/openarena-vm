@@ -441,7 +441,7 @@ void UI_MainMenu( void ) {
 	s_main.aimingmode.generic.flags		= QMF_SMALLFONT;
 	s_main.aimingmode.generic.x			= 220;
 	s_main.aimingmode.generic.y			= 15;
-	s_main.aimingmode.generic.name		= "touchscreen controls";
+	s_main.aimingmode.generic.name		= "touchscreen controls:";
 	s_main.aimingmode.generic.id		= ID_AIMING_MODE;
 	s_main.aimingmode.generic.callback	= Main_MenuEvent;
 	s_main.aimingmode.curvalue			= UI_ClampCvar( 0, 2, trap_Cvar_VariableValue( "cg_touchscreenControls" ));
@@ -451,7 +451,7 @@ void UI_MainMenu( void ) {
 	s_main.thirdperson.generic.flags	= QMF_SMALLFONT;
 	s_main.thirdperson.generic.x		= SCREEN_WIDTH - 60;
 	s_main.thirdperson.generic.y		= 15; // + SMALLCHAR_HEIGHT + 2;
-	s_main.thirdperson.generic.name		= "third-person view";
+	s_main.thirdperson.generic.name		= "third-person view:";
 	s_main.thirdperson.generic.id		= ID_THIRD_PERSON;
 	s_main.thirdperson.generic.callback	= Main_MenuEvent;
 	s_main.thirdperson.curvalue			= trap_Cvar_VariableValue( "cg_thirdPersonConfigOptionInSettings" );

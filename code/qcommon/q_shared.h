@@ -1298,7 +1298,7 @@ typedef enum _flag_status {
 	FLAG_DROPPED
 } flagStatus_t;
 
-
+enum { TOUCHSCREEN_TAP_TO_FIRE, TOUCHSCREEN_SWIPE_FREE_AIMING, TOUCHSCREEN_FIRE_BUTTON };
 
 #define	MAX_GLOBAL_SERVERS				4096
 #define	MAX_OTHER_SERVERS					128
@@ -1311,6 +1311,5 @@ typedef enum _flag_status {
 
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
-
 
 #endif	// __Q_SHARED_H

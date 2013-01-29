@@ -209,7 +209,7 @@ typedef struct
 	menuaction_s		lookup;
 	menuaction_s		lookdown;
 	menuaction_s		mouselook;
-	menuradiobutton_s	aimingmode;
+	menulist_s			aimingmode;
 	menuradiobutton_s	thirdperson;
 	menuradiobutton_s	widefov;
 	menuaction_s		centerview;
@@ -254,6 +254,13 @@ static const char *autoswitch_items[] = {
 	"NEW",
 	"BETTER",
         "NEW&BETTER",
+	NULL
+};
+
+static const char *s_controls_aimingmode_items[] = {
+	"TAP TO ATTACK",
+	"SINGLE-TOUCH ATTACK",
+	"ON-SCREEN BUTTON",
 	NULL
 };
 
@@ -316,7 +323,7 @@ static configcvar_t g_configcvars[] =
 	{"in_joystick",		0,					0},
 	{"joy_threshold",	0,					0},
 	{"m_filter",		0,					0},
-	{"cg_swipeFreeAiming",	0,				0},
+	{"cg_touchscreenControls",	0,				0},
 	{"cg_thirdPersonConfigOptionInSettings",	1,	1},
 	{"cg_fov",			90,					90},
         {"cg_voipTeamOnly",	0,					0},
@@ -879,7 +886,7 @@ static void Controls_GetConfig( void )
 	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 10, Controls_GetCvarValue( "sensitivity" ) );
 	s_controls.joyenable.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_joystick" ) );
 	s_controls.joythreshold.curvalue = UI_ClampCvar( 0.05f, 0.75f, Controls_GetCvarValue( "joy_threshold" ) );
-	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_swipeFreeAiming" ) );
+	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "cg_touchscreenControls" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
 	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
         s_controls.voip_teamonly.curvalue= UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_voipTeamOnly" ) );
@@ -924,7 +931,7 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "sensitivity", s_controls.sensitivity.curvalue );
 	trap_Cvar_SetValue( "in_joystick", s_controls.joyenable.curvalue );
 	trap_Cvar_SetValue( "joy_threshold", s_controls.joythreshold.curvalue );
-	trap_Cvar_SetValue( "cg_swipeFreeAiming", s_controls.aimingmode.curvalue );
+	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
 	trap_Cvar_SetValue( "cg_fov", (s_controls.widefov.curvalue == 0 ? 90 : 140) );
         trap_Cvar_SetValue( "cg_voipTeamOnly", s_controls.voip_teamonly.curvalue);
@@ -961,7 +968,7 @@ static void Controls_SetDefaults( void )
 	s_controls.sensitivity.curvalue  = Controls_GetCvarDefault( "sensitivity" );
 	s_controls.joyenable.curvalue    = Controls_GetCvarDefault( "in_joystick" );
 	s_controls.joythreshold.curvalue = Controls_GetCvarDefault( "joy_threshold" );
-	s_controls.aimingmode.curvalue     = Controls_GetCvarDefault( "cg_swipeFreeAiming" );
+	s_controls.aimingmode.curvalue     = Controls_GetCvarDefault( "cg_touchscreenControls" );
         s_controls.voip_teamonly.curvalue= Controls_GetCvarDefault( "cg_voipTeamOnly");
 }
 
@@ -1531,13 +1538,14 @@ static void Controls_MenuInit( void )
 	s_controls.mouselook.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_controls.mouselook.generic.id        = ID_MOUSELOOK;
 
-	s_controls.aimingmode.generic.type		= MTYPE_RADIOBUTTON;
+	s_controls.aimingmode.generic.type		= MTYPE_SPINCONTROL;
 	s_controls.aimingmode.generic.flags		= QMF_SMALLFONT;
 	s_controls.aimingmode.generic.x			= SCREEN_WIDTH/2;
-	s_controls.aimingmode.generic.name		= "swipe-free aiming";
+	s_controls.aimingmode.generic.name		= "touchscreen controls";
 	s_controls.aimingmode.generic.id		= ID_AIMING_MODE;
 	s_controls.aimingmode.generic.callback	= Controls_MenuEvent;
 	s_controls.aimingmode.generic.statusbar	= Controls_StatusBar;
+	s_controls.aimingmode.itemnames			= s_controls_aimingmode_items;
 
 	s_controls.thirdperson.generic.type		= MTYPE_RADIOBUTTON;
 	s_controls.thirdperson.generic.flags	= QMF_SMALLFONT;

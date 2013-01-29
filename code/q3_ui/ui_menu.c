@@ -60,7 +60,7 @@ typedef struct {
 	menutext_s		teamArena;
 	menutext_s		mods;
 	menutext_s		exit;
-	menuradiobutton_s	aimingmode; // Hack for lazy Android users, who are too ignorant change game settings, but quick to downvote
+	menulist_s		aimingmode; // Hack for lazy Android users, who are too ignorant change game settings, but quick to downvote
 	menuradiobutton_s	thirdperson; // Another hack
 
 	qhandle_t		bannerModel;
@@ -75,6 +75,13 @@ typedef struct {
 } errorMessage_t;
 
 static errorMessage_t s_errorMessage;
+
+static const char *s_main_aimingmode_items[] = {
+	"tap to attack",
+	"single-touch attack",
+	"on-screen button",
+	NULL
+};
 
 /*
 =================
@@ -145,7 +152,7 @@ void Main_MenuEvent (void* ptr, int event) {
 		break;
 
 	case ID_AIMING_MODE:
-			trap_Cvar_SetValue( "cg_swipeFreeAiming", s_main.aimingmode.curvalue );
+			trap_Cvar_SetValue( "cg_touchscreenControls", s_main.aimingmode.curvalue );
 		break;
 
 	case ID_THIRD_PERSON:
@@ -430,19 +437,20 @@ void UI_MainMenu( void ) {
 	s_main.exit.color						= color_red;
 	s_main.exit.style						= style;
 
-	s_main.aimingmode.generic.type		= MTYPE_RADIOBUTTON;
+	s_main.aimingmode.generic.type		= MTYPE_SPINCONTROL;
 	s_main.aimingmode.generic.flags		= QMF_SMALLFONT;
-	s_main.aimingmode.generic.x			= SCREEN_WIDTH - 60;
+	s_main.aimingmode.generic.x			= 220;
 	s_main.aimingmode.generic.y			= 15;
-	s_main.aimingmode.generic.name		= "swipe-free aiming";
+	s_main.aimingmode.generic.name		= "touchscreen controls";
 	s_main.aimingmode.generic.id		= ID_AIMING_MODE;
 	s_main.aimingmode.generic.callback	= Main_MenuEvent;
-	s_main.aimingmode.curvalue			= trap_Cvar_VariableValue( "cg_swipeFreeAiming" );
+	s_main.aimingmode.curvalue			= UI_ClampCvar( 0, 2, trap_Cvar_VariableValue( "cg_touchscreenControls" ));
+	s_main.aimingmode.itemnames			= s_main_aimingmode_items;
 
 	s_main.thirdperson.generic.type		= MTYPE_RADIOBUTTON;
 	s_main.thirdperson.generic.flags	= QMF_SMALLFONT;
 	s_main.thirdperson.generic.x		= SCREEN_WIDTH - 60;
-	s_main.thirdperson.generic.y		= 15 + SMALLCHAR_HEIGHT + 2;
+	s_main.thirdperson.generic.y		= 15; // + SMALLCHAR_HEIGHT + 2;
 	s_main.thirdperson.generic.name		= "third-person view";
 	s_main.thirdperson.generic.id		= ID_THIRD_PERSON;
 	s_main.thirdperson.generic.callback	= Main_MenuEvent;

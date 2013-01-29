@@ -782,7 +782,7 @@ static int CG_CalcViewValues( void ) {
 		}
 	}
 
-	if ( cg_swipeFreeAiming.integer ) {
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING ) {
 		CG_AdjustAnglesAfterTeleport();
 
 		cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
@@ -797,7 +797,7 @@ static int CG_CalcViewValues( void ) {
 		CG_OffsetFirstPersonView();
 	}
 
-	if ( cg_swipeFreeAiming.integer )
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
 		calculateTouchscreenAimingAngles();
 
 	// position eye reletive to origin

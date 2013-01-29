@@ -2595,7 +2595,7 @@ static void CG_DrawCrosshair(void)
 
 	x += cg.refdef.x + 0.5 * (cg.refdef.width - w);
 	y += cg.refdef.y + 0.5 * (cg.refdef.height - h);
-	if ( cg_swipeFreeAiming.integer ) {
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING ) {
 		x += cg.mouseX;
 		y += cg.mouseY;
 	}

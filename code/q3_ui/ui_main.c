@@ -191,7 +191,7 @@ vmCvar_t        ui_browserOnlyHumans;
 //new in beta 37:
 vmCvar_t        ui_setupchecked;
 // Init some cvars from cgame, so that the default value will be correct
-vmCvar_t	cg_swipeFreeAiming;
+vmCvar_t	cg_touchscreenControls;
 vmCvar_t	cg_drawFPS;
 vmCvar_t	cg_lagometer;
 vmCvar_t	cg_thirdPersonConfigOptionInSettings;
@@ -291,7 +291,7 @@ static cvarTable_t		cvarTable[] = {
         //new in beta 37:
         { &ui_setupchecked, "ui_setupchecked", "0", CVAR_ARCHIVE },
 	// Init some cvars from cgame, so that the default value will be correct
-	{ &cg_swipeFreeAiming, "cg_swipeFreeAiming", "0", CVAR_ARCHIVE },
+	{ &cg_touchscreenControls, "cg_touchscreenControls", "0", CVAR_ARCHIVE },
 	{ &cg_drawFPS, "cg_drawFPS", "0", CVAR_ARCHIVE  },
 	{ &cg_lagometer, "cg_lagometer", "0", CVAR_ARCHIVE },
 	{ &cg_thirdPersonConfigOptionInSettings, "cg_thirdPersonConfigOptionInSettings", "1", CVAR_ARCHIVE },

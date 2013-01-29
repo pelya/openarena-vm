@@ -490,6 +490,7 @@ static sfxHandle_t RadioButton_Key( menuradiobutton_s *rb, int key )
 		case K_ENTER:
 		case K_LEFTARROW:
 		case K_RIGHTARROW:
+		case '/':
 			rb->curvalue = !rb->curvalue;
 			if ( rb->generic.callback )
 				rb->generic.callback( rb, QM_ACTIVATED );
@@ -1713,6 +1714,7 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 		case K_AUX16:
 		case K_KP_ENTER:
 		case K_ENTER:
+		case '/':
 			if (item)
 				if (!(item->flags & (QMF_MOUSEONLY|QMF_GRAYED|QMF_INACTIVE)))
 					return (Menu_ActivateItem( m, item ));

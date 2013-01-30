@@ -519,6 +519,7 @@ void CG_ZoomDown_f( void ) {
 	}
 	cg.zoomed = qtrue;
 	cg.zoomTime = cg.time;
+	trap_Cvar_Set("cg_thirdperson", "0");
 }
 
 void CG_ZoomUp_f( void ) { 
@@ -527,6 +528,10 @@ void CG_ZoomUp_f( void ) {
 	}
 	cg.zoomed = qfalse;
 	cg.zoomTime = cg.time;
+	if( cg_thirdPersonConfigOptionInSettings.integer )
+		trap_Cvar_Set("cg_thirdperson", "1");
+	else
+		trap_Cvar_Set("cg_thirdperson", "0");
 }
 
 void CG_ZoomToggleDown_f( void ) {
@@ -535,15 +540,11 @@ void CG_ZoomToggleDown_f( void ) {
 
 	if ( cg.zoomed ) {
 		// TODO: hardcoded values
-		trap_Cvar_Set("cl_yawspeed", "40");
-		trap_Cvar_Set("cl_pitchspeed", "40");
 		trap_Cvar_Set("cl_pitchAutoCenter", "0");
 		trap_SendConsoleCommand("weapon 7"); // Select railgun
 		trap_Cvar_Set("cg_thirdperson", "0");
 	} else {
 		// TODO: hardcoded values
-		trap_Cvar_Set("cl_yawspeed", "140");
-		trap_Cvar_Set("cl_pitchspeed", "140");
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
 		if( cg_thirdPersonConfigOptionInSettings.integer )
 			trap_Cvar_Set("cg_thirdperson", "1");

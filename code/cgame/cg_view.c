@@ -514,16 +514,17 @@ static void CG_OffsetFirstPersonView( void ) {
 //======================================================================
 
 void CG_ZoomDown_f( void ) { 
-	if ( cg.zoomed ) {
+	if ( cg.zoomed || cg.zoomLocked ) {
 		return;
 	}
 	cg.zoomed = qtrue;
 	cg.zoomTime = cg.time;
 	trap_Cvar_Set("cg_thirdperson", "0");
+	cg.zoomFov = cg_zoomFovMinor.value;
 }
 
 void CG_ZoomUp_f( void ) { 
-	if ( !cg.zoomed ) {
+	if ( !cg.zoomed || cg.zoomLocked ) {
 		return;
 	}
 	cg.zoomed = qfalse;
@@ -536,13 +537,15 @@ void CG_ZoomUp_f( void ) {
 
 void CG_ZoomToggleDown_f( void ) {
 	cg.zoomed = !cg.zoomed;
+	cg.zoomLocked = cg.zoomed;
 	cg.zoomTime = cg.time;
 
 	if ( cg.zoomed ) {
 		// TODO: hardcoded values
 		trap_Cvar_Set("cl_pitchAutoCenter", "0");
-		trap_SendConsoleCommand("weapon 7"); // Select railgun
+		//trap_SendConsoleCommand("weapon 7"); // Select railgun
 		trap_Cvar_Set("cg_thirdperson", "0");
+		cg.zoomFov = cg_zoomFov.value;
 	} else {
 		// TODO: hardcoded values
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
@@ -601,7 +604,7 @@ static int CG_CalcFov( void ) {
 			zoomFov = 22.5;
 		} else {
                         // account for zooms
-                        zoomFov = cg_zoomFov.value;
+                        zoomFov = cg.zoomFov; //cg_zoomFov.value;
                         if ( zoomFov < 1 ) {
                                 zoomFov = 1;
                         } else if ( zoomFov > 160 ) {

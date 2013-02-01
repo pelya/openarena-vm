@@ -358,7 +358,7 @@ static void CG_OffsetThirdPersonView( void ) {
 	}
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2( focusPoint[2], focusDist );
 	//cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
-	cg.refdefViewAngles[ROLL] = 0;
+	//cg.refdefViewAngles[ROLL] = 0;
 }
 
 // this causes a compiler bug on mac MrC compiler

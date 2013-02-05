@@ -258,9 +258,9 @@ static const char *autoswitch_items[] = {
 };
 
 static const char *s_controls_aimingmode_items[] = {
+	"STATIC ATTACK BUTTON",
 	"TAP TO ATTACK",
 	"SINGLE-TOUCH ATTACK",
-	"ON-SCREEN BUTTON",
 	NULL
 };
 

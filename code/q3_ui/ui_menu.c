@@ -77,9 +77,9 @@ typedef struct {
 static errorMessage_t s_errorMessage;
 
 static const char *s_main_aimingmode_items[] = {
+	"static attack button",
 	"tap to attack",
 	"single-touch attack",
-	"on-screen button",
 	NULL
 };
 

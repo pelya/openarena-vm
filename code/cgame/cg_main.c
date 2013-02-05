@@ -280,6 +280,7 @@ vmCvar_t	cg_teamChatBeep;
 vmCvar_t	cg_underWater;
 vmCvar_t	cg_weaponBarActiveWidth;
 vmCvar_t	cg_weaponBarActiveWeapons;
+vmCvar_t	cg_holdingUsableItem;
 vmCvar_t	cg_touchscreenControls;
 vmCvar_t	cg_thirdPersonConfigOptionInSettings; // Any uglier name please?
 
@@ -479,6 +480,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{&cg_underWater, "cg_underWater", "0", 0 },
 	{&cg_weaponBarActiveWidth, "cg_weaponBarActiveWidth", "0", 0 },
 	{&cg_weaponBarActiveWeapons, "cg_weaponBarActiveWeapons", "0", 0 },
+	{&cg_holdingUsableItem, "cg_holdingUsableItem", "0", 0 },
 	{&cg_touchscreenControls, "cg_touchscreenControls", "0", CVAR_ARCHIVE },
 	{&cg_thirdPersonConfigOptionInSettings, "cg_thirdPersonConfigOptionInSettings", "1", CVAR_ARCHIVE },
 };

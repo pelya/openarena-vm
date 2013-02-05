@@ -1896,7 +1896,12 @@ static void CG_DrawHoldableItem( void ) {
 	value = cg.snap->ps.stats[STAT_HOLDABLE_ITEM];
 	if ( value ) {
 		CG_RegisterItemVisuals( value );
-		CG_DrawPic( 640-ICON_SIZE, (SCREEN_HEIGHT-ICON_SIZE)/2, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+		CG_DrawPic( 640-ICON_SIZE, 0 /*(SCREEN_HEIGHT-ICON_SIZE)/2*/, ICON_SIZE, ICON_SIZE, cg_items[ value ].icon );
+		if ( cg_holdingUsableItem.integer == 0 ) {
+			trap_Cvar_Set("cg_holdingUsableItem","1");
+		}
+	} else if( cg_holdingUsableItem.integer ) {
+		trap_Cvar_Set("cg_holdingUsableItem","0");
 	}
 
 }

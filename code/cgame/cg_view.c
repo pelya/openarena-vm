@@ -518,7 +518,7 @@ void CG_ZoomAdjustViewAngles( float from, float to ) {
 	float fromScale = tan(DEG2RAD((from * 0.5f)));
 	float toScale = tan(DEG2RAD((to * 0.5f)));
 	float mouseX = cg.mouseX / cgs.screenXScale / 640.0f;
-	float mouseY = cg.mouseY / cgs.screenYScale / 480.0f;
+	float mouseY = cg.mouseY / cgs.screenXScale / 480.0f;
 	float fromAngleX = atan2(mouseX * fromScale, 1.0f);
 	float fromAngleY = atan2(mouseY * fromScale, 1.0f);
 	float toAngleX = atan2(mouseX * toScale, 1.0f);

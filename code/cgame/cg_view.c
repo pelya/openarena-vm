@@ -257,7 +257,7 @@ static void calculateTouchscreenAimingAngles(void)
 	vec3_t tracePoint, anglesVector;
 	vec3_t forward, right, up;
 	trace_t trace;
-	float fovCoeff = cg.zoomed ? 6.25f : (cg_fov.integer == 90 ? 31.35f : 85.5f); // TODO: hardcoded values, use cg_fov and cg_zoomFov
+	float fovCoeff = cg.zoomed ? (cg.zoomFov == 45.0f ? 13.0f : 6.25f) : (cg_fov.integer == 90 ? 31.35f : 85.5f); // TODO: hardcoded values, use cg_fov and cg_zoomFov
 
 	// First we calculate a distant point, where we'd be aiming if there are no walls around
 	AngleVectors( cg.refdefViewAngles, forward, right, up );
@@ -514,6 +514,7 @@ static void CG_OffsetFirstPersonView( void ) {
 //======================================================================
 
 void CG_ZoomAdjustViewAngles( float from, float to ) {
+	// TODO: this code is still wrong, but works good enough.
 	float fromScale = tan(DEG2RAD((from * 0.5f)));
 	float toScale = tan(DEG2RAD((to * 0.5f)));
 	float mouseX = cg.mouseX / cgs.screenXScale / 640.0f;
@@ -522,9 +523,10 @@ void CG_ZoomAdjustViewAngles( float from, float to ) {
 	float fromAngleY = atan2(mouseY * fromScale, 1.0f);
 	float toAngleX = atan2(mouseX * toScale, 1.0f);
 	float toAngleY = atan2(mouseY * toScale, 1.0f);
-	cg.cameraAngles[YAW] -= RAD2DEG(fromAngleX - toAngleX);
-	cg.cameraAngles[PITCH] += RAD2DEG(fromAngleY - toAngleY);
-	//CG_Printf( "CG_ZoomAdjustViewAngles: dx %07d dy %07d fromScale %07d toScale %07d mouseX %07d mouseY %07d cg.cameraAngles[YAW] %d cg.cameraAngles[PITCH] %d\n",  (int)RAD2DEG((fromAngleX - toAngleX) * 1000),
+	cg.cameraAngles[YAW] -= 1.5f * RAD2DEG(fromAngleX - toAngleX);
+	cg.cameraAngles[PITCH] += 1.5f * RAD2DEG(fromAngleY - toAngleY);
+	//CG_Printf( "CG_ZoomAdjustViewAngles: dx %07d dy %07d fromScale %07d toScale %07d mouseX %07d mouseY %07d cg.cameraAngles[YAW] %d cg.cameraAngles[PITCH] %d\n",
+	//	(int)RAD2DEG((fromAngleX - toAngleX) * 1000),
 	//	(int)RAD2DEG((fromAngleY - toAngleY) * 1000), (int)(fromScale * 1000), (int)(toScale * 1000), (int)(mouseX * 1000), (int)(mouseY * 1000),
 	//	(int)(cg.cameraAngles[YAW]*1000), (int)(cg.cameraAngles[PITCH]*1000) );
 	trap_SetCameraAngles( cg.cameraAngles );

@@ -513,7 +513,21 @@ static void CG_OffsetFirstPersonView( void ) {
 
 //======================================================================
 
-void CG_ZoomDown_f( void ) { 
+void CG_ZoomAdjustViewAngles( float from, float to ) {
+	float fromScale = tan(DEG2RAD(from * 0.5f));
+	float toScale = tan(DEG2RAD(to * 0.5f));
+	float mouseX = cg.mouseX / cgs.screenXScale / 640.0f;
+	float mouseY = cg.mouseY / cgs.screenYScale / 480.0f;
+	float fromAngleX = atan2(mouseX * fromScale, 1.0f);
+	float fromAngleY = atan2(mouseY * fromScale, 1.0f);
+	float toAngleX = atan2(mouseX * toScale, 1.0f);
+	float toAngleY = atan2(mouseY * toScale, 1.0f);
+	cg.cameraAngles[YAW] += RAD2DEG(fromAngleX - toAngleX);
+	cg.cameraAngles[PITCH] += RAD2DEG(fromAngleY - toAngleY);
+	trap_SetCameraAngles( cg.cameraAngles );
+}
+
+void CG_ZoomDown_f( void ) {
 	if ( cg.zoomed || cg.zoomLocked ) {
 		return;
 	}
@@ -521,9 +535,11 @@ void CG_ZoomDown_f( void ) {
 	cg.zoomTime = cg.time;
 	trap_Cvar_Set("cg_thirdperson", "0");
 	cg.zoomFov = cg_zoomFovMinor.value;
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
+		CG_ZoomAdjustViewAngles(cg_fov.value, cg.zoomFov);
 }
 
-void CG_ZoomUp_f( void ) { 
+void CG_ZoomUp_f( void ) {
 	if ( !cg.zoomed || cg.zoomLocked ) {
 		return;
 	}
@@ -533,6 +549,8 @@ void CG_ZoomUp_f( void ) {
 		trap_Cvar_Set("cg_thirdperson", "1");
 	else
 		trap_Cvar_Set("cg_thirdperson", "0");
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
+		CG_ZoomAdjustViewAngles(cg.zoomFov, cg_fov.value);
 }
 
 void CG_ZoomToggleDown_f( void ) {
@@ -546,6 +564,8 @@ void CG_ZoomToggleDown_f( void ) {
 		//trap_SendConsoleCommand("weapon 7"); // Select railgun
 		trap_Cvar_Set("cg_thirdperson", "0");
 		cg.zoomFov = cg_zoomFov.value;
+		if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
+			CG_ZoomAdjustViewAngles(cg_fov.value, cg.zoomFov);
 	} else {
 		// TODO: hardcoded values
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
@@ -553,6 +573,8 @@ void CG_ZoomToggleDown_f( void ) {
 			trap_Cvar_Set("cg_thirdperson", "1");
 		else
 			trap_Cvar_Set("cg_thirdperson", "0");
+		if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
+			CG_ZoomAdjustViewAngles(cg.zoomFov, cg_fov.value);
 	}
 }
 

@@ -522,11 +522,11 @@ void CG_ZoomAdjustViewAngles( float from, float to ) {
 	float fromAngleY = atan2(mouseY * fromScale, 1.0f);
 	float toAngleX = atan2(mouseX * toScale, 1.0f);
 	float toAngleY = atan2(mouseY * toScale, 1.0f);
-	cg.cameraAngles[YAW] += RAD2DEG(fromAngleX - toAngleX) * 2.0f;
-	cg.cameraAngles[PITCH] += RAD2DEG(fromAngleY - toAngleY) * 2.0f;
-	CG_Printf( "CG_ZoomAdjustViewAngles: dx %07d dy %07d fromScale %07d toScale %07d mouseX %07d mouseY %07d cg.cameraAngles[YAW] %d cg.cameraAngles[PITCH] %d\n",  (int)RAD2DEG((fromAngleX - toAngleX) * 1000),
-		(int)RAD2DEG((fromAngleY - toAngleY) * 1000), (int)(fromScale * 1000), (int)(toScale * 1000), (int)(mouseX * 1000), (int)(mouseY * 1000),
-		(int)(cg.cameraAngles[YAW]*1000), (int)(cg.cameraAngles[PITCH]*1000) );
+	cg.cameraAngles[YAW] -= RAD2DEG(fromAngleX - toAngleX);
+	cg.cameraAngles[PITCH] += RAD2DEG(fromAngleY - toAngleY);
+	//CG_Printf( "CG_ZoomAdjustViewAngles: dx %07d dy %07d fromScale %07d toScale %07d mouseX %07d mouseY %07d cg.cameraAngles[YAW] %d cg.cameraAngles[PITCH] %d\n",  (int)RAD2DEG((fromAngleX - toAngleX) * 1000),
+	//	(int)RAD2DEG((fromAngleY - toAngleY) * 1000), (int)(fromScale * 1000), (int)(toScale * 1000), (int)(mouseX * 1000), (int)(mouseY * 1000),
+	//	(int)(cg.cameraAngles[YAW]*1000), (int)(cg.cameraAngles[PITCH]*1000) );
 	trap_SetCameraAngles( cg.cameraAngles );
 }
 

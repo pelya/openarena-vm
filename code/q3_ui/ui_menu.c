@@ -466,7 +466,7 @@ void UI_MainMenu( void ) {
 	s_main.gyroscope.generic.type		= MTYPE_RADIOBUTTON;
 	s_main.gyroscope.generic.flags		= QMF_SMALLFONT;
 	s_main.gyroscope.generic.x			= SCREEN_WIDTH - 60;
-	s_main.gyroscope.generic.y			= SMALLCHAR_HEIGHT + 2;
+	s_main.gyroscope.generic.y			= 15 + SMALLCHAR_HEIGHT + 2;
 	s_main.gyroscope.generic.name		= "gyroscope:";
 	s_main.gyroscope.generic.id			= ID_GYROSCOPE;
 	s_main.gyroscope.generic.callback	= Main_MenuEvent;

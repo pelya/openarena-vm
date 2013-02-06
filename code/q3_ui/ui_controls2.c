@@ -123,8 +123,8 @@ typedef struct
 #define ID_ALWAYSRUN	41
 #define ID_AUTOSWITCH	42
 #define ID_MOUSESPEED	43
-#define ID_JOYENABLE	44
-#define ID_JOYTHRESHOLD	45
+#define ID_GYROSCOPE	44
+#define ID_GYROSENS		45
 #define ID_SMOOTHMOUSE	46
 #define ID_VOIP_TEAMONLY 47
 #define ID_AIMING_MODE	48
@@ -230,8 +230,8 @@ typedef struct
 	menuaction_s		chat4;
         menuaction_s		voip_talk;
         menuradiobutton_s	voip_teamonly;
-	menuradiobutton_s	joyenable;
-	menuslider_s		joythreshold;
+	menuradiobutton_s	gyroscope;
+	menuslider_s		gyroscopeSensitivity;
 	int					section;
 	qboolean			waitingforkey;
 	char				playerModel[64];
@@ -258,9 +258,9 @@ static const char *autoswitch_items[] = {
 };
 
 static const char *s_controls_aimingmode_items[] = {
-	"STATIC ATTACK BUTTON",
-	"TAP TO ATTACK",
-	"SINGLE-TOUCH ATTACK",
+	"shoot button",
+	"tap to shoot",
+	"single-touch shooting",
 	NULL
 };
 
@@ -323,8 +323,10 @@ static configcvar_t g_configcvars[] =
 	{"in_joystick",		0,					0},
 	{"joy_threshold",	0,					0},
 	{"m_filter",		0,					0},
-	{"cg_touchscreenControls",	0,				0},
+	{"cg_touchscreenControls",	0,			0},
 	{"cg_thirdPersonConfigOptionInSettings",	1,	1},
+	{"in_gyroscope",	1,					1},
+	{"in_gyroscopeSensitivity",	2,			2},
 	{"cg_fov",			90,					90},
         {"cg_voipTeamOnly",	0,					0},
 	{NULL,				0,					0}
@@ -378,8 +380,8 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.mouselook,
 	(menucommon_s *)&s_controls.centerview,
 	(menucommon_s *)&s_controls.zoomview,
-	(menucommon_s *)&s_controls.joyenable,
-	(menucommon_s *)&s_controls.joythreshold,
+	(menucommon_s *)&s_controls.gyroscope,
+	(menucommon_s *)&s_controls.gyroscopeSensitivity,
 	(menucommon_s *)&s_controls.widefov,
 	NULL,
 };
@@ -884,8 +886,8 @@ static void Controls_GetConfig( void )
 	s_controls.alwaysrun.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_run" ) );
 	s_controls.autoswitch.curvalue   = UI_ClampCvar( 0, 4, Controls_GetCvarValue( "cg_autoswitch" ) );
 	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 10, Controls_GetCvarValue( "sensitivity" ) );
-	s_controls.joyenable.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_joystick" ) );
-	s_controls.joythreshold.curvalue = UI_ClampCvar( 0.05f, 0.75f, Controls_GetCvarValue( "joy_threshold" ) );
+	s_controls.gyroscope.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_gyroscope" ) );
+	s_controls.gyroscopeSensitivity.curvalue = UI_ClampCvar( 0.5f, 6.0f, Controls_GetCvarValue( "in_gyroscopeSensitivity" ) );
 	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "cg_touchscreenControls" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
 	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
@@ -929,8 +931,8 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "cl_run", s_controls.alwaysrun.curvalue );
 	trap_Cvar_SetValue( "cg_autoswitch", s_controls.autoswitch.curvalue );
 	trap_Cvar_SetValue( "sensitivity", s_controls.sensitivity.curvalue );
-	trap_Cvar_SetValue( "in_joystick", s_controls.joyenable.curvalue );
-	trap_Cvar_SetValue( "joy_threshold", s_controls.joythreshold.curvalue );
+	trap_Cvar_SetValue( "in_gyroscope", s_controls.gyroscope.curvalue );
+	trap_Cvar_SetValue( "in_gyroscopeSensitivity", s_controls.gyroscopeSensitivity.curvalue );
 	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
 	trap_Cvar_SetValue( "cg_drawGun", s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING ? 0 : 1 );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
@@ -967,8 +969,8 @@ static void Controls_SetDefaults( void )
 	s_controls.alwaysrun.curvalue    = Controls_GetCvarDefault( "cl_run" );
 	s_controls.autoswitch.curvalue   = Controls_GetCvarDefault( "cg_autoswitch" );
 	s_controls.sensitivity.curvalue  = Controls_GetCvarDefault( "sensitivity" );
-	s_controls.joyenable.curvalue    = Controls_GetCvarDefault( "in_joystick" );
-	s_controls.joythreshold.curvalue = Controls_GetCvarDefault( "joy_threshold" );
+	s_controls.gyroscope.curvalue    = Controls_GetCvarDefault( "in_gyroscope" );
+	s_controls.gyroscopeSensitivity.curvalue = Controls_GetCvarDefault( "in_gyroscopeSensitivity" );
 	s_controls.aimingmode.curvalue     = Controls_GetCvarDefault( "cg_touchscreenControls" );
         s_controls.voip_teamonly.curvalue= Controls_GetCvarDefault( "cg_voipTeamOnly");
 }
@@ -1201,8 +1203,8 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_ALWAYSRUN:
 		case ID_AUTOSWITCH:
                 case ID_VOIP_TEAMONLY:
-		case ID_JOYENABLE:
-		case ID_JOYTHRESHOLD:
+		case ID_GYROSCOPE:
+		case ID_GYROSENS:
 		case ID_WIDE_FOV:
 			if (event == QM_ACTIVATED)
 			{
@@ -1675,23 +1677,23 @@ static void Controls_MenuInit( void )
 	s_controls.voip_teamonly.generic.callback  = Controls_MenuEvent;
 	s_controls.voip_teamonly.generic.statusbar = Controls_StatusBar;
 
-	s_controls.joyenable.generic.type      = MTYPE_RADIOBUTTON;
-	s_controls.joyenable.generic.flags	   = QMF_SMALLFONT;
-	s_controls.joyenable.generic.x	       = SCREEN_WIDTH/2;
-	s_controls.joyenable.generic.name	   = "joystick";
-	s_controls.joyenable.generic.id        = ID_JOYENABLE;
-	s_controls.joyenable.generic.callback  = Controls_MenuEvent;
-	s_controls.joyenable.generic.statusbar = Controls_StatusBar;
+	s_controls.gyroscope.generic.type      = MTYPE_RADIOBUTTON;
+	s_controls.gyroscope.generic.flags	   = QMF_SMALLFONT;
+	s_controls.gyroscope.generic.x	       = SCREEN_WIDTH/2;
+	s_controls.gyroscope.generic.name	   = "gyroscope";
+	s_controls.gyroscope.generic.id        = ID_GYROSCOPE;
+	s_controls.gyroscope.generic.callback  = Controls_MenuEvent;
+	s_controls.gyroscope.generic.statusbar = Controls_StatusBar;
 
-	s_controls.joythreshold.generic.type	  = MTYPE_SLIDER;
-	s_controls.joythreshold.generic.x		  = SCREEN_WIDTH/2;
-	s_controls.joythreshold.generic.flags	  = QMF_SMALLFONT;
-	s_controls.joythreshold.generic.name	  = "joystick threshold";
-	s_controls.joythreshold.generic.id 	      = ID_JOYTHRESHOLD;
-	s_controls.joythreshold.generic.callback  = Controls_MenuEvent;
-	s_controls.joythreshold.minvalue		  = 0.05f;
-	s_controls.joythreshold.maxvalue		  = 0.75f;
-	s_controls.joythreshold.generic.statusbar = Controls_StatusBar;
+	s_controls.gyroscopeSensitivity.generic.type	  = MTYPE_SLIDER;
+	s_controls.gyroscopeSensitivity.generic.x		  = SCREEN_WIDTH/2;
+	s_controls.gyroscopeSensitivity.generic.flags	  = QMF_SMALLFONT;
+	s_controls.gyroscopeSensitivity.generic.name	  = "gyroscope sensitivity";
+	s_controls.gyroscopeSensitivity.generic.id 	      = ID_GYROSENS;
+	s_controls.gyroscopeSensitivity.generic.callback  = Controls_MenuEvent;
+	s_controls.gyroscopeSensitivity.minvalue		  = 0.5f;
+	s_controls.gyroscopeSensitivity.maxvalue		  = 6.0f;
+	s_controls.gyroscopeSensitivity.generic.statusbar = Controls_StatusBar;
 
 	s_controls.name.generic.type	= MTYPE_PTEXT;
 	s_controls.name.generic.flags	= QMF_CENTER_JUSTIFY|QMF_INACTIVE;
@@ -1722,8 +1724,8 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.mouselook );
 	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
 	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
-	Menu_AddItem( &s_controls.menu, &s_controls.joyenable );
-	Menu_AddItem( &s_controls.menu, &s_controls.joythreshold );
+	Menu_AddItem( &s_controls.menu, &s_controls.gyroscope );
+	Menu_AddItem( &s_controls.menu, &s_controls.gyroscopeSensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.widefov );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.alwaysrun );

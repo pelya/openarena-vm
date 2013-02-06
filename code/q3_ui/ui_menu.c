@@ -43,6 +43,7 @@ MAIN MENU
 #define ID_EXIT					17
 #define ID_AIMING_MODE			18
 #define ID_THIRD_PERSON			19
+#define ID_GYROSCOPE			20
 
 #define MAIN_BANNER_MODEL				"models/mapobjects/banner/banner5.md3"
 #define MAIN_MENU_VERTICAL_SPACING		34
@@ -62,6 +63,7 @@ typedef struct {
 	menutext_s		exit;
 	menulist_s		aimingmode; // Hack for lazy Android users, who are too ignorant change game settings, but quick to downvote
 	menuradiobutton_s	thirdperson; // Another hack
+	menuradiobutton_s	gyroscope; // Another hack
 
 	qhandle_t		bannerModel;
 } mainmenu_t;
@@ -77,9 +79,9 @@ typedef struct {
 static errorMessage_t s_errorMessage;
 
 static const char *s_main_aimingmode_items[] = {
-	"static attack button",
-	"tap to attack",
-	"single-touch attack",
+	"shoot button",
+	"tap to shoot",
+	"single-touch shooting",
 	NULL
 };
 
@@ -152,12 +154,16 @@ void Main_MenuEvent (void* ptr, int event) {
 		break;
 
 	case ID_AIMING_MODE:
-			trap_Cvar_SetValue( "cg_touchscreenControls", s_main.aimingmode.curvalue );
-			trap_Cvar_SetValue( "cg_drawGun", s_main.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING ? 0 : 1 );
+		trap_Cvar_SetValue( "cg_touchscreenControls", s_main.aimingmode.curvalue );
+		trap_Cvar_SetValue( "cg_drawGun", s_main.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING ? 0 : 1 );
 		break;
 
 	case ID_THIRD_PERSON:
-			trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_main.thirdperson.curvalue );
+		trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_main.thirdperson.curvalue );
+		break;
+
+	case ID_GYROSCOPE:
+		trap_Cvar_SetValue( "in_gyroscope", s_main.gyroscope.curvalue );
 		break;
 	}
 }
@@ -457,6 +463,15 @@ void UI_MainMenu( void ) {
 	s_main.thirdperson.generic.callback	= Main_MenuEvent;
 	s_main.thirdperson.curvalue			= trap_Cvar_VariableValue( "cg_thirdPersonConfigOptionInSettings" );
 
+	s_main.gyroscope.generic.type		= MTYPE_RADIOBUTTON;
+	s_main.gyroscope.generic.flags		= QMF_SMALLFONT;
+	s_main.gyroscope.generic.x			= SCREEN_WIDTH - 60;
+	s_main.gyroscope.generic.y			= SMALLCHAR_HEIGHT + 2;
+	s_main.gyroscope.generic.name		= "gyroscope:";
+	s_main.gyroscope.generic.id			= ID_GYROSCOPE;
+	s_main.gyroscope.generic.callback	= Main_MenuEvent;
+	s_main.gyroscope.curvalue			= trap_Cvar_VariableValue( "in_gyroscope" );
+
 	Menu_AddItem( &s_main.menu,	&s_main.singleplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
@@ -470,6 +485,7 @@ void UI_MainMenu( void ) {
 	Menu_AddItem( &s_main.menu,	&s_main.exit );
 	Menu_AddItem( &s_main.menu,	&s_main.aimingmode );
 	Menu_AddItem( &s_main.menu,	&s_main.thirdperson );
+	Menu_AddItem( &s_main.menu,	&s_main.gyroscope );
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;

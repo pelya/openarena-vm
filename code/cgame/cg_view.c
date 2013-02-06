@@ -514,16 +514,19 @@ static void CG_OffsetFirstPersonView( void ) {
 //======================================================================
 
 void CG_ZoomAdjustViewAngles( float from, float to ) {
-	float fromScale = tan(DEG2RAD(from * 0.5f));
-	float toScale = tan(DEG2RAD(to * 0.5f));
+	float fromScale = tan(DEG2RAD((from * 0.5f)));
+	float toScale = tan(DEG2RAD((to * 0.5f)));
 	float mouseX = cg.mouseX / cgs.screenXScale / 640.0f;
 	float mouseY = cg.mouseY / cgs.screenYScale / 480.0f;
 	float fromAngleX = atan2(mouseX * fromScale, 1.0f);
 	float fromAngleY = atan2(mouseY * fromScale, 1.0f);
 	float toAngleX = atan2(mouseX * toScale, 1.0f);
 	float toAngleY = atan2(mouseY * toScale, 1.0f);
-	cg.cameraAngles[YAW] += RAD2DEG(fromAngleX - toAngleX);
-	cg.cameraAngles[PITCH] += RAD2DEG(fromAngleY - toAngleY);
+	cg.cameraAngles[YAW] += RAD2DEG(fromAngleX - toAngleX) * 2.0f;
+	cg.cameraAngles[PITCH] += RAD2DEG(fromAngleY - toAngleY) * 2.0f;
+	CG_Printf( "CG_ZoomAdjustViewAngles: dx %07d dy %07d fromScale %07d toScale %07d mouseX %07d mouseY %07d cg.cameraAngles[YAW] %d cg.cameraAngles[PITCH] %d\n",  (int)RAD2DEG((fromAngleX - toAngleX) * 1000),
+		(int)RAD2DEG((fromAngleY - toAngleY) * 1000), (int)(fromScale * 1000), (int)(toScale * 1000), (int)(mouseX * 1000), (int)(mouseY * 1000),
+		(int)(cg.cameraAngles[YAW]*1000), (int)(cg.cameraAngles[PITCH]*1000) );
 	trap_SetCameraAngles( cg.cameraAngles );
 }
 
@@ -534,6 +537,7 @@ void CG_ZoomDown_f( void ) {
 	cg.zoomed = qtrue;
 	cg.zoomTime = cg.time;
 	trap_Cvar_Set("cg_thirdperson", "0");
+	trap_Cvar_Set("cl_pitchAutoCenter", "0");
 	cg.zoomFov = cg_zoomFovMinor.value;
 	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
 		CG_ZoomAdjustViewAngles(cg_fov.value, cg.zoomFov);
@@ -549,6 +553,7 @@ void CG_ZoomUp_f( void ) {
 		trap_Cvar_Set("cg_thirdperson", "1");
 	else
 		trap_Cvar_Set("cg_thirdperson", "0");
+	trap_Cvar_Set("cl_pitchAutoCenter", "1");
 	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
 		CG_ZoomAdjustViewAngles(cg.zoomFov, cg_fov.value);
 }

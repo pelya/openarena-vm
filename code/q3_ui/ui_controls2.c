@@ -932,6 +932,7 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "in_joystick", s_controls.joyenable.curvalue );
 	trap_Cvar_SetValue( "joy_threshold", s_controls.joythreshold.curvalue );
 	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
+	trap_Cvar_SetValue( "cg_drawGun", s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING ? 0 : 1 );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
 	trap_Cvar_SetValue( "cg_fov", (s_controls.widefov.curvalue == 0 ? 90 : 140) );
         trap_Cvar_SetValue( "cg_voipTeamOnly", s_controls.voip_teamonly.curvalue);

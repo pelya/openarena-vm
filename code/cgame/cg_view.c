@@ -232,8 +232,7 @@ void CG_AdjustCameraAngles(int yaw, int pitch)
 }
 #endif
 
-extern vec3_t crosshairDebug[10];
-static float oldAimingAngleYaw = 0; // Needed for teleport camera handling
+static vec3_t oldAimingAngles; // Needed for teleport camera handling
 
 void CG_AdjustAnglesAfterTeleport(void)
 {
@@ -242,7 +241,7 @@ void CG_AdjustAnglesAfterTeleport(void)
 	static float oldDeltaAngleYaw = 0;
 
 	if ( fabs( AngleSubtract( deltaAngleYaw, oldDeltaAngleYaw ) ) > 3.0f ) {
-		cg.cameraAngles[YAW] = AngleSubtract( oldAimingAngleYaw, -deltaAngleYaw );
+		cg.cameraAngles[YAW] = AngleSubtract( oldAimingAngles[YAW], -deltaAngleYaw );
 		cg.cameraAngles[PITCH] = 0;
 		cg.cameraAngles[ROLL] = 0;
 		trap_SetCameraAngles( cg.cameraAngles );
@@ -278,7 +277,7 @@ static void calculateTouchscreenAimingAngles(void)
 	angles[PITCH] = AngleSubtract( angles[PITCH], SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
 
 	trap_SetAimingAngles( angles );
-	oldAimingAngleYaw = angles[YAW];
+	VectorCopy( angles, oldAimingAngles );
 }
 
 
@@ -513,7 +512,7 @@ static void CG_OffsetFirstPersonView( void ) {
 
 //======================================================================
 
-void CG_ZoomAdjustViewAngles( float from, float to ) {
+void CG_ZoomAdjustViewAnglesSwipeFree( float from, float to, qboolean zoomIn ) {
 	// TODO: this code is still wrong, but works good enough.
 	float fromScale = tan(DEG2RAD((from * 0.5f)));
 	float toScale = tan(DEG2RAD((to * 0.5f)));
@@ -523,8 +522,12 @@ void CG_ZoomAdjustViewAngles( float from, float to ) {
 	float fromAngleY = atan2(mouseY * fromScale, 1.0f);
 	float toAngleX = atan2(mouseX * toScale, 1.0f);
 	float toAngleY = atan2(mouseY * toScale, 1.0f);
-	cg.cameraAngles[YAW] -= 1.5f * RAD2DEG(fromAngleX - toAngleX);
-	cg.cameraAngles[PITCH] += 1.5f * RAD2DEG(fromAngleY - toAngleY);
+
+	if ( zoomIn )
+		VectorCopy( oldAimingAngles, cg.cameraAngles );
+
+	cg.cameraAngles[YAW] -= RAD2DEG(fromAngleX - toAngleX);
+	cg.cameraAngles[PITCH] += RAD2DEG(fromAngleY - toAngleY);
 	//CG_Printf( "CG_ZoomAdjustViewAngles: dx %07d dy %07d fromScale %07d toScale %07d mouseX %07d mouseY %07d cg.cameraAngles[YAW] %d cg.cameraAngles[PITCH] %d\n",
 	//	(int)RAD2DEG((fromAngleX - toAngleX) * 1000),
 	//	(int)RAD2DEG((fromAngleY - toAngleY) * 1000), (int)(fromScale * 1000), (int)(toScale * 1000), (int)(mouseX * 1000), (int)(mouseY * 1000),
@@ -542,7 +545,7 @@ void CG_ZoomDown_f( void ) {
 	trap_Cvar_Set("cl_pitchAutoCenter", "0");
 	cg.zoomFov = cg_zoomFovMinor.value;
 	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
-		CG_ZoomAdjustViewAngles(cg_fov.value, cg.zoomFov);
+		CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
 }
 
 void CG_ZoomUp_f( void ) {
@@ -551,13 +554,7 @@ void CG_ZoomUp_f( void ) {
 	}
 	cg.zoomed = qfalse;
 	cg.zoomTime = cg.time;
-	if( cg_thirdPersonConfigOptionInSettings.integer )
-		trap_Cvar_Set("cg_thirdperson", "1");
-	else
-		trap_Cvar_Set("cg_thirdperson", "0");
 	trap_Cvar_Set("cl_pitchAutoCenter", "1");
-	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
-		CG_ZoomAdjustViewAngles(cg.zoomFov, cg_fov.value);
 }
 
 void CG_ZoomToggleDown_f( void ) {
@@ -566,22 +563,14 @@ void CG_ZoomToggleDown_f( void ) {
 	cg.zoomTime = cg.time;
 
 	if ( cg.zoomed ) {
-		// TODO: hardcoded values
 		trap_Cvar_Set("cl_pitchAutoCenter", "0");
 		//trap_SendConsoleCommand("weapon 7"); // Select railgun
 		trap_Cvar_Set("cg_thirdperson", "0");
 		cg.zoomFov = cg_zoomFov.value;
 		if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
-			CG_ZoomAdjustViewAngles(cg_fov.value, cg.zoomFov);
+			CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
 	} else {
-		// TODO: hardcoded values
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
-		if( cg_thirdPersonConfigOptionInSettings.integer )
-			trap_Cvar_Set("cg_thirdperson", "1");
-		else
-			trap_Cvar_Set("cg_thirdperson", "0");
-		if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
-			CG_ZoomAdjustViewAngles(cg.zoomFov, cg_fov.value);
 	}
 }
 
@@ -654,7 +643,14 @@ static int CG_CalcFov( void ) {
 		} else {
 			f = ( cg.time - cg.zoomTime ) / (float)ZOOM_TIME;
 			if ( f > 1.0 ) {
-				fov_x = fov_x;
+				//fov_x = fov_x;
+				// Reset third person view when we finished zoom-out animation
+				if ( cg_thirdPersonConfigOptionInSettings.integer && !cg_thirdPerson.integer ) {
+					trap_Cvar_Set("cg_thirdperson", "1");
+					if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING ) {
+						CG_ZoomAdjustViewAnglesSwipeFree(cg.zoomFov, cg_fov.value, qfalse);
+					}
+				}
 			} else {
 				fov_x = zoomFov + f * ( fov_x - zoomFov );
 			}

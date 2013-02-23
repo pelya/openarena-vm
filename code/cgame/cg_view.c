@@ -513,25 +513,26 @@ static void CG_OffsetFirstPersonView( void ) {
 //======================================================================
 
 void CG_ZoomAdjustViewAnglesSwipeFree( float from, float to, qboolean zoomIn ) {
-	// TODO: this code is still wrong, but works good enough.
-	float fromScale = tan(DEG2RAD((from * 0.5f)));
-	float toScale = tan(DEG2RAD((to * 0.5f)));
-	float mouseX = cg.mouseX / cgs.screenXScale / 640.0f;
-	float mouseY = cg.mouseY / cgs.screenXScale / 480.0f;
-	float fromAngleX = atan2(mouseX * fromScale, 1.0f);
-	float fromAngleY = atan2(mouseY * fromScale, 1.0f);
-	float toAngleX = atan2(mouseX * toScale, 1.0f);
-	float toAngleY = atan2(mouseY * toScale, 1.0f);
+	float toScale = tan(DEG2RAD(to * 0.5f));
+	float mouseX = (float)cg.mouseX / (float)cgs.glconfig.vidWidth;
+	float mouseY = (float)cg.mouseY / (float)cgs.glconfig.vidWidth; // (float)cgs.glconfig.vidHeight;
+	float toAngleX = atan2(mouseX * toScale, 0.5f);
+	float toAngleY = atan2(mouseY * toScale, 0.5f);
 
-	if ( zoomIn )
-		VectorCopy( oldAimingAngles, cg.cameraAngles );
+	if ( zoomIn ) {
+		cg.cameraAngles[YAW] = AngleSubtract( oldAimingAngles[YAW], -SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ) );
+		cg.cameraAngles[PITCH] = AngleSubtract( oldAimingAngles[PITCH], -SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
+		cg.cameraAngles[ROLL] = 0;
+		cg.cameraAngles[YAW] += RAD2DEG(toAngleX);
+		cg.cameraAngles[PITCH] -= RAD2DEG(toAngleY);
+	} else {
+		float fromScale = tan(DEG2RAD(from * 0.5f));
+		float fromAngleX = atan2(mouseX * fromScale, 0.5f);
+		float fromAngleY = atan2(mouseY * fromScale, 0.5f);
+		cg.cameraAngles[YAW] += RAD2DEG(toAngleX - fromAngleX);
+		cg.cameraAngles[PITCH] -= RAD2DEG(toAngleY - fromAngleY);
+	}
 
-	cg.cameraAngles[YAW] -= RAD2DEG(fromAngleX - toAngleX);
-	cg.cameraAngles[PITCH] += RAD2DEG(fromAngleY - toAngleY);
-	//CG_Printf( "CG_ZoomAdjustViewAngles: dx %07d dy %07d fromScale %07d toScale %07d mouseX %07d mouseY %07d cg.cameraAngles[YAW] %d cg.cameraAngles[PITCH] %d\n",
-	//	(int)RAD2DEG((fromAngleX - toAngleX) * 1000),
-	//	(int)RAD2DEG((fromAngleY - toAngleY) * 1000), (int)(fromScale * 1000), (int)(toScale * 1000), (int)(mouseX * 1000), (int)(mouseY * 1000),
-	//	(int)(cg.cameraAngles[YAW]*1000), (int)(cg.cameraAngles[PITCH]*1000) );
 	trap_SetCameraAngles( cg.cameraAngles );
 }
 
@@ -553,6 +554,7 @@ void CG_ZoomUp_f( void ) {
 		return;
 	}
 	cg.zoomed = qfalse;
+	cg.zoomAnglesNeedAdusting = qtrue;
 	cg.zoomTime = cg.time;
 	trap_Cvar_Set("cl_pitchAutoCenter", "1");
 }
@@ -571,6 +573,7 @@ void CG_ZoomToggleDown_f( void ) {
 			CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
 	} else {
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
+		cg.zoomAnglesNeedAdusting = qtrue;
 	}
 }
 
@@ -647,9 +650,10 @@ static int CG_CalcFov( void ) {
 				// Reset third person view when we finished zoom-out animation
 				if ( cg_thirdPersonConfigOptionInSettings.integer && !cg_thirdPerson.integer ) {
 					trap_Cvar_Set("cg_thirdperson", "1");
-					if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING ) {
-						CG_ZoomAdjustViewAnglesSwipeFree(cg.zoomFov, cg_fov.value, qfalse);
-					}
+				}
+				if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING && cg.zoomAnglesNeedAdusting ) {
+					cg.zoomAnglesNeedAdusting = qfalse;
+					CG_ZoomAdjustViewAnglesSwipeFree(cg.zoomFov, cg_fov.value, qfalse);
 				}
 			} else {
 				fov_x = zoomFov + f * ( fov_x - zoomFov );

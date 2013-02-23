@@ -535,6 +535,7 @@ typedef struct {
 	// zoom key
 	qboolean	zoomed;
 	qboolean	zoomLocked;
+	qboolean	zoomAnglesNeedAdusting;
 	int			zoomTime;
 	float		zoomSensitivity;
 	float		zoomFov;

@@ -127,7 +127,7 @@ void TeamMain_MenuInit( void ) {
 	s_teammain.joinred.string           = "JOIN RED";
 	s_teammain.joinred.style            = UI_CENTER|UI_SMALLFONT;
 	s_teammain.joinred.color            = colorRed;
-	y += 20;
+	y += 30;
 
 	s_teammain.joinblue.generic.type     = MTYPE_PTEXT;
 	s_teammain.joinblue.generic.flags    = QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -138,7 +138,7 @@ void TeamMain_MenuInit( void ) {
 	s_teammain.joinblue.string           = "JOIN BLUE";
 	s_teammain.joinblue.style            = UI_CENTER|UI_SMALLFONT;
 	s_teammain.joinblue.color            = colorRed;
-	y += 20;
+	y += 30;
 
 	s_teammain.joingame.generic.type     = MTYPE_PTEXT;
 	s_teammain.joingame.generic.flags    = QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -149,7 +149,7 @@ void TeamMain_MenuInit( void ) {
 	s_teammain.joingame.string           = "JOIN GAME";
 	s_teammain.joingame.style            = UI_CENTER|UI_SMALLFONT;
 	s_teammain.joingame.color            = colorRed;
-	y += 20;
+	y += 30;
 
 	s_teammain.spectate.generic.type     = MTYPE_PTEXT;
 	s_teammain.spectate.generic.flags    = QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -160,7 +160,7 @@ void TeamMain_MenuInit( void ) {
 	s_teammain.spectate.string           = "SPECTATE";
 	s_teammain.spectate.style            = UI_CENTER|UI_SMALLFONT;
 	s_teammain.spectate.color            = colorRed;
-	y += 20;
+	y += 30;
 
 	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
 	gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );

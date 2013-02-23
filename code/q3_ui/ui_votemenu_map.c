@@ -170,6 +170,8 @@ static void setMapMenutext(menutext_s *menu,int y,int id,char * text) {
     if(s_votemenu_map.selected == id)
          menu->color       = color_orange;
     menu->generic.x           = 320-80;
+    menu->generic.left        = 320-80;
+    menu->generic.right       = 320+120;
     menu->generic.y           = y;
     menu->generic.id          = id;
     menu->generic.callback    = VoteMapMenu_Event;

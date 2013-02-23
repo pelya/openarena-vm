@@ -44,7 +44,7 @@ INGAME MENU
 #define ID_LEAVEARENA			15
 #define ID_RESTART				16
 #define ID_QUIT					17
-#define ID_RESUME				18
+#define ID_CHAT					18
 #define ID_TEAMORDERS			19
 #define ID_VOTE                         20
 
@@ -53,6 +53,7 @@ typedef struct {
 	menuframework_s	menu;
 
 	menubitmap_s	frame;
+	menutext_s		chat;
 	menutext_s		team;
 	menutext_s		setup;
 	menutext_s		server;
@@ -62,7 +63,6 @@ typedef struct {
 	menutext_s		removebots;
 	menutext_s		teamorders;
 	menutext_s		quit;
-	menutext_s		resume;
         menutext_s              vote;
 } ingamemenu_t;
 
@@ -146,8 +146,9 @@ void InGame_Event( void *ptr, int notification ) {
 		UI_TeamOrdersMenu();
 		break;
 
-	case ID_RESUME:
+	case ID_CHAT:
 		UI_PopMenu();
+		trap_ScreenKeyboardTextInput("");
 		break;
                 
         case ID_VOTE:
@@ -185,13 +186,25 @@ void InGame_MenuInit( void ) {
 
 	//y = 96;
 	y = 88;
+
+	s_ingame.chat.generic.type			= MTYPE_PTEXT;
+	s_ingame.chat.generic.flags			= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
+	s_ingame.chat.generic.x				= 320;
+	s_ingame.chat.generic.y				= y;
+	s_ingame.chat.generic.id			= ID_CHAT;
+	s_ingame.chat.generic.callback		= InGame_Event; 
+	s_ingame.chat.string				= "CHAT";
+	s_ingame.chat.color					= color_red;
+	s_ingame.chat.style					= UI_CENTER|UI_SMALLFONT;
+
+	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.team.generic.type			= MTYPE_PTEXT;
 	s_ingame.team.generic.flags			= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_ingame.team.generic.x				= 320;
 	s_ingame.team.generic.y				= y;
 	s_ingame.team.generic.id			= ID_TEAM;
 	s_ingame.team.generic.callback		= InGame_Event; 
-	s_ingame.team.string				= "START";
+	s_ingame.team.string				= "JOIN GAME";
 	s_ingame.team.color					= color_red;
 	s_ingame.team.style					= UI_CENTER|UI_SMALLFONT;
 
@@ -297,17 +310,6 @@ void InGame_MenuInit( void ) {
 	}
 
 	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.resume.generic.type			= MTYPE_PTEXT;
-	s_ingame.resume.generic.flags			= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.resume.generic.x				= 320;
-	s_ingame.resume.generic.y				= y;
-	s_ingame.resume.generic.id				= ID_RESUME;
-	s_ingame.resume.generic.callback		= InGame_Event; 
-	s_ingame.resume.string					= "RESUME GAME";
-	s_ingame.resume.color					= color_red;
-	s_ingame.resume.style					= UI_CENTER|UI_SMALLFONT;
-
-	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.leave.generic.type			= MTYPE_PTEXT;
 	s_ingame.leave.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_ingame.leave.generic.x			= 320;
@@ -330,6 +332,7 @@ void InGame_MenuInit( void ) {
 	s_ingame.quit.style					= UI_CENTER|UI_SMALLFONT;
 
 	Menu_AddItem( &s_ingame.menu, &s_ingame.frame );
+	Menu_AddItem( &s_ingame.menu, &s_ingame.chat );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.team );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.addbots );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.removebots );
@@ -338,7 +341,6 @@ void InGame_MenuInit( void ) {
 	Menu_AddItem( &s_ingame.menu, &s_ingame.setup );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.server );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.restart );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.resume );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.leave );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.quit );
 }

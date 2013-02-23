@@ -136,7 +136,7 @@ extern vmCvar_t ui_browserOnlyHumans;
 #define RCOLUMN_OFFSET			( BIGCHAR_WIDTH )
 #define LCOLUMN_OFFSET			(-BIGCHAR_WIDTH )
 
-#define SLIDER_RANGE			10
+#define SLIDER_RANGE			20
 #define	MAX_EDIT_LINE			256
 
 #define MAX_MENUDEPTH			8

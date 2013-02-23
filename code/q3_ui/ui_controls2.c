@@ -657,7 +657,7 @@ static void Controls_Update( void ) {
 		control->x      = 320;
 		control->y      = y;
 		control->left   = 320 - 19*SMALLCHAR_WIDTH;
-		control->right  = 320 + 21*SMALLCHAR_WIDTH;
+		control->right  = 320 + 23*SMALLCHAR_WIDTH;
 		control->top    = y;
 		control->bottom = y + SMALLCHAR_HEIGHT;
 	}
@@ -1630,7 +1630,7 @@ static void Controls_MenuInit( void )
 	s_controls.sensitivity.generic.id 	     = ID_MOUSESPEED;
 	s_controls.sensitivity.generic.callback  = Controls_MenuEvent;
 	s_controls.sensitivity.minvalue		     = 2;
-	s_controls.sensitivity.maxvalue		     = 10;
+	s_controls.sensitivity.maxvalue		     = 20;
 	s_controls.sensitivity.generic.statusbar = Controls_StatusBar;
 
 	s_controls.gesture.generic.type	     = MTYPE_ACTION;
@@ -1692,7 +1692,7 @@ static void Controls_MenuInit( void )
 	s_controls.gyroscopeSensitivity.generic.id 	      = ID_GYROSENS;
 	s_controls.gyroscopeSensitivity.generic.callback  = Controls_MenuEvent;
 	s_controls.gyroscopeSensitivity.minvalue		  = 0.5f;
-	s_controls.gyroscopeSensitivity.maxvalue		  = 6.0f;
+	s_controls.gyroscopeSensitivity.maxvalue		  = 10.0f;
 	s_controls.gyroscopeSensitivity.generic.statusbar = Controls_StatusBar;
 
 	s_controls.name.generic.type	= MTYPE_PTEXT;

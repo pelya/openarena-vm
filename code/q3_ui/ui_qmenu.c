@@ -675,7 +675,7 @@ static void Slider_Draw( menuslider_s *s ) {
 
 	// draw slider
 	UI_SetColor( color );
-	UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y, 96, 16, sliderBar );
+	UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y, 16 + SLIDER_RANGE * SMALLCHAR_WIDTH, 16, sliderBar );
 	UI_SetColor( NULL );
 
 	// clamp thumb
@@ -1609,11 +1609,11 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 	// route key stimulus to widget
 	item = Menu_ItemAtCursor( m );
 
-	if (key == K_MOUSE1 && item &&
+	if (key == K_MOUSE1 && item && (
 		(uis.cursorx < item->left) ||
 		(uis.cursorx > item->right) ||
 		(uis.cursory < item->top) ||
-		(uis.cursory > item->bottom))
+		(uis.cursory > item->bottom)))
 	{
 		// cursor out of item bounds, ignore the mouse click, to prevent misclicks on touchscreen
 		return 0;

@@ -1769,7 +1769,29 @@ void CG_DrawWeaponBar0(int count, int bits){
 	int y = 20;
 	int x = 320 - count * 20;
 	int i;
+	int ammo;
+	int br;
+	int max;
+	float red[4];
+	float yellow[4];
+	float green[4];
 	
+	red[0] = 1.0f;
+	red[1] = 0;
+	red[2] = 0;
+	red[3] = 1.0f;
+	
+	yellow[0] = 1.0f;
+	yellow[1] = 0.6f;
+	yellow[2] = 0;
+	yellow[3] = 1.0f;
+	
+	green[0] = 0;
+	green[1] = 1.0f;
+	green[2] = 0;
+	green[3] = 1.0f;
+	
+
 	for ( i = 0 ; i < MAX_WEAPONS ; i++ ) {
                 //Sago: Do mad change of grapple placement:
                 if(i==10)
@@ -1780,6 +1802,38 @@ void CG_DrawWeaponBar0(int count, int bits){
                     if(i==10)
                         i=0;
 			continue;
+		}
+		
+		ammo=cg.snap->ps.ammo[i];
+			
+		switch(i) {
+			case WP_MACHINEGUN: max = 100; break;
+			case WP_SHOTGUN: max = 10; break;
+			case WP_GRENADE_LAUNCHER: max = 10; break;
+			case WP_ROCKET_LAUNCHER: max = 10; break;
+			case WP_LIGHTNING: max = 100; break;
+			case WP_RAILGUN: max = 10; break;
+			case WP_PLASMAGUN: max = 50; break;
+			case WP_BFG: max = 10; break;
+			case WP_NAILGUN: max = 10; break;
+			case WP_PROX_LAUNCHER: max = 5; break;
+			case WP_CHAINGUN: max = 100; break;
+			default: max = 1; break;
+		}
+			
+		ammo = (ammo*100)/max;
+		if(ammo >=100)
+			ammo=100;
+			
+		br=ammo*32/100;
+			
+		if(i!=WP_GAUNTLET && i!=WP_GRAPPLING_HOOK){
+			if(ammo <= 20)
+				CG_FillRect( x, y+38, br, 4, red);
+			else if(ammo > 20 && ammo <= 50)
+				CG_FillRect( x, y+38, br, 4, yellow);
+			else if(ammo > 50)
+				CG_FillRect( x, y+38, br, 4, green);
 		}
 
 		CG_RegisterWeapon( i );

@@ -132,6 +132,9 @@ typedef struct
 #define ID_WIDE_FOV		50
 #define ID_ZOOMVIEWBIG	51
 #define ID_RAILAUTOZOOM	52
+#define ID_GYROAXESSWAP	53
+#define ID_SWIPEANGLE	54
+#define ID_SWIPESENS	55
 
 
 #define ANIM_IDLE		0
@@ -236,6 +239,9 @@ typedef struct
         menuradiobutton_s	voip_teamonly;
 	menuradiobutton_s	gyroscope;
 	menuslider_s		gyroscopeSensitivity;
+	menulist_s			gyroscopeAxesSwap;
+	menulist_s			swipeAngle;
+	menuslider_s		swipeSensitivity;
 	int					section;
 	qboolean			waitingforkey;
 	char				playerModel[64];
@@ -265,6 +271,25 @@ static const char *s_controls_aimingmode_items[] = {
 	"shoot button",
 	"tap to shoot",
 	"single-touch shooting",
+	NULL
+};
+
+static const char *s_swipe_angle[] = {
+	"disabled",
+	"90 degrees",
+	"180 degrees",
+	NULL
+};
+
+static const char *s_gyro_axes_remap[] = {
+	"+X | +Y",
+	"-X | +Y",
+	"+X | -Y",
+	"-X | -Y",
+	"+Y | +X",
+	"+Y | -X",
+	"-Y | +X",
+	"-Y | -X",
 	NULL
 };
 
@@ -332,6 +357,9 @@ static configcvar_t g_configcvars[] =
 	{"cg_thirdPersonConfigOptionInSettings",	1,	1},
 	{"in_gyroscope",	1,					1},
 	{"in_gyroscopeSensitivity",	2,			2},
+	{"in_gyroscopeAxesSwap",	0,			0},
+	{"in_swipeAngle",		180,			180},
+	{"in_swipeSensitivity",		25,			25},
 	{"cg_fov",			90,					90},
 	{"cg_railgunAutoZoom",	1,					1},
         {"cg_voipTeamOnly",	0,					0},
@@ -385,6 +413,9 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.invertmouse,
 	(menucommon_s *)&s_controls.gyroscope,
 	(menucommon_s *)&s_controls.gyroscopeSensitivity,
+	(menucommon_s *)&s_controls.gyroscopeAxesSwap,
+	(menucommon_s *)&s_controls.swipeAngle,
+	(menucommon_s *)&s_controls.swipeSensitivity,
 	(menucommon_s *)&s_controls.widefov,
 	(menucommon_s *)&s_controls.railautozoom,
 	(menucommon_s *)&s_controls.zoomview,
@@ -901,6 +932,9 @@ static void Controls_GetConfig( void )
 	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 10, Controls_GetCvarValue( "sensitivity" ) );
 	s_controls.gyroscope.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_gyroscope" ) );
 	s_controls.gyroscopeSensitivity.curvalue = UI_ClampCvar( 0.5f, 6.0f, Controls_GetCvarValue( "in_gyroscopeSensitivity" ) );
+	s_controls.gyroscopeAxesSwap.curvalue = UI_ClampCvar( 0, 7, Controls_GetCvarValue( "in_gyroscopeAxesSwap" ) );
+	s_controls.swipeAngle.curvalue = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "in_swipeAngle" ) / 90.0f );
+	s_controls.swipeSensitivity.curvalue = UI_ClampCvar( 10, 50, Controls_GetCvarValue( "in_swipeSensitivity" ) );
 	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "cg_touchscreenControls" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
 	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
@@ -947,6 +981,9 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "sensitivity", s_controls.sensitivity.curvalue );
 	trap_Cvar_SetValue( "in_gyroscope", s_controls.gyroscope.curvalue );
 	trap_Cvar_SetValue( "in_gyroscopeSensitivity", s_controls.gyroscopeSensitivity.curvalue );
+	trap_Cvar_SetValue( "in_gyroscopeAxesSwap", s_controls.gyroscopeAxesSwap.curvalue );
+	trap_Cvar_SetValue( "in_swipeAngle", s_controls.swipeAngle.curvalue * 90.0f );
+	trap_Cvar_SetValue( "in_swipeSensitivity", s_controls.swipeSensitivity.curvalue );
 	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
 	trap_Cvar_SetValue( "cg_drawGun", s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING ? 0 : 1 );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
@@ -1220,6 +1257,9 @@ static void Controls_MenuEvent( void* ptr, int event )
                 case ID_VOIP_TEAMONLY:
 		case ID_GYROSCOPE:
 		case ID_GYROSENS:
+		case ID_GYROAXESSWAP:
+		case ID_SWIPEANGLE:
+		case ID_SWIPESENS:
 		case ID_WIDE_FOV:
 		case ID_RAILAUTOZOOM:
 			if (event == QM_ACTIVATED)
@@ -1721,6 +1761,34 @@ static void Controls_MenuInit( void )
 	s_controls.gyroscopeSensitivity.maxvalue		  = 10.0f;
 	s_controls.gyroscopeSensitivity.generic.statusbar = Controls_StatusBar;
 
+	s_controls.gyroscopeAxesSwap.generic.type      = MTYPE_SPINCONTROL;
+	s_controls.gyroscopeAxesSwap.generic.flags	    = QMF_SMALLFONT;
+	s_controls.gyroscopeAxesSwap.generic.x	        = SCREEN_WIDTH/2;
+	s_controls.gyroscopeAxesSwap.generic.name	    = "swap gyro axes";
+	s_controls.gyroscopeAxesSwap.generic.id        = ID_GYROAXESSWAP;
+	s_controls.gyroscopeAxesSwap.generic.callback  = Controls_MenuEvent;
+	s_controls.gyroscopeAxesSwap.generic.statusbar = Controls_StatusBar;
+	s_controls.gyroscopeAxesSwap.itemnames         = s_gyro_axes_remap;
+
+	s_controls.swipeAngle.generic.type      = MTYPE_SPINCONTROL;
+	s_controls.swipeAngle.generic.flags	    = QMF_SMALLFONT;
+	s_controls.swipeAngle.generic.x	        = SCREEN_WIDTH/2;
+	s_controls.swipeAngle.generic.name	    = "swipe rotation";
+	s_controls.swipeAngle.generic.id        = ID_SWIPEANGLE;
+	s_controls.swipeAngle.generic.callback  = Controls_MenuEvent;
+	s_controls.swipeAngle.generic.statusbar = Controls_StatusBar;
+	s_controls.swipeAngle.itemnames         = s_swipe_angle;
+
+	s_controls.swipeSensitivity.generic.type	  = MTYPE_SLIDER;
+	s_controls.swipeSensitivity.generic.x		  = SCREEN_WIDTH/2;
+	s_controls.swipeSensitivity.generic.flags	  = QMF_SMALLFONT;
+	s_controls.swipeSensitivity.generic.name	  = "swipe sensitivity";
+	s_controls.swipeSensitivity.generic.id 	      = ID_SWIPESENS;
+	s_controls.swipeSensitivity.generic.callback  = Controls_MenuEvent;
+	s_controls.swipeSensitivity.minvalue		  = 10.0f;
+	s_controls.swipeSensitivity.maxvalue		  = 50.0f;
+	s_controls.swipeSensitivity.generic.statusbar = Controls_StatusBar;
+
 	s_controls.railautozoom.generic.type      = MTYPE_RADIOBUTTON;
 	s_controls.railautozoom.generic.flags	   = QMF_SMALLFONT;
 	s_controls.railautozoom.generic.x	       = SCREEN_WIDTH/2;
@@ -1753,6 +1821,9 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscope );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscopeSensitivity );
+	Menu_AddItem( &s_controls.menu, &s_controls.gyroscopeAxesSwap );
+	Menu_AddItem( &s_controls.menu, &s_controls.swipeAngle );
+	Menu_AddItem( &s_controls.menu, &s_controls.swipeSensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.widefov );
 	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );

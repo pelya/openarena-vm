@@ -130,6 +130,7 @@ typedef struct
 #define ID_AIMING_MODE	48
 #define ID_THIRD_PERSON	49
 #define ID_WIDE_FOV		50
+#define ID_ZOOMVIEWBIG	51
 
 
 #define ANIM_IDLE		0
@@ -214,6 +215,7 @@ typedef struct
 	menuradiobutton_s	widefov;
 	menuaction_s		centerview;
 	menuaction_s		zoomview;
+	menuaction_s		zoomviewbig;
 	menuaction_s		gesture;
 	menuradiobutton_s	invertmouse;
 	menuslider_s		sensitivity;
@@ -289,6 +291,7 @@ static bind_t g_bindings[] =
 	{"+mlook", 		"mouse look",		ID_MOUSELOOK,	ANIM_IDLE,		'/',			-1,		-1, -1},
 	{"+centerview",		"center view",		ID_CENTERVIEW,	ANIM_IDLE,		K_END,			-1,		-1, -1},
 	{"+zoom", 		"zoom view",		ID_ZOOMVIEW,	ANIM_IDLE,	-1,	-1,	-1, -1},
+	{"+zoomtoggle", 	"sniper scope",	ID_ZOOMVIEWBIG,	ANIM_IDLE,	-1,	-1,	-1, -1},
 	{"weapon 1",		"gauntlet",		ID_WEAPON1,	ANIM_WEAPON1,	'1',	-1,	-1, -1},
 	{"weapon 2",		"machinegun",		ID_WEAPON2,	ANIM_WEAPON2,	'2',	-1,	-1, -1},
 	{"weapon 3",		"shotgun",		ID_WEAPON3,	ANIM_WEAPON3,	'3',	-1,	-1, -1},
@@ -345,6 +348,9 @@ static menucommon_s *g_movement_controls[] =
 	(menucommon_s *)&s_controls.turnleft,      
 	(menucommon_s *)&s_controls.turnright,     
 	(menucommon_s *)&s_controls.sidestep,
+	(menucommon_s *)&s_controls.lookup,
+	(menucommon_s *)&s_controls.lookdown,
+	(menucommon_s *)&s_controls.mouselook,
 	NULL
 };
 
@@ -373,16 +379,14 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.aimingmode,
 	(menucommon_s *)&s_controls.thirdperson,
 	(menucommon_s *)&s_controls.sensitivity,
-	(menucommon_s *)&s_controls.smoothmouse,
 	(menucommon_s *)&s_controls.invertmouse,
-	(menucommon_s *)&s_controls.lookup,
-	(menucommon_s *)&s_controls.lookdown,
-	(menucommon_s *)&s_controls.mouselook,
-	(menucommon_s *)&s_controls.centerview,
-	(menucommon_s *)&s_controls.zoomview,
 	(menucommon_s *)&s_controls.gyroscope,
 	(menucommon_s *)&s_controls.gyroscopeSensitivity,
 	(menucommon_s *)&s_controls.widefov,
+	(menucommon_s *)&s_controls.smoothmouse,
+	(menucommon_s *)&s_controls.centerview,
+	(menucommon_s *)&s_controls.zoomview,
+	(menucommon_s *)&s_controls.zoomviewbig,
 	NULL,
 };
 
@@ -733,6 +737,7 @@ static void Controls_DrawKeyBinding( void *self )
 	qboolean		c;
 	char			name[32];
 	char			name2[32];
+	int				id;
 
 	a = (menuaction_s*) self;
 
@@ -741,7 +746,11 @@ static void Controls_DrawKeyBinding( void *self )
 
 	c = (Menu_ItemAtCursor( a->generic.parent ) == a);
 
-	b1 = g_bindings[a->generic.id].bind1;
+	for( id = 0; g_bindings[id].command != NULL; id++ )
+		if( g_bindings[id].id == a->generic.id )
+			break;
+
+	b1 = g_bindings[id].bind1;
 	if (b1 == -1)
 		strcpy(name,"???");
 	else
@@ -749,7 +758,7 @@ static void Controls_DrawKeyBinding( void *self )
 		trap_Key_KeynumToStringBuf( b1, name, 32 );
 		Q_strupr(name);
 
-		b2 = g_bindings[a->generic.id].bind2;
+		b2 = g_bindings[id].bind2;
 		if (b2 != -1)
 		{
 			trap_Key_KeynumToStringBuf( b2, name2, 32 );
@@ -764,7 +773,7 @@ static void Controls_DrawKeyBinding( void *self )
 	{
 		UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, listbar_color ); 
 
-		UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_highlight );
+		UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[id].label, UI_RIGHT|UI_SMALLFONT, text_color_highlight );
 		UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, text_color_highlight );
 
 		if (s_controls.waitingforkey)
@@ -783,12 +792,12 @@ static void Controls_DrawKeyBinding( void *self )
 	{
 		if (a->generic.flags & QMF_GRAYED)
 		{
-			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled );
+			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled );
 			UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, text_color_disabled );
 		}
 		else
 		{
-			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, controls_binding_color );
+			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[id].label, UI_RIGHT|UI_SMALLFONT, controls_binding_color );
 			UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, controls_binding_color );
 		}
 	}
@@ -1227,7 +1236,11 @@ static void Controls_ActionEvent( void* ptr, int event )
 	}
 	else if (event == QM_GOTFOCUS)
 	{
-		Controls_UpdateModel( g_bindings[((menucommon_s*)ptr)->id].anim );
+		int id;
+		for( id = 0; g_bindings[id].command != NULL; id++ )
+			if( g_bindings[id].id == ((menucommon_s*)ptr)->id )
+				break;
+		Controls_UpdateModel( g_bindings[id].anim );
 	}
 	else if ((event == QM_ACTIVATED) && !s_controls.waitingforkey)
 	{
@@ -1578,6 +1591,12 @@ static void Controls_MenuInit( void )
 	s_controls.zoomview.generic.ownerdraw = Controls_DrawKeyBinding;
 	s_controls.zoomview.generic.id        = ID_ZOOMVIEW;
 
+	s_controls.zoomviewbig.generic.type	  = MTYPE_ACTION;
+	s_controls.zoomviewbig.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
+	s_controls.zoomviewbig.generic.callback  = Controls_ActionEvent;
+	s_controls.zoomviewbig.generic.ownerdraw = Controls_DrawKeyBinding;
+	s_controls.zoomviewbig.generic.id        = ID_ZOOMVIEWBIG;
+
 	s_controls.useitem.generic.type	     = MTYPE_ACTION;
 	s_controls.useitem.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.useitem.generic.callback  = Controls_ActionEvent;
@@ -1593,7 +1612,7 @@ static void Controls_MenuInit( void )
 	s_controls.invertmouse.generic.type      = MTYPE_RADIOBUTTON;
 	s_controls.invertmouse.generic.flags	 = QMF_SMALLFONT;
 	s_controls.invertmouse.generic.x	     = SCREEN_WIDTH/2;
-	s_controls.invertmouse.generic.name	     = "invert mouse";
+	s_controls.invertmouse.generic.name	     = "invert gamepad aim";
 	s_controls.invertmouse.generic.id        = ID_INVERTMOUSE;
 	s_controls.invertmouse.generic.callback  = Controls_MenuEvent;
 	s_controls.invertmouse.generic.statusbar = Controls_StatusBar;
@@ -1688,7 +1707,7 @@ static void Controls_MenuInit( void )
 	s_controls.gyroscopeSensitivity.generic.type	  = MTYPE_SLIDER;
 	s_controls.gyroscopeSensitivity.generic.x		  = SCREEN_WIDTH/2;
 	s_controls.gyroscopeSensitivity.generic.flags	  = QMF_SMALLFONT;
-	s_controls.gyroscopeSensitivity.generic.name	  = "gyroscope sensitivity";
+	s_controls.gyroscopeSensitivity.generic.name	  = "gyro sensitivity";
 	s_controls.gyroscopeSensitivity.generic.id 	      = ID_GYROSENS;
 	s_controls.gyroscopeSensitivity.generic.callback  = Controls_MenuEvent;
 	s_controls.gyroscopeSensitivity.minvalue		  = 0.5f;
@@ -1717,16 +1736,14 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.aimingmode );
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdperson );
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );
-	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );
-	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
-	Menu_AddItem( &s_controls.menu, &s_controls.lookup );
-	Menu_AddItem( &s_controls.menu, &s_controls.lookdown );
-	Menu_AddItem( &s_controls.menu, &s_controls.mouselook );
-	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
-	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscope );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscopeSensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.widefov );
+	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
+	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );
+	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
+	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
+	Menu_AddItem( &s_controls.menu, &s_controls.zoomviewbig );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.alwaysrun );
 	Menu_AddItem( &s_controls.menu, &s_controls.run );
@@ -1739,6 +1756,9 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.turnleft );
 	Menu_AddItem( &s_controls.menu, &s_controls.turnright );
 	Menu_AddItem( &s_controls.menu, &s_controls.sidestep );
+	Menu_AddItem( &s_controls.menu, &s_controls.lookup );
+	Menu_AddItem( &s_controls.menu, &s_controls.lookdown );
+	Menu_AddItem( &s_controls.menu, &s_controls.mouselook );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.attack );
 	Menu_AddItem( &s_controls.menu, &s_controls.nextweapon );

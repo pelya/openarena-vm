@@ -131,6 +131,7 @@ typedef struct
 #define ID_THIRD_PERSON	49
 #define ID_WIDE_FOV		50
 #define ID_ZOOMVIEWBIG	51
+#define ID_RAILAUTOZOOM	52
 
 
 #define ANIM_IDLE		0
@@ -216,6 +217,7 @@ typedef struct
 	menuaction_s		centerview;
 	menuaction_s		zoomview;
 	menuaction_s		zoomviewbig;
+	menuradiobutton_s	railautozoom;
 	menuaction_s		gesture;
 	menuradiobutton_s	invertmouse;
 	menuslider_s		sensitivity;
@@ -289,7 +291,7 @@ static bind_t g_bindings[] =
 	{"+lookup", 		"look up",		ID_LOOKUP,		ANIM_LOOKUP,	K_PGDN,			-1,		-1, -1},
 	{"+lookdown", 		"look down",		ID_LOOKDOWN,	ANIM_LOOKDOWN,	K_DEL,			-1,		-1, -1},
 	{"+mlook", 		"mouse look",		ID_MOUSELOOK,	ANIM_IDLE,		'/',			-1,		-1, -1},
-	{"+centerview",		"center view",		ID_CENTERVIEW,	ANIM_IDLE,		K_END,			-1,		-1, -1},
+	{"+centerview",		"jump / centerview",		ID_CENTERVIEW,	ANIM_IDLE,		K_END,			-1,		-1, -1},
 	{"+zoom", 		"zoom view",		ID_ZOOMVIEW,	ANIM_IDLE,	-1,	-1,	-1, -1},
 	{"+zoomtoggle", 	"sniper scope",	ID_ZOOMVIEWBIG,	ANIM_IDLE,	-1,	-1,	-1, -1},
 	{"weapon 1",		"gauntlet",		ID_WEAPON1,	ANIM_WEAPON1,	'1',	-1,	-1, -1},
@@ -331,6 +333,7 @@ static configcvar_t g_configcvars[] =
 	{"in_gyroscope",	1,					1},
 	{"in_gyroscopeSensitivity",	2,			2},
 	{"cg_fov",			90,					90},
+	{"cg_railgunAutoZoom",	1,					1},
         {"cg_voipTeamOnly",	0,					0},
 	{NULL,				0,					0}
 };
@@ -383,10 +386,11 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.gyroscope,
 	(menucommon_s *)&s_controls.gyroscopeSensitivity,
 	(menucommon_s *)&s_controls.widefov,
-	(menucommon_s *)&s_controls.smoothmouse,
-	(menucommon_s *)&s_controls.centerview,
+	(menucommon_s *)&s_controls.railautozoom,
 	(menucommon_s *)&s_controls.zoomview,
 	(menucommon_s *)&s_controls.zoomviewbig,
+	(menucommon_s *)&s_controls.centerview,
+	(menucommon_s *)&s_controls.smoothmouse,
 	NULL,
 };
 
@@ -900,6 +904,7 @@ static void Controls_GetConfig( void )
 	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "cg_touchscreenControls" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
 	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
+	s_controls.railautozoom.curvalue = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_railgunAutoZoom" ) );
         s_controls.voip_teamonly.curvalue= UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_voipTeamOnly" ) );
 }
 
@@ -946,6 +951,7 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "cg_drawGun", s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING ? 0 : 1 );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
 	trap_Cvar_SetValue( "cg_fov", (s_controls.widefov.curvalue == 0 ? 90 : 140) );
+	trap_Cvar_SetValue( "cg_railgunAutoZoom", s_controls.railautozoom.curvalue );
         trap_Cvar_SetValue( "cg_voipTeamOnly", s_controls.voip_teamonly.curvalue);
 	trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
 }
@@ -1215,6 +1221,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_GYROSCOPE:
 		case ID_GYROSENS:
 		case ID_WIDE_FOV:
+		case ID_RAILAUTOZOOM:
 			if (event == QM_ACTIVATED)
 			{
 				s_controls.changesmade = qtrue;
@@ -1714,6 +1721,14 @@ static void Controls_MenuInit( void )
 	s_controls.gyroscopeSensitivity.maxvalue		  = 10.0f;
 	s_controls.gyroscopeSensitivity.generic.statusbar = Controls_StatusBar;
 
+	s_controls.railautozoom.generic.type      = MTYPE_RADIOBUTTON;
+	s_controls.railautozoom.generic.flags	   = QMF_SMALLFONT;
+	s_controls.railautozoom.generic.x	       = SCREEN_WIDTH/2;
+	s_controls.railautozoom.generic.name	   = "railgun autozoom";
+	s_controls.railautozoom.generic.id        = ID_RAILAUTOZOOM;
+	s_controls.railautozoom.generic.callback  = Controls_MenuEvent;
+	s_controls.railautozoom.generic.statusbar = Controls_StatusBar;
+
 	s_controls.name.generic.type	= MTYPE_PTEXT;
 	s_controls.name.generic.flags	= QMF_CENTER_JUSTIFY|QMF_INACTIVE;
 	s_controls.name.generic.x		= 320;
@@ -1744,6 +1759,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
 	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
 	Menu_AddItem( &s_controls.menu, &s_controls.zoomviewbig );
+	Menu_AddItem( &s_controls.menu, &s_controls.railautozoom );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.alwaysrun );
 	Menu_AddItem( &s_controls.menu, &s_controls.run );

@@ -32,7 +32,7 @@ MULTIPLAYER MENU (SERVER BROWSER)
 #include "ui_local.h"
 
 
-#define MAX_GLOBALSERVERS		256
+#define MAX_GLOBALSERVERS		384
 // When we're behind NAT (most common case) we can only send ONE ping request at a time
 // If we'll send 32 pings in parallel we'll get response only from the last server
 // or we need to open 32 separate sockets to make this work behind NAT

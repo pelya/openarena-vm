@@ -32,7 +32,7 @@ MULTIPLAYER MENU (SERVER BROWSER)
 #include "ui_local.h"
 
 
-#define MAX_GLOBALSERVERS		384
+#define MAX_GLOBALSERVERS		256
 // When we're behind NAT (most common case) we can only send ONE ping request at a time
 // If we'll send 32 pings in parallel we'll get response only from the last server
 // or we need to open 32 separate sockets to make this work behind NAT
@@ -285,18 +285,29 @@ static int                              g_hideprivate;
 
 static void ArenaServers_StartRefresh( void );
 
-static int ConvertServerTypeToEngine( int servertype ) {
-	if( servertype == UIAS_ALL_LOCAL )
-		servertype = AS_LOCAL;
-	else if( (servertype >= UIAS_GLOBAL1 && servertype <= UIAS_GLOBAL5) || servertype == UIAS_ALL_GLOBAL )
-		servertype = AS_GLOBAL;
-	else if( servertype == UIAS_FAVORITES )
-		servertype = AS_FAVORITES;
-	return servertype;
-}
+/*
+=================
+ArenaServers_SourceForLAN
 
-static int LAN_GetServerCount( int servertype ) {
-	return trap_LAN_GetServerCount( ConvertServerTypeToEngine(servertype) );
+Convert ui's g_servertype to AS_* used by trap calls.
+=================
+*/
+int ArenaServers_SourceForLAN(void) {
+	switch( g_servertype ) {
+	default:
+	case UIAS_LOCAL:
+	case UIAS_ALL_LOCAL:
+		return AS_LOCAL;
+	case UIAS_GLOBAL1:
+	case UIAS_GLOBAL2:
+	case UIAS_GLOBAL3:
+	case UIAS_GLOBAL4:
+	case UIAS_GLOBAL5:
+	case UIAS_ALL_GLOBAL:
+		return AS_GLOBAL;
+	case UIAS_FAVORITES:
+		return AS_FAVORITES;
+	}
 }
 
 /*
@@ -1090,11 +1101,11 @@ static void ArenaServers_DoRefresh( void )
 	{
 	  if (g_servertype != UIAS_FAVORITES) {
 			if (g_servertype == UIAS_LOCAL || g_servertype == UIAS_ALL_LOCAL) {
-				if (!LAN_GetServerCount(g_servertype)) {
+				if (!trap_LAN_GetServerCount(ArenaServers_SourceForLAN())) {
 					return;
 				}
 			}
-			if (LAN_GetServerCount(g_servertype) < 0) {
+			if (trap_LAN_GetServerCount(ArenaServers_SourceForLAN()) < 0) {
 			  // still waiting for response
 			  return;
 			}
@@ -1166,7 +1177,7 @@ static void ArenaServers_DoRefresh( void )
 	if (g_servertype == UIAS_FAVORITES) {
 	  g_arenaservers.numqueriedservers = g_arenaservers.numfavoriteaddresses;
 	} else {
-	  g_arenaservers.numqueriedservers = LAN_GetServerCount(g_servertype);
+	  g_arenaservers.numqueriedservers = trap_LAN_GetServerCount(ArenaServers_SourceForLAN());
 	}
 
 //	if (g_arenaservers.numqueriedservers > g_arenaservers.maxservers)
@@ -1196,7 +1207,7 @@ static void ArenaServers_DoRefresh( void )
 		if (g_servertype == UIAS_FAVORITES) {
 		  strcpy( adrstr, g_arenaservers.favoriteaddresses[g_arenaservers.currentping] );
 		} else {
-		  trap_LAN_GetServerAddressString(ConvertServerTypeToEngine(g_servertype), g_arenaservers.currentping, adrstr, MAX_ADDRESSLENGTH);
+		  trap_LAN_GetServerAddressString(ArenaServers_SourceForLAN(), g_arenaservers.currentping, adrstr, MAX_ADDRESSLENGTH);
 		}
 
 		strcpy( g_arenaservers.pinglist[j].adrstr, adrstr );
@@ -1240,16 +1251,18 @@ static void ArenaServers_StartRefresh( void )
 	int		i;
 	char	myargs[32], protocol[32];
 
+	for (i=0; i<MAX_PINGREQUESTS; i++)
+	{
+		g_arenaservers.pinglist[i].adrstr[0] = '\0';
+		trap_LAN_ClearPing( i );
+	}
+
 	g_arenaservers.refreshservers    = qtrue;
+	g_arenaservers.currentping       = 0;
 	g_arenaservers.nextpingtime      = 0;
+
 	if( g_servertype != UIAS_ALL_GLOBAL ) {
-		for (i=0; i<MAX_PINGREQUESTS; i++)
-		{
-			g_arenaservers.pinglist[i].adrstr[0] = '\0';
-			trap_LAN_ClearPing( i );
-		}
 		memset( g_arenaservers.serverlist, 0, g_arenaservers.maxservers*sizeof(table_t) );
-		g_arenaservers.currentping       = 0;
 		*g_arenaservers.numservers       = 0;
 		g_arenaservers.numqueriedservers = 0;
 	}

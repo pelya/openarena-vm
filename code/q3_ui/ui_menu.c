@@ -155,7 +155,8 @@ void Main_MenuEvent (void* ptr, int event) {
 
 	case ID_AIMING_MODE:
 		trap_Cvar_SetValue( "cg_touchscreenControls", s_main.aimingmode.curvalue );
-		trap_Cvar_SetValue( "cg_drawGun", s_main.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING ? 0 : 1 );
+		if ( s_main.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING )
+			trap_Cvar_SetValue( "cg_drawGun", 0 );
 		break;
 
 	case ID_THIRD_PERSON:

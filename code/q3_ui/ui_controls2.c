@@ -988,7 +988,8 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "in_swipeAngle", s_controls.swipeAngle.curvalue * 90.0f );
 	trap_Cvar_SetValue( "in_swipeSensitivity", s_controls.swipeSensitivity.curvalue );
 	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
-	trap_Cvar_SetValue( "cg_drawGun", s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING ? 0 : 1 );
+	if ( s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING )
+		trap_Cvar_SetValue( "cg_drawGun", 0 );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
 	trap_Cvar_SetValue( "cg_thirdPersonRange", s_controls.thirdpersonrange.curvalue );
 	trap_Cvar_SetValue( "cg_fov", (s_controls.widefov.curvalue == 0 ? 90 : 140) );

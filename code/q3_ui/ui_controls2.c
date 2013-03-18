@@ -135,6 +135,7 @@ typedef struct
 #define ID_GYROAXESSWAP	53
 #define ID_SWIPEANGLE	54
 #define ID_SWIPESENS	55
+#define ID_THIRD_PERSON_RANGE	56
 
 
 #define ANIM_IDLE		0
@@ -216,6 +217,7 @@ typedef struct
 	menuaction_s		mouselook;
 	menulist_s			aimingmode;
 	menuradiobutton_s	thirdperson;
+	menuslider_s		thirdpersonrange;
 	menuradiobutton_s	widefov;
 	menuaction_s		centerview;
 	menuaction_s		zoomview;
@@ -355,6 +357,7 @@ static configcvar_t g_configcvars[] =
 	{"m_filter",		0,					0},
 	{"cg_touchscreenControls",	0,			0},
 	{"cg_thirdPersonConfigOptionInSettings",	1,	1},
+	{"cg_thirdPersonRange",	120,			120},
 	{"in_gyroscope",	1,					1},
 	{"in_gyroscopeSensitivity",	2,			2},
 	{"in_gyroscopeAxesSwap",	0,			0},
@@ -936,6 +939,7 @@ static void Controls_GetConfig( void )
 	s_controls.swipeSensitivity.curvalue = UI_ClampCvar( 10, 50, Controls_GetCvarValue( "in_swipeSensitivity" ) );
 	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "cg_touchscreenControls" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
+	s_controls.thirdpersonrange.curvalue  = UI_ClampCvar( 40, 300, Controls_GetCvarValue( "cg_thirdPersonRange" ) );
 	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
 	s_controls.railautozoom.curvalue = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_railgunAutoZoom" ) );
         s_controls.voip_teamonly.curvalue= UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_voipTeamOnly" ) );
@@ -986,6 +990,7 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
 	trap_Cvar_SetValue( "cg_drawGun", s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING ? 0 : 1 );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
+	trap_Cvar_SetValue( "cg_thirdPersonRange", s_controls.thirdpersonrange.curvalue );
 	trap_Cvar_SetValue( "cg_fov", (s_controls.widefov.curvalue == 0 ? 90 : 140) );
 	trap_Cvar_SetValue( "cg_railgunAutoZoom", s_controls.railautozoom.curvalue );
         trap_Cvar_SetValue( "cg_voipTeamOnly", s_controls.voip_teamonly.curvalue);
@@ -1248,6 +1253,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 
 		case ID_AIMING_MODE:
 		case ID_THIRD_PERSON:
+		case ID_THIRD_PERSON_RANGE:
 		case ID_MOUSESPEED:
 		case ID_INVERTMOUSE:
 		case ID_SMOOTHMOUSE:
@@ -1617,6 +1623,16 @@ static void Controls_MenuInit( void )
 	s_controls.thirdperson.generic.callback	= Controls_MenuEvent;
 	s_controls.thirdperson.generic.statusbar	= Controls_StatusBar;
 
+	s_controls.thirdpersonrange.generic.type	= MTYPE_SLIDER;
+	s_controls.thirdpersonrange.generic.x		= SCREEN_WIDTH/2;
+	s_controls.thirdpersonrange.generic.flags	= QMF_SMALLFONT;
+	s_controls.thirdpersonrange.generic.name	= "camera distance";
+	s_controls.thirdpersonrange.generic.id		= ID_THIRD_PERSON_RANGE;
+	s_controls.thirdpersonrange.generic.callback = Controls_MenuEvent;
+	s_controls.thirdpersonrange.minvalue		= 40;
+	s_controls.thirdpersonrange.maxvalue		= 300;
+	s_controls.thirdpersonrange.generic.statusbar = Controls_StatusBar;
+
 	s_controls.widefov.generic.type			= MTYPE_RADIOBUTTON;
 	s_controls.widefov.generic.flags		= QMF_SMALLFONT;
 	s_controls.widefov.generic.x			= SCREEN_WIDTH/2;
@@ -1817,6 +1833,7 @@ static void Controls_MenuInit( void )
 
 	Menu_AddItem( &s_controls.menu, &s_controls.aimingmode );
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdperson );
+	Menu_AddItem( &s_controls.menu, &s_controls.thirdpersonrange );
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscope );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscopeSensitivity );

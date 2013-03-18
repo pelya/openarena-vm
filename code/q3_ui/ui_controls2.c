@@ -412,6 +412,7 @@ static menucommon_s *g_weapons_controls[] = {
 static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.aimingmode,
 	(menucommon_s *)&s_controls.thirdperson,
+	(menucommon_s *)&s_controls.thirdpersonrange,
 	(menucommon_s *)&s_controls.sensitivity,
 	(menucommon_s *)&s_controls.invertmouse,
 	(menucommon_s *)&s_controls.gyroscope,

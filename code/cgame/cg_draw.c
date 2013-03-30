@@ -3330,9 +3330,6 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 			CG_DrawCrosshairNames();
 			CG_DrawWeaponSelect();
 
-			if( cg_underWater.integer != underWater )
-				trap_Cvar_Set("cg_underWater", va("%d", underWater));
-
                         #ifndef MISSIONPACK
 			CG_DrawHoldableItem();
 			CG_DrawPersistantPowerup();

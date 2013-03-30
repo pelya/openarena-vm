@@ -277,7 +277,6 @@ vmCvar_t	cg_chatBeep;
 vmCvar_t	cg_teamChatBeep;
 
 // Android-specific
-vmCvar_t	cg_underWater;
 vmCvar_t	cg_weaponBarActiveWidth;
 vmCvar_t	cg_weaponBarActiveWeapons;
 vmCvar_t	cg_holdingUsableItem;
@@ -477,7 +476,6 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{&cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE },
 	{&cg_teamChatBeep, "cg_teamChatBeep", "1", CVAR_ARCHIVE },
 
-	{&cg_underWater, "cg_underWater", "0", 0 },
 	{&cg_weaponBarActiveWidth, "cg_weaponBarActiveWidth", "0", 0 },
 	{&cg_weaponBarActiveWeapons, "cg_weaponBarActiveWeapons", "0", 0 },
 	{&cg_holdingUsableItem, "cg_holdingUsableItem", "0", 0 },

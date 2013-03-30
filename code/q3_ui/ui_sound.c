@@ -47,10 +47,17 @@ SOUND OPTIONS MENU
 //Sago: Here I do some stuff!
 #define ID_OPENAL			18
 #define ID_BACK				19
+#define ID_VOICECHAT		20
+#define ID_SHAKESENSITIVITY	21
+#define ID_VOICECHATTIME	22
 
 
 static const char *quality_items[] = {
 	"Low", "High", NULL
+};
+
+static const char *sound_voicechat_items[] = {
+	"Off", "Shake and talk", NULL
 };
 
 typedef struct {
@@ -70,6 +77,9 @@ typedef struct {
 	menulist_s			quality;
 //	menuradiobutton_s	a3d;
 	menuradiobutton_s	openal;
+	menulist_s			voicechat;
+	menuslider_s		shakesensitivity;
+	menuslider_s		voicechattime;
 
 	menubitmap_s		back;
 } soundOptionsInfo_t;
@@ -146,6 +156,18 @@ static void UI_SoundOptionsMenu_Event( void* ptr, int event ) {
 			trap_Cmd_ExecuteText( EXEC_NOW, "s_useopenal 0\n" );
 		}
 		soundOptionsInfo.openal.curvalue = (int)trap_Cvar_VariableValue( "s_useopenal" );
+		break;
+
+	case ID_VOICECHAT:
+		trap_Cvar_SetValue( "cl_voip", soundOptionsInfo.voicechat.curvalue );
+		break;
+
+	case ID_SHAKESENSITIVITY:
+		trap_Cvar_SetValue( "cl_voipAccelShakeThreshold", 100000 - soundOptionsInfo.shakesensitivity.curvalue );
+		break;
+
+	case ID_VOICECHATTIME:
+		trap_Cvar_SetValue( "cl_voipAccelShakeRecordingTime", soundOptionsInfo.voicechattime.curvalue );
 		break;
 
 	case ID_BACK:
@@ -256,6 +278,38 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.musicvolume.maxvalue			= 10;
 
 	y += BIGCHAR_HEIGHT+2;
+	soundOptionsInfo.voicechat.generic.type				= MTYPE_SPINCONTROL;
+	soundOptionsInfo.voicechat.generic.name				= "Voice Chat:";
+	soundOptionsInfo.voicechat.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	soundOptionsInfo.voicechat.generic.callback			= UI_SoundOptionsMenu_Event;
+	soundOptionsInfo.voicechat.generic.id				= ID_VOICECHAT;
+	soundOptionsInfo.voicechat.generic.x				= 400;
+	soundOptionsInfo.voicechat.generic.y				= y;
+	soundOptionsInfo.voicechat.itemnames				= sound_voicechat_items;
+
+	y += BIGCHAR_HEIGHT+2;
+	soundOptionsInfo.shakesensitivity.generic.type		= MTYPE_SLIDER;
+	soundOptionsInfo.shakesensitivity.generic.name		= "Shake sensitivity:";
+	soundOptionsInfo.shakesensitivity.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	soundOptionsInfo.shakesensitivity.generic.callback	= UI_SoundOptionsMenu_Event;
+	soundOptionsInfo.shakesensitivity.generic.id		= ID_SHAKESENSITIVITY;
+	soundOptionsInfo.shakesensitivity.generic.x			= 400;
+	soundOptionsInfo.shakesensitivity.generic.y			= y;
+	soundOptionsInfo.shakesensitivity.minvalue			= 0;
+	soundOptionsInfo.shakesensitivity.maxvalue			= 80000;
+
+	y += BIGCHAR_HEIGHT+2;
+	soundOptionsInfo.voicechattime.generic.type		= MTYPE_SLIDER;
+	soundOptionsInfo.voicechattime.generic.name		= "Voice recording time:";
+	soundOptionsInfo.voicechattime.generic.flags	= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	soundOptionsInfo.voicechattime.generic.callback	= UI_SoundOptionsMenu_Event;
+	soundOptionsInfo.voicechattime.generic.id		= ID_VOICECHATTIME;
+	soundOptionsInfo.voicechattime.generic.x		= 400;
+	soundOptionsInfo.voicechattime.generic.y		= y;
+	soundOptionsInfo.voicechattime.minvalue			= 1000;
+	soundOptionsInfo.voicechattime.maxvalue			= 10000;
+
+	y += BIGCHAR_HEIGHT+2;
 	soundOptionsInfo.quality.generic.type		= MTYPE_SPINCONTROL;
 	soundOptionsInfo.quality.generic.name		= "Sound Quality:";
 	soundOptionsInfo.quality.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -303,6 +357,9 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.network );
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.sfxvolume );
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.musicvolume );
+	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.voicechat );
+	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.shakesensitivity );
+	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.voicechattime );
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.quality );
 //	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.a3d );
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.openal );
@@ -313,6 +370,9 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.quality.curvalue = !trap_Cvar_VariableValue( "s_compression" );
 //	soundOptionsInfo.a3d.curvalue = (int)trap_Cvar_VariableValue( "s_usingA3D" );
 	soundOptionsInfo.openal.curvalue = (int)trap_Cvar_VariableValue( "s_useopenal" );
+	soundOptionsInfo.voicechat.curvalue = (int)trap_Cvar_VariableValue( "cl_voip" );
+	soundOptionsInfo.shakesensitivity.curvalue = 100000 - (int)trap_Cvar_VariableValue( "cl_voipAccelShakeThreshold" );
+	soundOptionsInfo.voicechattime.curvalue = (int)trap_Cvar_VariableValue( "cl_voipAccelShakeRecordingTime" );
 }
 
 

@@ -44,6 +44,7 @@ NETWORK OPTIONS MENU
 #define ID_ALLOWDOWNLOAD	15
 #define ID_LAGOMETER		16
 #define ID_BACK				17
+#define ID_VOICECHAT		18
 
 
 const char *rate_items[] = {
@@ -53,6 +54,10 @@ const char *rate_items[] = {
 	"ISDN",
 	"LAN/Cable/xDSL",
 	NULL
+};
+
+static const char *network_voicechat_items[] = {
+	"Off", "Shake and talk", NULL
 };
 
 typedef struct {
@@ -70,6 +75,7 @@ typedef struct {
 	menulist_s		rate;
 	menuradiobutton_s	allowdownload;
 	menuradiobutton_s	lagometer;
+	menulist_s			voicechat;
 
 	menubitmap_s	back;
 } networkOptionsInfo_t;
@@ -131,6 +137,10 @@ static void UI_NetworkOptionsMenu_Event( void* ptr, int event ) {
 
 	case ID_LAGOMETER:
 		trap_Cvar_SetValue( "cg_lagometer", networkOptionsInfo.lagometer.curvalue );
+		break;
+
+	case ID_VOICECHAT:
+		trap_Cvar_SetValue( "cl_voip", networkOptionsInfo.voicechat.curvalue );
 		break;
 
 	case ID_BACK:
@@ -247,6 +257,16 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.lagometer.generic.x	       = 400;
 	networkOptionsInfo.lagometer.generic.y	       = y;
 
+	y += BIGCHAR_HEIGHT+2;
+	networkOptionsInfo.voicechat.generic.type			= MTYPE_SPINCONTROL;
+	networkOptionsInfo.voicechat.generic.name			= "Voice Chat:";
+	networkOptionsInfo.voicechat.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	networkOptionsInfo.voicechat.generic.callback		= UI_NetworkOptionsMenu_Event;
+	networkOptionsInfo.voicechat.generic.id				= ID_VOICECHAT;
+	networkOptionsInfo.voicechat.generic.x				= 400;
+	networkOptionsInfo.voicechat.generic.y				= y;
+	networkOptionsInfo.voicechat.itemnames				= network_voicechat_items;
+
 	networkOptionsInfo.back.generic.type		= MTYPE_BITMAP;
 	networkOptionsInfo.back.generic.name		= ART_BACK0;
 	networkOptionsInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -268,6 +288,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.rate );
 	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.allowdownload );
 	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.lagometer );
+	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.voicechat );
 	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.back );
 
 	rate = trap_Cvar_VariableValue( "rate" );
@@ -289,6 +310,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 
 	networkOptionsInfo.allowdownload.curvalue = trap_Cvar_VariableValue( "cl_allowDownload" ) != 0;
 	networkOptionsInfo.lagometer.curvalue = trap_Cvar_VariableValue( "cg_lagometer" ) != 0;
+	networkOptionsInfo.voicechat.curvalue = trap_Cvar_VariableValue( "cl_voip" ) != 0;
 }
 
 

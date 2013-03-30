@@ -932,12 +932,12 @@ static void Controls_GetConfig( void )
 	s_controls.smoothmouse.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "m_filter" ) );
 	s_controls.alwaysrun.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_run" ) );
 	s_controls.autoswitch.curvalue   = UI_ClampCvar( 0, 4, Controls_GetCvarValue( "cg_autoswitch" ) );
-	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 10, Controls_GetCvarValue( "sensitivity" ) );
+	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 20, Controls_GetCvarValue( "sensitivity" ) );
 	s_controls.gyroscope.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_gyroscope" ) );
-	s_controls.gyroscopeSensitivity.curvalue = UI_ClampCvar( 0.5f, 6.0f, Controls_GetCvarValue( "in_gyroscopeSensitivity" ) );
+	s_controls.gyroscopeSensitivity.curvalue = UI_ClampCvar( 0.5f, 10.0f, Controls_GetCvarValue( "in_gyroscopeSensitivity" ) );
 	s_controls.gyroscopeAxesSwap.curvalue = UI_ClampCvar( 0, 7, Controls_GetCvarValue( "in_gyroscopeAxesSwap" ) );
 	s_controls.swipeAngle.curvalue = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "in_swipeAngle" ) / 90.0f );
-	s_controls.swipeSensitivity.curvalue = UI_ClampCvar( 10, 50, Controls_GetCvarValue( "in_swipeSensitivity" ) );
+	s_controls.swipeSensitivity.curvalue = UI_ClampCvar( 0, 40, 50 - Controls_GetCvarValue( "in_swipeSensitivity" ) );
 	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "cg_touchscreenControls" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
 	s_controls.thirdpersonrange.curvalue  = UI_ClampCvar( 40, 300, Controls_GetCvarValue( "cg_thirdPersonRange" ) );
@@ -987,7 +987,7 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "in_gyroscopeSensitivity", s_controls.gyroscopeSensitivity.curvalue );
 	trap_Cvar_SetValue( "in_gyroscopeAxesSwap", s_controls.gyroscopeAxesSwap.curvalue );
 	trap_Cvar_SetValue( "in_swipeAngle", s_controls.swipeAngle.curvalue * 90.0f );
-	trap_Cvar_SetValue( "in_swipeSensitivity", s_controls.swipeSensitivity.curvalue );
+	trap_Cvar_SetValue( "in_swipeSensitivity", 50 - s_controls.swipeSensitivity.curvalue );
 	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
 	if ( s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING )
 		trap_Cvar_SetValue( "cg_drawGun", 0 );
@@ -1802,8 +1802,8 @@ static void Controls_MenuInit( void )
 	s_controls.swipeSensitivity.generic.name	  = "swipe sensitivity";
 	s_controls.swipeSensitivity.generic.id 	      = ID_SWIPESENS;
 	s_controls.swipeSensitivity.generic.callback  = Controls_MenuEvent;
-	s_controls.swipeSensitivity.minvalue		  = 10.0f;
-	s_controls.swipeSensitivity.maxvalue		  = 50.0f;
+	s_controls.swipeSensitivity.minvalue		  = 0.0f;
+	s_controls.swipeSensitivity.maxvalue		  = 40.0f;
 	s_controls.swipeSensitivity.generic.statusbar = Controls_StatusBar;
 
 	s_controls.railautozoom.generic.type      = MTYPE_RADIOBUTTON;

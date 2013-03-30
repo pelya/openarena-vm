@@ -40,6 +40,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ID_RATE                 11
 #define ID_DELAGHITSCAN		12
 #define ID_ALLOWDOWNLOAD	13
+#define ID_VOICECHAT		14
 
 #define ID_GO                   100
 #define ID_BACK                 101
@@ -68,6 +69,10 @@ static char* art_artlist[] =
 	NULL
 };
 
+static const char *firstconnect_voicechat_items[] = {
+	"Off", "Shake and talk", NULL
+};
+
 typedef struct
 {
 	menuframework_s	menu;
@@ -86,6 +91,7 @@ typedef struct
         //Optional options
         menuradiobutton_s	delaghitscan;
 	menuradiobutton_s	allowdownload;
+	menulist_s	voicechat;
 } firstconnect_t;
 
 static firstconnect_t	s_firstconnect;
@@ -197,6 +203,9 @@ static void FirstConnect_StatusBar_Download( void* ptr ) {
 		UI_DrawString( 320, 440, "Auto download missing maps and mods", UI_CENTER|UI_SMALLFONT, colorWhite );
 }
 
+static void FirstConnect_StatusBar_VoiceChat( void* ptr ) {
+		UI_DrawString( 320, 440, "Speak to other players over network", UI_CENTER|UI_SMALLFONT, colorWhite );
+}
 /*
 =================
 FirstConnect_SaveChanges
@@ -259,6 +268,10 @@ static void FirstConnect_Event( void* ptr, int event )
                         trap_Cvar_SetValue( "g_delagHitscan", s_firstconnect.delaghitscan.curvalue );
                         trap_Cvar_SetValue( "cg_delag", s_firstconnect.delaghitscan.curvalue );
                         break;
+
+                case ID_VOICECHAT:
+                        trap_Cvar_SetValue( "cl_voip", s_firstconnect.voicechat.curvalue );
+                        break;
 	}
 }
 
@@ -291,6 +304,7 @@ static void FirstConnect_SetMenuItems( void ) {
 
         s_firstconnect.allowdownload.curvalue	= trap_Cvar_VariableValue( "cl_allowDownload" ) != 0;
         s_firstconnect.delaghitscan.curvalue	= trap_Cvar_VariableValue( "cg_delag" ) != 0;
+        s_firstconnect.voicechat.curvalue	= trap_Cvar_VariableValue( "cl_voip" ) != 0;
 }
 
 /*
@@ -399,6 +413,17 @@ void FirstConnect_MenuInit( void )
 	s_firstconnect.allowdownload.generic.y	       = y;
         s_firstconnect.allowdownload.generic.statusbar  = FirstConnect_StatusBar_Download;
 
+	y += BIGCHAR_HEIGHT+2;
+	s_firstconnect.voicechat.generic.type			= MTYPE_SPINCONTROL;
+	s_firstconnect.voicechat.generic.name			= "Voice Chat:";
+	s_firstconnect.voicechat.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	s_firstconnect.voicechat.generic.callback		= FirstConnect_Event;
+	s_firstconnect.voicechat.generic.id				= ID_VOICECHAT;
+	s_firstconnect.voicechat.generic.x				= 320;
+	s_firstconnect.voicechat.generic.y				= y;
+	s_firstconnect.voicechat.itemnames				= firstconnect_voicechat_items;
+	s_firstconnect.voicechat.generic.statusbar		= FirstConnect_StatusBar_VoiceChat;
+
         s_firstconnect.info.generic.type	 = MTYPE_TEXT;
 	s_firstconnect.info.generic.x     = 320;
 	s_firstconnect.info.generic.y     = 400;
@@ -424,6 +449,7 @@ void FirstConnect_MenuInit( void )
 
         Menu_AddItem( &s_firstconnect.menu, &s_firstconnect.delaghitscan );
         Menu_AddItem( &s_firstconnect.menu, &s_firstconnect.allowdownload );
+        Menu_AddItem( &s_firstconnect.menu, &s_firstconnect.voicechat );
 
         Menu_AddItem( &s_firstconnect.menu, &s_firstconnect.info );
         Menu_AddItem( &s_firstconnect.menu, &s_firstconnect.info2 );

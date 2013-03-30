@@ -44,6 +44,7 @@ MAIN MENU
 #define ID_AIMING_MODE			18
 #define ID_THIRD_PERSON			19
 #define ID_GYROSCOPE			20
+#define ID_VOICECHAT			21
 
 #define MAIN_BANNER_MODEL				"models/mapobjects/banner/banner5.md3"
 #define MAIN_MENU_VERTICAL_SPACING		34
@@ -64,6 +65,7 @@ typedef struct {
 	menulist_s		aimingmode; // Hack for lazy Android users, who are too ignorant change game settings, but quick to downvote
 	menuradiobutton_s	thirdperson; // Another hack
 	menuradiobutton_s	gyroscope; // Another hack
+	menulist_s		voicechat; // Another hack
 
 	qhandle_t		bannerModel;
 } mainmenu_t;
@@ -83,6 +85,10 @@ static const char *s_main_aimingmode_items[] = {
 	"tap to shoot",
 	"single-touch shooting",
 	NULL
+};
+
+static const char *main_voicechat_items[] = {
+	"off", "shake and talk", NULL
 };
 
 /*
@@ -165,6 +171,10 @@ void Main_MenuEvent (void* ptr, int event) {
 
 	case ID_GYROSCOPE:
 		trap_Cvar_SetValue( "in_gyroscope", s_main.gyroscope.curvalue );
+		break;
+
+	case ID_VOICECHAT:
+		trap_Cvar_SetValue( "cl_voip", s_main.voicechat.curvalue );
 		break;
 	}
 }
@@ -473,6 +483,16 @@ void UI_MainMenu( void ) {
 	s_main.gyroscope.generic.callback	= Main_MenuEvent;
 	s_main.gyroscope.curvalue			= trap_Cvar_VariableValue( "in_gyroscope" );
 
+	s_main.voicechat.generic.type			= MTYPE_SPINCONTROL;
+	s_main.voicechat.generic.name			= "voice chat:";
+	s_main.voicechat.generic.flags			= QMF_SMALLFONT;
+	s_main.voicechat.generic.callback		= Main_MenuEvent;
+	s_main.voicechat.generic.id				= ID_VOICECHAT;
+	s_main.voicechat.generic.x				= 140;
+	s_main.voicechat.generic.y				= 15 + SMALLCHAR_HEIGHT + 2;
+	s_main.voicechat.itemnames				= main_voicechat_items;
+	s_main.voicechat.curvalue				= trap_Cvar_VariableValue( "cl_voip" );
+
 	Menu_AddItem( &s_main.menu,	&s_main.singleplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
@@ -487,6 +507,7 @@ void UI_MainMenu( void ) {
 	Menu_AddItem( &s_main.menu,	&s_main.aimingmode );
 	Menu_AddItem( &s_main.menu,	&s_main.thirdperson );
 	Menu_AddItem( &s_main.menu,	&s_main.gyroscope );
+	Menu_AddItem( &s_main.menu,	&s_main.voicechat );
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;

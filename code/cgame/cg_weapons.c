@@ -1829,11 +1829,11 @@ void CG_DrawWeaponBar0(int count, int bits){
 			
 		if(i!=WP_GAUNTLET && i!=WP_GRAPPLING_HOOK){
 			if(ammo <= 20)
-				CG_FillRect( x, y+38, br, 4, red);
+				CG_FillRect( x, y-10, br, 4, red);
 			else if(ammo > 20 && ammo <= 50)
-				CG_FillRect( x, y+38, br, 4, yellow);
+				CG_FillRect( x, y-10, br, 4, yellow);
 			else if(ammo > 50)
-				CG_FillRect( x, y+38, br, 4, green);
+				CG_FillRect( x, y-10, br, 4, green);
 		}
 
 		CG_RegisterWeapon( i );

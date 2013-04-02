@@ -286,7 +286,7 @@ static cvarTable_t		cvarTable[] = {
 	//{ &ui_cdkeychecked, "ui_cdkeychecked", "0", CVAR_ROM },
         
         //new in beta 23:
-        { &ui_browserOnlyHumans, "ui_browserOnlyHumans", "0", CVAR_ARCHIVE },
+        { &ui_browserOnlyHumans, "ui_browserOnlyHumans", "1", CVAR_ARCHIVE },
 
         //new in beta 37:
         { &ui_setupchecked, "ui_setupchecked", "0", CVAR_ARCHIVE },

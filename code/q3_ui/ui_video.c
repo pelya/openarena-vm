@@ -1089,7 +1089,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.network.style				= UI_RIGHT;
 	s_graphicsoptions.network.color				= color_red;
 
-	y = 240 - 7 * (BIGCHAR_HEIGHT + 2);
+	y = 240 - 3 * (BIGCHAR_HEIGHT + 2);
 	s_graphicsoptions.list.generic.type     = MTYPE_SPINCONTROL;
 	s_graphicsoptions.list.generic.name     = "Graphics Settings:";
 	s_graphicsoptions.list.generic.flags    = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -1099,7 +1099,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.list.generic.id       = ID_LIST;
 	s_graphicsoptions.list.itemnames        = s_graphics_options_names;
 	y += 2 * ( BIGCHAR_HEIGHT + 2 );
-
+/*
 	s_graphicsoptions.driver.generic.type  = MTYPE_SPINCONTROL;
 	s_graphicsoptions.driver.generic.name  = "GL Driver:";
 	s_graphicsoptions.driver.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -1148,7 +1148,7 @@ void GraphicsOptions_MenuInit( void )
 	s_graphicsoptions.fs.generic.y	      = y;
 	s_graphicsoptions.fs.itemnames	      = enabled_names;
 	y += BIGCHAR_HEIGHT+2;
-
+*/
 	// references/modifies "r_vertexLight"
 	s_graphicsoptions.lighting.generic.type  = MTYPE_SPINCONTROL;
 	s_graphicsoptions.lighting.generic.name	 = "Lighting:";
@@ -1272,11 +1272,13 @@ void GraphicsOptions_MenuInit( void )
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.network );
 
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.list );
+/*
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.driver );
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.allow_extensions );
         Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.ratio );
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.mode );
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.fs );
+*/
 	Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.lighting );
         Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.flares );
         Menu_AddItem( &s_graphicsoptions.menu, ( void * ) &s_graphicsoptions.bloom );

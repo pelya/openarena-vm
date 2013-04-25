@@ -285,6 +285,8 @@ static int                              g_hideprivate;
 
 static void ArenaServers_StartRefresh( void );
 
+static void ArenaServers_StartRefreshNoClearList( void );
+
 /*
 =================
 ArenaServers_SourceForLAN
@@ -628,7 +630,7 @@ static void ArenaServers_UpdateMenu( void ) {
 
 	if( !g_arenaservers.refreshservers && g_servertype == UIAS_ALL_LOCAL ) {
 		g_servertype = UIAS_ALL_GLOBAL;
-		ArenaServers_StartRefresh();
+		ArenaServers_StartRefreshNoClearList();
 		return;
 	}
 
@@ -1248,6 +1250,14 @@ ArenaServers_StartRefresh
 */
 static void ArenaServers_StartRefresh( void )
 {
+	memset( g_arenaservers.serverlist, 0, g_arenaservers.maxservers*sizeof(table_t) );
+	*g_arenaservers.numservers       = 0;
+	g_arenaservers.numqueriedservers = 0;
+	ArenaServers_StartRefreshNoClearList();
+}
+
+static void ArenaServers_StartRefreshNoClearList( void )
+{
 	int		i;
 	char	myargs[32], protocol[32];
 
@@ -1260,12 +1270,6 @@ static void ArenaServers_StartRefresh( void )
 	g_arenaservers.refreshservers    = qtrue;
 	g_arenaservers.currentping       = 0;
 	g_arenaservers.nextpingtime      = 0;
-
-	if( g_servertype != UIAS_ALL_GLOBAL ) {
-		memset( g_arenaservers.serverlist, 0, g_arenaservers.maxservers*sizeof(table_t) );
-		*g_arenaservers.numservers       = 0;
-		g_arenaservers.numqueriedservers = 0;
-	}
 
 	// allow max 5 seconds for responses
 	g_arenaservers.refreshtime = uis.realtime + 5000;

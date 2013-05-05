@@ -1903,14 +1903,17 @@ static LDOUBLE abs_val (LDOUBLE value)
 
 static long round (LDOUBLE value)
 {
+  /* The engine code rounds floats to nearest int, not truncates them, as C standard demands */
+  return value;
+  /*
   long intpart;
-
   intpart = value;
   value = value - intpart;
   if (value >= 0.5)
     intpart++;
 
   return intpart;
+  */
 }
 
 static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
@@ -1951,7 +1954,8 @@ static int fmtfp (char *buffer, size_t *currlen, size_t maxlen,
   if (flags & DP_F_UP) caps = 1; /* Should characters be upper case? */
 #endif
 
-  intpart = ufvalue;
+  /* The engine code rounds floats to nearest int, not truncates them, as C standard demands */
+  intpart = floor(ufvalue);
 
   /* 
    * Sorry, we only support 9 digits past the decimal because of our 

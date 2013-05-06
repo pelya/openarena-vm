@@ -57,7 +57,7 @@ static const char *quality_items[] = {
 };
 
 static const char *sound_voicechat_items[] = {
-	"Off", "Shake and talk", NULL
+	"Off", "Shake and talk", "Listen only", NULL
 };
 
 typedef struct {
@@ -278,6 +278,35 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.musicvolume.maxvalue			= 10;
 
 	y += BIGCHAR_HEIGHT+2;
+	soundOptionsInfo.quality.generic.type		= MTYPE_SPINCONTROL;
+	soundOptionsInfo.quality.generic.name		= "Sound Quality:";
+	soundOptionsInfo.quality.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	soundOptionsInfo.quality.generic.callback	= UI_SoundOptionsMenu_Event;
+	soundOptionsInfo.quality.generic.id			= ID_QUALITY;
+	soundOptionsInfo.quality.generic.x			= 400;
+	soundOptionsInfo.quality.generic.y			= y;
+	soundOptionsInfo.quality.itemnames			= quality_items;
+/*
+	y += BIGCHAR_HEIGHT+2;
+	soundOptionsInfo.a3d.generic.type			= MTYPE_RADIOBUTTON;
+	soundOptionsInfo.a3d.generic.name			= "A3D:";
+	soundOptionsInfo.a3d.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	soundOptionsInfo.a3d.generic.callback		= UI_SoundOptionsMenu_Event;
+	soundOptionsInfo.a3d.generic.id				= ID_A3D;
+	soundOptionsInfo.a3d.generic.x				= 400;
+	soundOptionsInfo.a3d.generic.y				= y;
+*/
+	y += BIGCHAR_HEIGHT+2;
+	soundOptionsInfo.openal.generic.type			= MTYPE_RADIOBUTTON;
+	soundOptionsInfo.openal.generic.name			= "OpenAL:";
+	soundOptionsInfo.openal.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	soundOptionsInfo.openal.generic.callback		= UI_SoundOptionsMenu_Event;
+	soundOptionsInfo.openal.generic.id				= ID_OPENAL;
+	soundOptionsInfo.openal.generic.x				= 400;
+	soundOptionsInfo.openal.generic.y				= y;
+
+	y += BIGCHAR_HEIGHT+2; // Spacer
+	y += BIGCHAR_HEIGHT+2;
 	soundOptionsInfo.voicechat.generic.type				= MTYPE_SPINCONTROL;
 	soundOptionsInfo.voicechat.generic.name				= "Voice Chat:";
 	soundOptionsInfo.voicechat.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -309,34 +338,6 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	soundOptionsInfo.voicechattime.minvalue			= 1000;
 	soundOptionsInfo.voicechattime.maxvalue			= 10000;
 
-	y += BIGCHAR_HEIGHT+2;
-	soundOptionsInfo.quality.generic.type		= MTYPE_SPINCONTROL;
-	soundOptionsInfo.quality.generic.name		= "Sound Quality:";
-	soundOptionsInfo.quality.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	soundOptionsInfo.quality.generic.callback	= UI_SoundOptionsMenu_Event;
-	soundOptionsInfo.quality.generic.id			= ID_QUALITY;
-	soundOptionsInfo.quality.generic.x			= 400;
-	soundOptionsInfo.quality.generic.y			= y;
-	soundOptionsInfo.quality.itemnames			= quality_items;
-/*
-	y += BIGCHAR_HEIGHT+2;
-	soundOptionsInfo.a3d.generic.type			= MTYPE_RADIOBUTTON;
-	soundOptionsInfo.a3d.generic.name			= "A3D:";
-	soundOptionsInfo.a3d.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	soundOptionsInfo.a3d.generic.callback		= UI_SoundOptionsMenu_Event;
-	soundOptionsInfo.a3d.generic.id				= ID_A3D;
-	soundOptionsInfo.a3d.generic.x				= 400;
-	soundOptionsInfo.a3d.generic.y				= y;
-*/
-	y += BIGCHAR_HEIGHT+2;
-	soundOptionsInfo.openal.generic.type			= MTYPE_RADIOBUTTON;
-	soundOptionsInfo.openal.generic.name			= "OpenAL:";
-	soundOptionsInfo.openal.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	soundOptionsInfo.openal.generic.callback		= UI_SoundOptionsMenu_Event;
-	soundOptionsInfo.openal.generic.id				= ID_OPENAL;
-	soundOptionsInfo.openal.generic.x				= 400;
-	soundOptionsInfo.openal.generic.y				= y;
-
 	soundOptionsInfo.back.generic.type			= MTYPE_BITMAP;
 	soundOptionsInfo.back.generic.name			= ART_BACK0;
 	soundOptionsInfo.back.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -357,12 +358,12 @@ static void UI_SoundOptionsMenu_Init( void ) {
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.network );
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.sfxvolume );
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.musicvolume );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.voicechat );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.shakesensitivity );
-	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.voicechattime );
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.quality );
 //	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.a3d );
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.openal );
+	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.voicechat );
+	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.shakesensitivity );
+	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.voicechattime );
 	Menu_AddItem( &soundOptionsInfo.menu, ( void * ) &soundOptionsInfo.back );
 
 	soundOptionsInfo.sfxvolume.curvalue = trap_Cvar_VariableValue( "s_volume" ) * 10;

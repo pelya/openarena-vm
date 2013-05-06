@@ -70,7 +70,7 @@ static char* art_artlist[] =
 };
 
 static const char *firstconnect_voicechat_items[] = {
-	"Off", "Shake and talk", NULL
+	"Off", "Shake and talk", "Listen only", NULL
 };
 
 typedef struct

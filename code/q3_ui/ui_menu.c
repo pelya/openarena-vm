@@ -88,7 +88,7 @@ static const char *s_main_aimingmode_items[] = {
 };
 
 static const char *main_voicechat_items[] = {
-	"off", "shake and talk", NULL
+	"off", "shake and talk", "listen only", NULL
 };
 
 /*

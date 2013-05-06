@@ -57,7 +57,7 @@ const char *rate_items[] = {
 };
 
 static const char *network_voicechat_items[] = {
-	"Off", "Shake and talk", NULL
+	"Off", "Shake and talk", "Listen only", NULL
 };
 
 typedef struct {

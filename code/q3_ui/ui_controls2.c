@@ -136,6 +136,8 @@ typedef struct
 #define ID_SWIPEANGLE	54
 #define ID_SWIPESENS	55
 #define ID_THIRD_PERSON_RANGE	56
+#define ID_CROSSHAIR_OFFSET	57
+#define ID_CROSSHAIR_EDGES	58
 
 
 #define ANIM_IDLE		0
@@ -216,6 +218,8 @@ typedef struct
 	menuaction_s		lookdown;
 	menuaction_s		mouselook;
 	menulist_s			aimingmode;
+	menuslider_s		crosshairOffset;
+	menuradiobutton_s	crosshairEdges;
 	menuradiobutton_s	thirdperson;
 	menuslider_s		thirdpersonrange;
 	menuradiobutton_s	widefov;
@@ -363,6 +367,8 @@ static configcvar_t g_configcvars[] =
 	{"in_gyroscopeAxesSwap",	0,			0},
 	{"in_swipeAngle",		180,			180},
 	{"in_swipeSensitivity",		25,			25},
+	{"in_swipeFreeCrosshairOffset",	1,		1},
+	{"in_swipeFreeStickyEdges",		1,		1},
 	{"cg_fov",			90,					90},
 	{"cg_railgunAutoZoom",	1,					1},
         {"cg_voipTeamOnly",	0,					0},
@@ -411,6 +417,8 @@ static menucommon_s *g_weapons_controls[] = {
 
 static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.aimingmode,
+	(menucommon_s *)&s_controls.crosshairOffset,
+	(menucommon_s *)&s_controls.crosshairEdges,
 	(menucommon_s *)&s_controls.thirdperson,
 	(menucommon_s *)&s_controls.thirdpersonrange,
 	(menucommon_s *)&s_controls.sensitivity,
@@ -939,6 +947,8 @@ static void Controls_GetConfig( void )
 	s_controls.swipeAngle.curvalue = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "in_swipeAngle" ) / 90.0f );
 	s_controls.swipeSensitivity.curvalue = UI_ClampCvar( 0, 40, 50 - Controls_GetCvarValue( "in_swipeSensitivity" ) );
 	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "cg_touchscreenControls" ) );
+	s_controls.crosshairOffset.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "in_swipeFreeCrosshairOffset" ) );
+	s_controls.crosshairEdges.curvalue   = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_swipeFreeStickyEdges" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
 	s_controls.thirdpersonrange.curvalue  = UI_ClampCvar( 40, 300, Controls_GetCvarValue( "cg_thirdPersonRange" ) );
 	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
@@ -989,8 +999,10 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "in_swipeAngle", s_controls.swipeAngle.curvalue * 90.0f );
 	trap_Cvar_SetValue( "in_swipeSensitivity", 50 - s_controls.swipeSensitivity.curvalue );
 	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
-	if ( s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING )
+	if ( s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING && s_controls.thirdperson.curvalue == 0 )
 		trap_Cvar_SetValue( "cg_drawGun", 0 );
+	trap_Cvar_SetValue( "in_swipeFreeCrosshairOffset", s_controls.crosshairOffset.curvalue );
+	trap_Cvar_SetValue( "in_swipeFreeStickyEdges", s_controls.crosshairEdges.curvalue );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
 	trap_Cvar_SetValue( "cg_thirdPersonRange", s_controls.thirdpersonrange.curvalue );
 	trap_Cvar_SetValue( "cg_fov", (s_controls.widefov.curvalue == 0 ? 90 : 140) );
@@ -1269,6 +1281,8 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_SWIPESENS:
 		case ID_WIDE_FOV:
 		case ID_RAILAUTOZOOM:
+		case ID_CROSSHAIR_OFFSET:
+		case ID_CROSSHAIR_EDGES:
 			if (event == QM_ACTIVATED)
 			{
 				s_controls.changesmade = qtrue;
@@ -1617,6 +1631,24 @@ static void Controls_MenuInit( void )
 	s_controls.aimingmode.generic.statusbar	= Controls_StatusBar;
 	s_controls.aimingmode.itemnames			= s_controls_aimingmode_items;
 
+	s_controls.crosshairOffset.generic.type	= MTYPE_SLIDER;
+	s_controls.crosshairOffset.generic.x		= SCREEN_WIDTH/2;
+	s_controls.crosshairOffset.generic.flags	= QMF_SMALLFONT;
+	s_controls.crosshairOffset.generic.name		= "crosshair offset";
+	s_controls.crosshairOffset.generic.id		= ID_CROSSHAIR_OFFSET;
+	s_controls.crosshairOffset.generic.callback = Controls_MenuEvent;
+	s_controls.crosshairOffset.minvalue			= 0;
+	s_controls.crosshairOffset.maxvalue			= 2;
+	s_controls.crosshairOffset.generic.statusbar = Controls_StatusBar;
+
+	s_controls.crosshairEdges.generic.type		= MTYPE_RADIOBUTTON;
+	s_controls.crosshairEdges.generic.flags		= QMF_SMALLFONT;
+	s_controls.crosshairEdges.generic.x			= SCREEN_WIDTH/2;
+	s_controls.crosshairEdges.generic.name		= "crosshair sticks to edges";
+	s_controls.crosshairEdges.generic.id		= ID_CROSSHAIR_EDGES;
+	s_controls.crosshairEdges.generic.callback	= Controls_MenuEvent;
+	s_controls.crosshairEdges.generic.statusbar	= Controls_StatusBar;
+
 	s_controls.thirdperson.generic.type		= MTYPE_RADIOBUTTON;
 	s_controls.thirdperson.generic.flags	= QMF_SMALLFONT;
 	s_controls.thirdperson.generic.x		= SCREEN_WIDTH/2;
@@ -1834,6 +1866,8 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.misc );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.aimingmode );
+	Menu_AddItem( &s_controls.menu, &s_controls.crosshairOffset );
+	Menu_AddItem( &s_controls.menu, &s_controls.crosshairEdges );
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdperson );
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdpersonrange );
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );

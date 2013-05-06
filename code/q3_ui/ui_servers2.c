@@ -587,7 +587,7 @@ static void ArenaServers_UpdateMenu( void ) {
                         g_arenaservers.hideprivate.generic.flags	|= QMF_GRAYED;
 			g_arenaservers.showfull.generic.flags	|= QMF_GRAYED;
 			g_arenaservers.list.generic.flags		|= QMF_GRAYED;
-			g_arenaservers.refresh.generic.flags	|= QMF_GRAYED;
+			//g_arenaservers.refresh.generic.flags	|= QMF_GRAYED; // Allow to press Refresh once again to stop
 			g_arenaservers.go.generic.flags			|= QMF_GRAYED;
 		}
 		else {
@@ -615,7 +615,7 @@ static void ArenaServers_UpdateMenu( void ) {
                         g_arenaservers.hideprivate.generic.flags	&= ~QMF_GRAYED;
 			g_arenaservers.showfull.generic.flags	&= ~QMF_GRAYED;
 			g_arenaservers.list.generic.flags		|= QMF_GRAYED;
-			//g_arenaservers.refresh.generic.flags	&= ~QMF_GRAYED;
+			g_arenaservers.refresh.generic.flags	&= ~QMF_GRAYED;
 			g_arenaservers.go.generic.flags			|= QMF_GRAYED;
 		}
 

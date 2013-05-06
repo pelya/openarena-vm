@@ -304,7 +304,7 @@ static void FirstConnect_SetMenuItems( void ) {
 
         s_firstconnect.allowdownload.curvalue	= trap_Cvar_VariableValue( "cl_allowDownload" ) != 0;
         s_firstconnect.delaghitscan.curvalue	= trap_Cvar_VariableValue( "cg_delag" ) != 0;
-        s_firstconnect.voicechat.curvalue	= trap_Cvar_VariableValue( "cl_voip" ) != 0;
+        s_firstconnect.voicechat.curvalue	= trap_Cvar_VariableValue( "cl_voip" );
 }
 
 /*

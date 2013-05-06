@@ -310,7 +310,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 
 	networkOptionsInfo.allowdownload.curvalue = trap_Cvar_VariableValue( "cl_allowDownload" ) != 0;
 	networkOptionsInfo.lagometer.curvalue = trap_Cvar_VariableValue( "cg_lagometer" ) != 0;
-	networkOptionsInfo.voicechat.curvalue = trap_Cvar_VariableValue( "cl_voip" ) != 0;
+	networkOptionsInfo.voicechat.curvalue = trap_Cvar_VariableValue( "cl_voip" );
 }
 
 

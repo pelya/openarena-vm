@@ -32,7 +32,7 @@ MULTIPLAYER MENU (SERVER BROWSER)
 #include "ui_local.h"
 
 
-#define MAX_GLOBALSERVERS		384
+#define MAX_GLOBALSERVERS		256
 // When we're behind NAT (most common case) we can only send ONE ping request at a time
 // If we'll send 32 pings in parallel we'll get response only from the last server
 // or we need to open 32 separate sockets to make this work behind NAT
@@ -41,7 +41,7 @@ MULTIPLAYER MENU (SERVER BROWSER)
 #define MAX_ADDRESSLENGTH		64
 #define MAX_HOSTNAMELENGTH		31
 #define MAX_MAPNAMELENGTH		20
-#define MAX_LISTBOXITEMS		384
+#define MAX_LISTBOXITEMS		256
 #define MAX_LOCALSERVERS		124
 #define MAX_STATUSLENGTH		64
 #define MAX_LEAGUELENGTH		28
@@ -96,8 +96,6 @@ MULTIPLAYER MENU (SERVER BROWSER)
 #define UIAS_GLOBAL4			6
 #define UIAS_GLOBAL5			7
 #define UIAS_FAVORITES			8
-
-#define UI_MAX_MASTER_SERVERS	5
 
 #define SORT_HOST			0
 #define SORT_MAP			1
@@ -268,8 +266,8 @@ typedef struct {
 static arenaservers_t	g_arenaservers;
 
 
-static servernode_t		g_globalserverlist[UI_MAX_MASTER_SERVERS][MAX_GLOBALSERVERS];
-static int				g_numglobalservers[UI_MAX_MASTER_SERVERS];
+static servernode_t		g_globalserverlist[MAX_GLOBALSERVERS];
+static int				g_numglobalservers;
 static servernode_t		g_localserverlist[MAX_LOCALSERVERS];
 static int				g_numlocalservers;
 static servernode_t		g_favoriteserverlist[MAX_FAVORITESERVERS];
@@ -1389,9 +1387,6 @@ ArenaServers_SetType
 */
 int ArenaServers_SetType( int type )
 {
-	if(type == UIAS_ALL_GLOBAL)
-		type = UIAS_ALL_LOCAL;
-
 	if(type >= UIAS_GLOBAL1 && type <= UIAS_GLOBAL5)
 	{
 		char masterstr[2], cvarname[sizeof("sv_master1")];
@@ -1425,8 +1420,9 @@ int ArenaServers_SetType( int type )
 	case UIAS_ALL_LOCAL:
 	case UIAS_ALL_GLOBAL:
 		g_arenaservers.remove.generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
-		g_arenaservers.serverlist = g_globalserverlist[type-UIAS_GLOBAL1];
-		g_arenaservers.numservers = &g_numglobalservers[type-UIAS_GLOBAL1];
+		g_arenaservers.serverlist = g_globalserverlist;
+		g_arenaservers.numservers = &g_numglobalservers;
+		//*g_arenaservers.numservers = 0;
 		g_arenaservers.maxservers = MAX_GLOBALSERVERS;
 		break;
 
@@ -1439,17 +1435,8 @@ int ArenaServers_SetType( int type )
 
 	}
 
-	if( !*g_arenaservers.numservers ) {
-		ArenaServers_StartRefresh();
-	}
-	else {
-		// avoid slow operation, use existing results
-		g_arenaservers.currentping       = *g_arenaservers.numservers;
-		g_arenaservers.numqueriedservers = *g_arenaservers.numservers; 
-		ArenaServers_UpdateMenu();
-		strcpy(g_arenaservers.status.string,"hit refresh to update");
-	}
-	
+	ArenaServers_StartRefresh();
+
 	return type;
 }
 

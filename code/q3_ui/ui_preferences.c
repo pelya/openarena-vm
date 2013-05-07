@@ -61,6 +61,7 @@ GAME OPTIONS MENU
 #define ID_CHATBEEP             145
 #define ID_TEAMCHATBEEP         146
 #define ID_DRAWWEAPON           147
+#define ID_WEAPONBARBOTTOM      148
 
 #define	NUM_CROSSHAIRS			99
 
@@ -82,6 +83,7 @@ typedef struct {
 
 	menuradiobutton_s	simpleitems;
 	menuradiobutton_s	alwaysweaponbar;
+	menuradiobutton_s	weaponbarbottom;
 	menuradiobutton_s	drawweapon;
 	menuradiobutton_s	brass;
 	menuradiobutton_s	wallmarks;
@@ -92,7 +94,7 @@ typedef struct {
 	menuradiobutton_s	forcemodel;
 	menulist_s			drawteamoverlay;
         menuradiobutton_s	delaghitscan;
-	menuradiobutton_s	allowdownload;
+	//menuradiobutton_s	allowdownload; // Moved to Network menu
         menuradiobutton_s       chatbeep;
         menuradiobutton_s       teamchatbeep;
 	menubitmap_s		back;
@@ -119,6 +121,7 @@ static void Preferences_SetMenuItems( void ) {
         s_preferences.crosshairColorBlue.curvalue       = trap_Cvar_VariableValue( "cg_crosshairColorBlue")*255.0f;
 	s_preferences.simpleitems.curvalue		= trap_Cvar_VariableValue( "cg_simpleItems" ) != 0;
 	s_preferences.alwaysweaponbar.curvalue		= trap_Cvar_VariableValue( "cg_alwaysWeaponBar" ) != 0;
+	s_preferences.weaponbarbottom.curvalue		= trap_Cvar_VariableValue( "cg_weaponBarAtBottom" ) != 0;
 	s_preferences.drawweapon.curvalue		= trap_Cvar_VariableValue( "cg_drawGun" ) != 0;
 	s_preferences.brass.curvalue			= trap_Cvar_VariableValue( "cg_brassTime" ) != 0;
 	s_preferences.wallmarks.curvalue		= trap_Cvar_VariableValue( "cg_marks" ) != 0;
@@ -128,7 +131,7 @@ static void Preferences_SetMenuItems( void ) {
 	//s_preferences.synceveryframe.curvalue	= trap_Cvar_VariableValue( "r_finish" ) != 0;
 	s_preferences.forcemodel.curvalue		= trap_Cvar_VariableValue( "cg_forcemodel" ) != 0;
 	s_preferences.drawteamoverlay.curvalue	= Com_Clamp( 0, 3, trap_Cvar_VariableValue( "cg_drawTeamOverlay" ) );
-	s_preferences.allowdownload.curvalue	= trap_Cvar_VariableValue( "cl_allowDownload" ) != 0;
+	//s_preferences.allowdownload.curvalue	= trap_Cvar_VariableValue( "cl_allowDownload" ) != 0;
         s_preferences.delaghitscan.curvalue	= trap_Cvar_VariableValue( "cg_delag" ) != 0;
         s_preferences.chatbeep.curvalue         = trap_Cvar_VariableValue( "cg_chatBeep" ) != 0;
         s_preferences.teamchatbeep.curvalue     = trap_Cvar_VariableValue( "cg_teamChatBeep" ) != 0;
@@ -179,8 +182,12 @@ static void Preferences_Event( void* ptr, int notification ) {
 		trap_Cvar_SetValue( "cg_simpleItems", s_preferences.simpleitems.curvalue );
 		break;
                 
-        case ID_WEAPONBAR:
+	case ID_WEAPONBAR:
 		trap_Cvar_SetValue( "cg_alwaysWeaponBar", s_preferences.alwaysweaponbar.curvalue );
+		break;
+
+	case ID_WEAPONBARBOTTOM:
+		trap_Cvar_SetValue( "cg_weaponBarAtBottom", s_preferences.weaponbarbottom.curvalue );
 		break;
 
 	case ID_DRAWWEAPON:
@@ -222,10 +229,10 @@ static void Preferences_Event( void* ptr, int notification ) {
 		trap_Cvar_SetValue( "cg_drawTeamOverlay", s_preferences.drawteamoverlay.curvalue );
 		break;
 
-	case ID_ALLOWDOWNLOAD:
-		trap_Cvar_SetValue( "cl_allowDownload", s_preferences.allowdownload.curvalue );
-		trap_Cvar_SetValue( "sv_allowDownload", s_preferences.allowdownload.curvalue );
-		break;
+	//case ID_ALLOWDOWNLOAD:
+	//	trap_Cvar_SetValue( "cl_allowDownload", s_preferences.allowdownload.curvalue );
+	//	trap_Cvar_SetValue( "sv_allowDownload", s_preferences.allowdownload.curvalue );
+	//	break;
                
         case ID_DELAGHITSCAN:
                 trap_Cvar_SetValue( "g_delagHitscan", s_preferences.delaghitscan.curvalue );
@@ -413,14 +420,24 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.simpleitems.generic.y	          = y;
         
         //Elimination
-        y += BIGCHAR_HEIGHT+2;
+	y += BIGCHAR_HEIGHT+2;
 	s_preferences.alwaysweaponbar.generic.type        = MTYPE_RADIOBUTTON;
-	s_preferences.alwaysweaponbar.generic.name	      = "Always show weapons bar:";
+	s_preferences.alwaysweaponbar.generic.name	      = "Always show weapon bar:";
 	s_preferences.alwaysweaponbar.generic.flags	      = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_preferences.alwaysweaponbar.generic.callback    = Preferences_Event;
 	s_preferences.alwaysweaponbar.generic.id          = ID_WEAPONBAR;
 	s_preferences.alwaysweaponbar.generic.x	          = PREFERENCES_X_POS;
 	s_preferences.alwaysweaponbar.generic.y	          = y;
+
+
+	y += BIGCHAR_HEIGHT+2;
+	s_preferences.weaponbarbottom.generic.type        = MTYPE_RADIOBUTTON;
+	s_preferences.weaponbarbottom.generic.name	      = "Weapon bar at bottom:";
+	s_preferences.weaponbarbottom.generic.flags	      = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	s_preferences.weaponbarbottom.generic.callback    = Preferences_Event;
+	s_preferences.weaponbarbottom.generic.id          = ID_WEAPONBARBOTTOM;
+	s_preferences.weaponbarbottom.generic.x	          = PREFERENCES_X_POS;
+	s_preferences.weaponbarbottom.generic.y	          = y;
 
 	y += BIGCHAR_HEIGHT+2;
 	s_preferences.drawweapon.generic.type         = MTYPE_RADIOBUTTON;
@@ -476,7 +493,7 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.highqualitysky.generic.x	      = PREFERENCES_X_POS;
 	s_preferences.highqualitysky.generic.y	      = y;
 
-/*
+	/*
 	y += BIGCHAR_HEIGHT+2;
 	s_preferences.synceveryframe.generic.type     = MTYPE_RADIOBUTTON;
 	s_preferences.synceveryframe.generic.name	  = "Sync every frame:";
@@ -485,7 +502,7 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.synceveryframe.generic.id       = ID_SYNCEVERYFRAME;
 	s_preferences.synceveryframe.generic.x	      = PREFERENCES_X_POS;
 	s_preferences.synceveryframe.generic.y	      = y;
-*/
+	*/
 
 	y += BIGCHAR_HEIGHT+2;
 	s_preferences.forcemodel.generic.type     = MTYPE_RADIOBUTTON;
@@ -506,7 +523,7 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.drawteamoverlay.generic.y	       = y;
 	s_preferences.drawteamoverlay.itemnames			= teamoverlay_names;
 
-        y += BIGCHAR_HEIGHT+2;
+	y += BIGCHAR_HEIGHT+2;
 	s_preferences.delaghitscan.generic.type     = MTYPE_RADIOBUTTON;
 	s_preferences.delaghitscan.generic.name	   = "Unlag hitscan:";
 	s_preferences.delaghitscan.generic.flags	   = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -514,7 +531,8 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.delaghitscan.generic.id       = ID_DELAGHITSCAN;
 	s_preferences.delaghitscan.generic.x	       = PREFERENCES_X_POS;
 	s_preferences.delaghitscan.generic.y	       = y;
-        
+
+	/*
 	y += BIGCHAR_HEIGHT+2;
 	s_preferences.allowdownload.generic.type     = MTYPE_RADIOBUTTON;
 	s_preferences.allowdownload.generic.name	   = "Automatic downloading:";
@@ -523,8 +541,9 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.allowdownload.generic.id       = ID_ALLOWDOWNLOAD;
 	s_preferences.allowdownload.generic.x	       = PREFERENCES_X_POS;
 	s_preferences.allowdownload.generic.y	       = y;
-        
-        y += BIGCHAR_HEIGHT+2;
+	*/
+
+	y += BIGCHAR_HEIGHT+2;
 	s_preferences.chatbeep.generic.type     = MTYPE_RADIOBUTTON;
 	s_preferences.chatbeep.generic.name	   = "Beep on chat:";
 	s_preferences.chatbeep.generic.flags	   = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -532,8 +551,8 @@ static void Preferences_MenuInit( void ) {
 	s_preferences.chatbeep.generic.id       = ID_CHATBEEP;
 	s_preferences.chatbeep.generic.x	       = PREFERENCES_X_POS;
 	s_preferences.chatbeep.generic.y	       = y;
-        
-        y += BIGCHAR_HEIGHT+2;
+
+	y += BIGCHAR_HEIGHT+2;
 	s_preferences.teamchatbeep.generic.type     = MTYPE_RADIOBUTTON;
 	s_preferences.teamchatbeep.generic.name	   = "Beep on team chat:";
 	s_preferences.teamchatbeep.generic.flags	   = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -559,12 +578,13 @@ static void Preferences_MenuInit( void ) {
 	Menu_AddItem( &s_preferences.menu, &s_preferences.framer );
 
 	Menu_AddItem( &s_preferences.menu, &s_preferences.crosshair );
-        Menu_AddItem( &s_preferences.menu, &s_preferences.crosshairHealth );
-        Menu_AddItem( &s_preferences.menu, &s_preferences.crosshairColorRed );
-        Menu_AddItem( &s_preferences.menu, &s_preferences.crosshairColorGreen );
-        Menu_AddItem( &s_preferences.menu, &s_preferences.crosshairColorBlue );
+	Menu_AddItem( &s_preferences.menu, &s_preferences.crosshairHealth );
+	Menu_AddItem( &s_preferences.menu, &s_preferences.crosshairColorRed );
+	Menu_AddItem( &s_preferences.menu, &s_preferences.crosshairColorGreen );
+	Menu_AddItem( &s_preferences.menu, &s_preferences.crosshairColorBlue );
 	Menu_AddItem( &s_preferences.menu, &s_preferences.simpleitems );
 	Menu_AddItem( &s_preferences.menu, &s_preferences.alwaysweaponbar );
+	Menu_AddItem( &s_preferences.menu, &s_preferences.weaponbarbottom );
 	Menu_AddItem( &s_preferences.menu, &s_preferences.drawweapon );
 	Menu_AddItem( &s_preferences.menu, &s_preferences.wallmarks );
 	Menu_AddItem( &s_preferences.menu, &s_preferences.brass );
@@ -574,10 +594,10 @@ static void Preferences_MenuInit( void ) {
 	//Menu_AddItem( &s_preferences.menu, &s_preferences.synceveryframe );
 	Menu_AddItem( &s_preferences.menu, &s_preferences.forcemodel );
 	Menu_AddItem( &s_preferences.menu, &s_preferences.drawteamoverlay );
-        Menu_AddItem( &s_preferences.menu, &s_preferences.delaghitscan );
-	Menu_AddItem( &s_preferences.menu, &s_preferences.allowdownload );
-        Menu_AddItem( &s_preferences.menu, &s_preferences.teamchatbeep );
-        Menu_AddItem( &s_preferences.menu, &s_preferences.chatbeep );
+	Menu_AddItem( &s_preferences.menu, &s_preferences.delaghitscan );
+	//Menu_AddItem( &s_preferences.menu, &s_preferences.allowdownload );
+	Menu_AddItem( &s_preferences.menu, &s_preferences.teamchatbeep );
+	Menu_AddItem( &s_preferences.menu, &s_preferences.chatbeep );
 
 	Menu_AddItem( &s_preferences.menu, &s_preferences.back );
 

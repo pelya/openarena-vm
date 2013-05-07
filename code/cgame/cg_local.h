@@ -1389,6 +1389,7 @@ extern vmCvar_t			cg_teamChatBeep;
 // Android-specific
 extern vmCvar_t			cg_weaponBarActiveWidth;
 extern vmCvar_t			cg_weaponBarActiveWeapons;
+extern vmCvar_t			cg_weaponBarAtBottom;
 extern vmCvar_t			cg_holdingUsableItem;
 extern vmCvar_t			cg_touchscreenControls;
 extern vmCvar_t			cg_thirdPersonConfigOptionInSettings;

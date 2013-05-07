@@ -565,6 +565,12 @@ static void CG_DrawStatusBar( void ) {
 	else //Sago: If we follow find the teamcolor of the guy we follow. It might not be our own team!
 		CG_DrawTeamBackground( 0, 420, 640, 60, 0.33f, cgs.clientinfo[ cg.snap->ps.clientNum ].team );
 
+	/*
+	if ( cg_weaponBarAtBottom.integer && cg_weaponBarActiveWidth.integer > 0 ) {
+		return; // Do not draw anything if weapon bar at bottom is shown
+	}
+	*/
+
 	cent = &cg_entities[cg.snap->ps.clientNum];
 	ps = &cg.snap->ps;
 
@@ -1744,7 +1750,7 @@ CG_DrawLowerRight
 static void CG_DrawLowerRight( void ) {
 	float	y;
 
-	y = 480 - ICON_SIZE;
+	y = 480 - ICON_SIZE - 4;
 
 	if ( cgs.gametype >= GT_TEAM && cgs.ffa_gt!=1 && cg_drawTeamOverlay.integer == 2 ) {
 		y = CG_DrawTeamOverlay( y, qtrue, qfalse );

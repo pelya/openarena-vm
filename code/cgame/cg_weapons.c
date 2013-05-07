@@ -1766,31 +1766,20 @@ CG_DrawWeaponBar0
 
 void CG_DrawWeaponBar0(int count, int bits){
 
-	int y = 20;
-	int x = 320 - count * 20;
+	int y = !cg_weaponBarAtBottom.integer ? 20 : 440;
+	int x = !cg_weaponBarAtBottom.integer ? 320 - count * 20 : 640 - count * 40;
 	int i;
 	int ammo;
 	int br;
 	int max;
-	float red[4];
-	float yellow[4];
-	float green[4];
+	static const float red[4] = { 1, 0, 0, 1 };
+	static const float yellow[4] = { 1, 0.6f, 0, 1 };
+	static const float green[4] = { 0, 1, 0, 1 };
 	
-	red[0] = 1.0f;
-	red[1] = 0;
-	red[2] = 0;
-	red[3] = 1.0f;
-	
-	yellow[0] = 1.0f;
-	yellow[1] = 0.6f;
-	yellow[2] = 0;
-	yellow[3] = 1.0f;
-	
-	green[0] = 0;
-	green[1] = 1.0f;
-	green[2] = 0;
-	green[3] = 1.0f;
-	
+	if( cg_weaponBarAtBottom.integer ) {
+		static const float darken[4] = { 0, 0, 0, 0.7f };
+		CG_FillRect( x-4, y-16, 40 * count + 4, 56, darken );
+	}
 
 	for ( i = 0 ; i < MAX_WEAPONS ; i++ ) {
                 //Sago: Do mad change of grapple placement:

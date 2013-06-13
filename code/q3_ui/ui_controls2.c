@@ -946,7 +946,7 @@ static void Controls_GetConfig( void )
 	s_controls.gyroscopeAxesSwap.curvalue = UI_ClampCvar( 0, 7, Controls_GetCvarValue( "in_gyroscopeAxesSwap" ) );
 	s_controls.swipeAngle.curvalue = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "in_swipeAngle" ) / 90.0f );
 	s_controls.swipeSensitivity.curvalue = UI_ClampCvar( 0, 40, 50 - Controls_GetCvarValue( "in_swipeSensitivity" ) );
-	s_controls.aimingmode.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "cg_touchscreenControls" ) );
+	s_controls.aimingmode.curvalue   = UI_ClampCvar( TOUCHSCREEN_FIRE_BUTTON, TOUCHSCREEN_SWIPE_FREE_AIMING, Controls_GetCvarValue( "cg_touchscreenControls" ) );
 	s_controls.crosshairOffset.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "in_swipeFreeCrosshairOffset" ) );
 	s_controls.crosshairEdges.curvalue   = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_swipeFreeStickyEdges" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );

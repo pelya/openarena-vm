@@ -83,6 +83,7 @@ MULTIPLAYER MENU (SERVER BROWSER)
 //Beta 23
 #define ID_ONLY_HUMANS                  24
 #define ID_HIDE_PRIVATE                 25
+#define ID_PLATFORM			26
 
 #define GR_LOGO				30
 #define GR_LETTERS			31
@@ -187,6 +188,12 @@ static char* netnames[] = {
 	NULL
 };
 
+static const char *platform_items[] = {
+	"Android",
+	"PC",
+	NULL
+};
+
 static char quake3worldMessage[] = "Visit www.openarena.ws - News, Community, Events, Files";
 
 
@@ -225,6 +232,7 @@ typedef struct {
 	menutext_s			banner;
 
 	menulist_s			master;
+	menulist_s			platform;
 	menulist_s			gametype;
 	menulist_s			sortkey;
 	menuradiobutton_s	showfull;
@@ -440,6 +448,9 @@ ArenaServers_Go
 static void ArenaServers_Go( void ) {
 	servernode_t*	servernode;
 
+	if( g_arenaservers.platform.curvalue != 0 && trap_Cvar_VariableValue( "cg_touchscreenControls" ) == TOUCHSCREEN_SWIPE_FREE_AIMING )
+		trap_Cvar_SetValue( "cg_touchscreenControls", TOUCHSCREEN_FIRE_BUTTON ); // Old VM does not recognize swipe-free aiming, and will crash
+
 	servernode = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;
 	if( servernode ) {
 		if(servernode->needPass) {
@@ -551,6 +562,7 @@ static void ArenaServers_UpdateMenu( void ) {
 		else {
 			// all servers pinged - enable controls
 			g_arenaservers.master.generic.flags		&= ~QMF_GRAYED; 
+			g_arenaservers.platform.generic.flags	&= ~QMF_GRAYED; 
 			g_arenaservers.gametype.generic.flags	&= ~QMF_GRAYED;
 			g_arenaservers.sortkey.generic.flags	&= ~QMF_GRAYED;
 			g_arenaservers.showempty.generic.flags	&= ~QMF_GRAYED;
@@ -578,6 +590,7 @@ static void ArenaServers_UpdateMenu( void ) {
 
 			// disable controls during refresh
 			g_arenaservers.master.generic.flags		|= QMF_GRAYED;
+			g_arenaservers.platform.generic.flags	|= QMF_GRAYED;
 			g_arenaservers.gametype.generic.flags	|= QMF_GRAYED;
 			g_arenaservers.sortkey.generic.flags	|= QMF_GRAYED;
 			g_arenaservers.showempty.generic.flags	|= QMF_GRAYED;
@@ -606,6 +619,7 @@ static void ArenaServers_UpdateMenu( void ) {
 
 			// end of refresh - set control state
 			g_arenaservers.master.generic.flags		&= ~QMF_GRAYED;
+			g_arenaservers.platform.generic.flags	&= ~QMF_GRAYED;
 			g_arenaservers.gametype.generic.flags	&= ~QMF_GRAYED;
 			g_arenaservers.sortkey.generic.flags	&= ~QMF_GRAYED;
 			g_arenaservers.showempty.generic.flags	&= ~QMF_GRAYED;
@@ -1462,6 +1476,11 @@ static void ArenaServers_Event( void* ptr, int event ) {
 		trap_Cvar_SetValue( "ui_browserMaster", g_arenaservers.master.curvalue);
 		break;
 
+	case ID_PLATFORM:
+		trap_Cvar_Set( "cl_serverlistGamename", g_arenaservers.platform.curvalue == 0 ? GAMENAME_FOR_MASTER : GAMENAME_FOR_MASTER_PC );
+		ArenaServers_StartRefresh();
+		break;
+
 	case ID_GAMETYPE:
 		trap_Cvar_SetValue( "ui_browserGameType", g_arenaservers.gametype.curvalue );
 		g_gametype = g_arenaservers.gametype.curvalue;
@@ -1608,6 +1627,7 @@ static void ArenaServers_MenuInit( void ) {
 	int			y;
 	int			value;
 	static char	statusbuffer[MAX_STATUSLENGTH];
+	char		platformStr[64];
 
 	// zero set all our globals
 	memset( &g_arenaservers, 0 ,sizeof(arenaservers_t) );
@@ -1636,6 +1656,15 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.master.generic.x				= 320;
 	g_arenaservers.master.generic.y				= y;
 	g_arenaservers.master.itemnames				= master_items;
+
+	g_arenaservers.platform.generic.type			= MTYPE_SPINCONTROL;
+	g_arenaservers.platform.generic.name			= "For:";
+	g_arenaservers.platform.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
+	g_arenaservers.platform.generic.callback		= ArenaServers_Event;
+	g_arenaservers.platform.generic.id				= ID_PLATFORM;
+	g_arenaservers.platform.generic.x				= 500;
+	g_arenaservers.platform.generic.y				= y;
+	g_arenaservers.platform.itemnames				= platform_items;
 
 	y += SMALLCHAR_HEIGHT;
 	g_arenaservers.gametype.generic.type		= MTYPE_SPINCONTROL;
@@ -1829,6 +1858,7 @@ static void ArenaServers_MenuInit( void ) {
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.banner );
 
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.master );
+	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.platform );
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.gametype );
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.sortkey );
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.showfull);
@@ -1861,6 +1891,9 @@ static void ArenaServers_MenuInit( void ) {
 	//if (value >= 1)
 	//	value--;
 	g_arenaservers.master.curvalue = g_servertype;
+
+	trap_Cvar_VariableStringBuffer( "cl_serverlistGamename", platformStr, sizeof(platformStr) );
+	g_arenaservers.platform.curvalue = strcmp(platformStr, GAMENAME_FOR_MASTER) == 0 ? 0 : 1;
 
 	g_gametype = Com_Clamp( 0, 12, ui_browserGameType.integer );
 	g_arenaservers.gametype.curvalue = g_gametype;

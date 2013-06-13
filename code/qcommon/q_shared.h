@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define BASEGAME			"baseoa"
   #define CLIENT_WINDOW_TITLE     	"OpenArena"
   #define CLIENT_WINDOW_MIN_TITLE 	"OA"
+  #define GAMENAME_FOR_MASTER		"OpenArenaAndroid"	// Android-exclusive server list
+  #define GAMENAME_FOR_MASTER_PC	"Quake3Arena"	// must NOT contain whitespace.  No servers show up if you use "openarena"
 /*#else
   #define PRODUCT_NAME			"ioq3"
   #define BASEGAME			"baseq3"

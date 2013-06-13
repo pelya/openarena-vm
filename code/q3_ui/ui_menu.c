@@ -462,7 +462,7 @@ void UI_MainMenu( void ) {
 	s_main.aimingmode.generic.name		= "touchscreen controls:";
 	s_main.aimingmode.generic.id		= ID_AIMING_MODE;
 	s_main.aimingmode.generic.callback	= Main_MenuEvent;
-	s_main.aimingmode.curvalue			= UI_ClampCvar( 0, 2, trap_Cvar_VariableValue( "cg_touchscreenControls" ));
+	s_main.aimingmode.curvalue			= UI_ClampCvar( TOUCHSCREEN_FIRE_BUTTON, TOUCHSCREEN_SWIPE_FREE_AIMING, trap_Cvar_VariableValue( "cg_touchscreenControls" ) );
 	s_main.aimingmode.itemnames			= s_main_aimingmode_items;
 
 	s_main.thirdperson.generic.type		= MTYPE_RADIOBUTTON;

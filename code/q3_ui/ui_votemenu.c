@@ -127,11 +127,14 @@ VoteMenu_Event
 */
 static void VoteMenu_Event( void* ptr, int event )
 {
+	if (event != QM_ACTIVATED)
+		return;
+
 	switch (((menucommon_s*)ptr)->id)
 	{
 		case ID_BACK:
 			if (event != QM_ACTIVATED)
-				break;
+				return;
 
 			UI_PopMenu();
 			break;

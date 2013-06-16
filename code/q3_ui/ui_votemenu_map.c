@@ -83,7 +83,16 @@ static void VoteMapMenu_Event( void* ptr, int event )
                     return;
                 UI_PopMenu();
                 break;
-            case ID_GO:
+            default:
+                if( event != QM_ACTIVATED ) {
+                    return;
+                }
+                if(s_votemenu_map.selected != ((menucommon_s*)ptr)->id) {
+                    s_votemenu_map.selected = ((menucommon_s*)ptr)->id;
+                    UI_VoteMapMenuInternal();
+                }
+            //    break;
+            //case ID_GO:
                 if( event != QM_ACTIVATED ) {
                     return;
                 }
@@ -94,15 +103,6 @@ static void VoteMapMenu_Event( void* ptr, int event )
                 trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote map %s", mappage.mapname[s_votemenu_map.selected-ID_MAPNAME0]) );
                 UI_PopMenu();
                 UI_PopMenu();
-                break;
-            default:
-                if( event != QM_ACTIVATED ) {
-                    return;
-                }
-                if(s_votemenu_map.selected != ((menucommon_s*)ptr)->id) {
-                    s_votemenu_map.selected = ((menucommon_s*)ptr)->id;
-                    UI_VoteMapMenuInternal();
-                }
                 break;
          }
 }
@@ -292,7 +292,7 @@ void UI_VoteMapMenu( void ) {
     Menu_AddItem( &s_votemenu_map.menu, (void*) &s_votemenu_map.banner );
     Menu_AddItem( &s_votemenu_map.menu, (void*) &s_votemenu_map.info );
     Menu_AddItem( &s_votemenu_map.menu, (void*) &s_votemenu_map.back );
-    Menu_AddItem( &s_votemenu_map.menu, (void*) &s_votemenu_map.go );
+    //Menu_AddItem( &s_votemenu_map.menu, (void*) &s_votemenu_map.go );
     Menu_AddItem( &s_votemenu_map.menu, (void*) &s_votemenu_map.arrows );
     Menu_AddItem( &s_votemenu_map.menu, (void*) &s_votemenu_map.down );
     Menu_AddItem( &s_votemenu_map.menu, (void*) &s_votemenu_map.up );

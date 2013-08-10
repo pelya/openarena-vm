@@ -179,27 +179,6 @@ void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t)
 	}
 }
 
-#define OUYA_BORDER 20.0f
-void UI_AdjustForOuya( float *x, float *y, float *w, float *h ) {
-	// Calculate bottom-right corner instead of width/height, and substract upper-left corner,
-	// otherwise we'll have rounding errors and holes between textures
-	*w = (*w + *x) * (640.0f - OUYA_BORDER * 2) / 640.0f;
-	*h = (*h + *y) * (480.0f - OUYA_BORDER * 2) / 480.0f;
-	*x = *x * (640.0f - OUYA_BORDER * 2) / 640.0f;
-	*y = *y * (480.0f - OUYA_BORDER * 2) / 480.0f;
-	*w -= *x;
-	*h -= *y;
-	*x += OUYA_BORDER;
-	*y += OUYA_BORDER;
-}
-
-void UI_DrawStretchPic( float x, float y, float w, float h, float s0, float t0, float s1, float t1, qhandle_t hShader )
-{
-	if (uis.runningOnOuya)
-		UI_AdjustForOuya(&x, &y, &w, &h);
-	trap_R_DrawStretchPic( x, y, w, h, s0, t0, s1, t1, hShader );
-}
-
 /*
 =================
 UI_DrawProportionalString2
@@ -392,7 +371,7 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 			fheight = (float)PROPB_HEIGHT / 256.0f;
 			aw = (float)propMapB[ch][2] * uis.xscale;
 			ah = (float)PROPB_HEIGHT * uis.yscale;
-			UI_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, uis.charsetPropB );
+			trap_R_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, uis.charsetPropB );
 			ax += (aw + (float)PROPB_GAP_WIDTH * uis.xscale);
 		}
 		s++;
@@ -501,7 +480,7 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 			fheight = (float)PROP_HEIGHT / 256.0f;
 			aw = (float)propMap[ch][2] * uis.xscale * sizeScale;
 			ah = (float)PROP_HEIGHT * uis.yscale * sizeScale;
-			UI_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, charset );
+			trap_R_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, charset );
 		}
 
 		ax += (aw + (float)PROP_GAP_WIDTH * uis.xscale * sizeScale);
@@ -700,7 +679,7 @@ static void UI_DrawString2( int x, int y, const char* str, vec4_t color, int cha
 		{
 			frow = (ch>>4)*0.0625;
 			fcol = (ch&15)*0.0625;
-			UI_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, uis.charset );
+			trap_R_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol + 0.0625, frow + 0.0625, uis.charset );
 		}
 
 		ax += aw;
@@ -1131,7 +1110,6 @@ void UI_Init( void ) {
 		// no wide screen
 		uis.bias = 0;
 	}
-	uis.runningOnOuya = trap_Cvar_VariableValue( "cl_runningOnOuya" );
 
 	// initialize the menu system
 	Menu_Cache();
@@ -1147,15 +1125,12 @@ UI_AdjustFrom640
 Adjusted for resolution and screen aspect ratio
 ================
 */
-
 void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
 	// expect valid pointers
 	*x = *x * uis.xscale + uis.bias;
 	*y *= uis.yscale;
 	*w *= uis.xscale;
 	*h *= uis.yscale;
-	if (uis.runningOnOuya)
-		UI_AdjustForOuya(x, y, w, h);
 }
 
 void UI_DrawNamedPic( float x, float y, float width, float height, const char *picname ) {

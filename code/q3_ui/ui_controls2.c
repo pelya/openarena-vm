@@ -346,7 +346,7 @@ static bind_t g_bindings[] =
 	{"messagemode2", 	"chat - team",		ID_CHAT2,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"messagemode3", 	"chat - target",	ID_CHAT3,		ANIM_CHAT,		-1,				-1,		-1, -1},
 	{"messagemode4", 	"chat - attacker",	ID_CHAT4,		ANIM_CHAT,		-1,				-1,		-1, -1},
-        {"+voiprecord", 	"voice chat",           ID_VOIP_TALK,		ANIM_CHAT,		'q',				-1,		-1, -1},
+	{"+voiprecord", 	"voice chat",           ID_VOIP_TALK,		ANIM_CHAT,		'v',				-1,		-1, -1},
 	{(char*)NULL,		(char*)NULL,		0,				0,				-1,				-1,		-1,	-1},
 };
 
@@ -1880,52 +1880,63 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
-	Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
-	Menu_AddItem( &s_controls.menu, &s_controls.zoomviewbig );
-	Menu_AddItem( &s_controls.menu, &s_controls.railautozoom );
+	// Stupid Ouya does not want it's games to contain button names of PC keyboard - only it's gamepad is allowed
+	// So I'll hide them completely, mwahaha
+	if (!uis.runningOnOuya)
+	{
+		Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
+		Menu_AddItem( &s_controls.menu, &s_controls.zoomviewbig );
+		Menu_AddItem( &s_controls.menu, &s_controls.railautozoom );
+	}
 
 	Menu_AddItem( &s_controls.menu, &s_controls.alwaysrun );
-	Menu_AddItem( &s_controls.menu, &s_controls.run );
-	Menu_AddItem( &s_controls.menu, &s_controls.walkforward );
-	Menu_AddItem( &s_controls.menu, &s_controls.backpedal );
-	Menu_AddItem( &s_controls.menu, &s_controls.stepleft );
-	Menu_AddItem( &s_controls.menu, &s_controls.stepright );
-	Menu_AddItem( &s_controls.menu, &s_controls.moveup );
-	Menu_AddItem( &s_controls.menu, &s_controls.movedown );
-	Menu_AddItem( &s_controls.menu, &s_controls.turnleft );
-	Menu_AddItem( &s_controls.menu, &s_controls.turnright );
-	Menu_AddItem( &s_controls.menu, &s_controls.sidestep );
-	Menu_AddItem( &s_controls.menu, &s_controls.lookup );
-	Menu_AddItem( &s_controls.menu, &s_controls.lookdown );
-	Menu_AddItem( &s_controls.menu, &s_controls.mouselook );
+	if (!uis.runningOnOuya)
+	{
+		Menu_AddItem( &s_controls.menu, &s_controls.run );
+		Menu_AddItem( &s_controls.menu, &s_controls.walkforward );
+		Menu_AddItem( &s_controls.menu, &s_controls.backpedal );
+		Menu_AddItem( &s_controls.menu, &s_controls.stepleft );
+		Menu_AddItem( &s_controls.menu, &s_controls.stepright );
+		Menu_AddItem( &s_controls.menu, &s_controls.moveup );
+		Menu_AddItem( &s_controls.menu, &s_controls.movedown );
+		Menu_AddItem( &s_controls.menu, &s_controls.turnleft );
+		Menu_AddItem( &s_controls.menu, &s_controls.turnright );
+		Menu_AddItem( &s_controls.menu, &s_controls.sidestep );
+		Menu_AddItem( &s_controls.menu, &s_controls.lookup );
+		Menu_AddItem( &s_controls.menu, &s_controls.lookdown );
+		Menu_AddItem( &s_controls.menu, &s_controls.mouselook );
 
-	Menu_AddItem( &s_controls.menu, &s_controls.attack );
-	Menu_AddItem( &s_controls.menu, &s_controls.nextweapon );
-	Menu_AddItem( &s_controls.menu, &s_controls.prevweapon );
+		Menu_AddItem( &s_controls.menu, &s_controls.attack );
+		Menu_AddItem( &s_controls.menu, &s_controls.nextweapon );
+		Menu_AddItem( &s_controls.menu, &s_controls.prevweapon );
+	}
 	Menu_AddItem( &s_controls.menu, &s_controls.autoswitch );
-	Menu_AddItem( &s_controls.menu, &s_controls.chainsaw );
-	Menu_AddItem( &s_controls.menu, &s_controls.machinegun );
-	Menu_AddItem( &s_controls.menu, &s_controls.shotgun );
-	Menu_AddItem( &s_controls.menu, &s_controls.grenadelauncher );
-	Menu_AddItem( &s_controls.menu, &s_controls.rocketlauncher );
-	Menu_AddItem( &s_controls.menu, &s_controls.lightning );
-	Menu_AddItem( &s_controls.menu, &s_controls.railgun );
-	Menu_AddItem( &s_controls.menu, &s_controls.plasma );
-	Menu_AddItem( &s_controls.menu, &s_controls.bfg );
-        Menu_AddItem( &s_controls.menu, &s_controls.grapple );
-        Menu_AddItem( &s_controls.menu, &s_controls.nailgun );
-        Menu_AddItem( &s_controls.menu, &s_controls.proxmine );
-        Menu_AddItem( &s_controls.menu, &s_controls.chaingun );
+	if (!uis.runningOnOuya)
+	{
+		Menu_AddItem( &s_controls.menu, &s_controls.chainsaw );
+		Menu_AddItem( &s_controls.menu, &s_controls.machinegun );
+		Menu_AddItem( &s_controls.menu, &s_controls.shotgun );
+		Menu_AddItem( &s_controls.menu, &s_controls.grenadelauncher );
+		Menu_AddItem( &s_controls.menu, &s_controls.rocketlauncher );
+		Menu_AddItem( &s_controls.menu, &s_controls.lightning );
+		Menu_AddItem( &s_controls.menu, &s_controls.railgun );
+		Menu_AddItem( &s_controls.menu, &s_controls.plasma );
+		Menu_AddItem( &s_controls.menu, &s_controls.bfg );
+		Menu_AddItem( &s_controls.menu, &s_controls.grapple );
+		Menu_AddItem( &s_controls.menu, &s_controls.nailgun );
+		Menu_AddItem( &s_controls.menu, &s_controls.proxmine );
+		Menu_AddItem( &s_controls.menu, &s_controls.chaingun );
 
-	Menu_AddItem( &s_controls.menu, &s_controls.showscores );
-	Menu_AddItem( &s_controls.menu, &s_controls.useitem );
-	Menu_AddItem( &s_controls.menu, &s_controls.gesture );
-	Menu_AddItem( &s_controls.menu, &s_controls.chat );
-	Menu_AddItem( &s_controls.menu, &s_controls.chat2 );
-	Menu_AddItem( &s_controls.menu, &s_controls.chat3 );
-	Menu_AddItem( &s_controls.menu, &s_controls.chat4 );
-        Menu_AddItem( &s_controls.menu, &s_controls.voip_talk );
-        Menu_AddItem( &s_controls.menu, &s_controls.voip_teamonly );
+		Menu_AddItem( &s_controls.menu, &s_controls.showscores );
+		Menu_AddItem( &s_controls.menu, &s_controls.useitem );
+		Menu_AddItem( &s_controls.menu, &s_controls.gesture );
+		Menu_AddItem( &s_controls.menu, &s_controls.chat );
+		Menu_AddItem( &s_controls.menu, &s_controls.chat2 );
+		Menu_AddItem( &s_controls.menu, &s_controls.chat3 );
+		Menu_AddItem( &s_controls.menu, &s_controls.chat4 );
+		Menu_AddItem( &s_controls.menu, &s_controls.voip_talk );
+	}
+	Menu_AddItem( &s_controls.menu, &s_controls.voip_teamonly );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.back );
 

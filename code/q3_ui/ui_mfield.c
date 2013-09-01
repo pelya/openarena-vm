@@ -197,12 +197,6 @@ void MField_KeyDownEvent( mfield_t *edit, int key ) {
 		trap_Key_SetOverstrikeMode( !trap_Key_GetOverstrikeMode() );
 		return;
 	}
-
-	if ( key == K_MOUSE1 ) {
-		trap_ScreenKeyboardTextInput( edit->buffer );
-		MField_Clear( edit );
-		return;
-	}
 }
 
 /*
@@ -405,6 +399,10 @@ sfxHandle_t MenuField_Key( menufield_s* m, int* key )
 	{
 		case K_KP_ENTER:
 		case K_ENTER:
+		case K_MOUSE1:
+			trap_ScreenKeyboardTextInput( m->field.buffer );
+			MField_Clear( &m->field );
+			break;
 		case K_JOY1:
 		case K_JOY2:
 		case K_JOY3:

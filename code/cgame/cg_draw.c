@@ -587,7 +587,7 @@ static void CG_DrawStatusBar( void ) {
 					   cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles );
 	}
 
-	CG_DrawStatusBarHead( 285 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - 5 - ouyaShift/6, 480 - ouyaShift );
+	CG_DrawStatusBarHead( 285 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - 5 - ouyaShift/3, 480 - ouyaShift );
 
 	if( cg.predictedPlayerState.powerups[PW_REDFLAG] ) {
 		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480 - ouyaShift, TEAM_RED );
@@ -602,7 +602,7 @@ static void CG_DrawStatusBar( void ) {
 		origin[1] = 0;
 		origin[2] = -10;
 		angles[YAW] = ( cg.time & 2047 ) * 360 / 2048.0;
-		CG_Draw3DModel( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - ouyaShift, 432 - ouyaShift, ICON_SIZE, ICON_SIZE,
+		CG_Draw3DModel( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - ouyaShift*5/4, 432 - ouyaShift, ICON_SIZE, ICON_SIZE,
 					   cgs.media.armorModel, 0, origin, angles );
 	}
         
@@ -616,7 +616,7 @@ static void CG_DrawStatusBar( void ) {
 		} else {
 			handle = cgs.media.blueCubeModel;
 		}
-		CG_Draw3DModel( 480 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - ouyaShift, 432 - ouyaShift, ICON_SIZE, ICON_SIZE, handle, 0, origin, angles );
+		CG_Draw3DModel( 480 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - ouyaShift*3/2, 432 - ouyaShift, ICON_SIZE, ICON_SIZE, handle, 0, origin, angles );
 	}
         
         

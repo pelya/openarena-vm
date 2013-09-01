@@ -440,7 +440,7 @@ CG_DrawStatusBarHead
 */
 #ifndef MISSIONPACK
 
-static void CG_DrawStatusBarHead( float x ) {
+static void CG_DrawStatusBarHead( float x, float y ) {
 	vec3_t		angles;
 	float		size, stretch;
 	float		frac;
@@ -487,7 +487,7 @@ static void CG_DrawStatusBarHead( float x ) {
 	angles[YAW] = cg.headStartYaw + ( cg.headEndYaw - cg.headStartYaw ) * frac;
 	angles[PITCH] = cg.headStartPitch + ( cg.headEndPitch - cg.headStartPitch ) * frac;
 
-	CG_DrawHead( x, 480 - size, size, size, 
+	CG_DrawHead( x, y - size, size, size, 
 				cg.snap->ps.clientNum, angles );
 }
 #endif // MISSIONPACK
@@ -499,8 +499,8 @@ CG_DrawStatusBarFlag
 ================
 */
 #ifndef MISSIONPACK
-static void CG_DrawStatusBarFlag( float x, int team ) {
-	CG_DrawFlagModel( x, 480 - ICON_SIZE, ICON_SIZE, ICON_SIZE, team, qfalse );
+static void CG_DrawStatusBarFlag( float x, float y, int team ) {
+	CG_DrawFlagModel( x, y - ICON_SIZE, ICON_SIZE, ICON_SIZE, team, qfalse );
 }
 #endif // MISSIONPACK
 
@@ -547,7 +547,8 @@ static void CG_DrawStatusBar( void ) {
 	vec3_t		angles;
 	vec3_t		origin;
         qhandle_t	handle;
-        
+	float ouyaShift = cl_runningOnOuya.integer ? 480 * OUYA_BORDER / 100 * 2 / 3 : 0;
+
 	static float colors[4][4] = { 
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
 		{ 1.0f, 0.69f, 0.0f, 1.0f },    // normal
@@ -582,18 +583,18 @@ static void CG_DrawStatusBar( void ) {
 		origin[1] = 0;
 		origin[2] = 0;
 		angles[YAW] = 90 + 20 * sin( cg.time / 1000.0 );
-		CG_Draw3DModel( 130 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
+		CG_Draw3DModel( 130 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ouyaShift/3, 432 - ouyaShift, ICON_SIZE, ICON_SIZE,
 					   cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles );
 	}
 
-	CG_DrawStatusBarHead( 285 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - 5 );
+	CG_DrawStatusBarHead( 285 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - 5 - ouyaShift/6, 480 - ouyaShift );
 
 	if( cg.predictedPlayerState.powerups[PW_REDFLAG] ) {
-		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_RED );
+		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480 - ouyaShift, TEAM_RED );
 	} else if( cg.predictedPlayerState.powerups[PW_BLUEFLAG] ) {
-		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_BLUE );
+		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480 - ouyaShift, TEAM_BLUE );
 	} else if( cg.predictedPlayerState.powerups[PW_NEUTRALFLAG] ) {
-		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, TEAM_FREE );
+		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480 - ouyaShift, TEAM_FREE );
 	}
 
 	if ( ps->stats[ STAT_ARMOR ] ) {
@@ -601,7 +602,7 @@ static void CG_DrawStatusBar( void ) {
 		origin[1] = 0;
 		origin[2] = -10;
 		angles[YAW] = ( cg.time & 2047 ) * 360 / 2048.0;
-		CG_Draw3DModel( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
+		CG_Draw3DModel( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - ouyaShift, 432 - ouyaShift, ICON_SIZE, ICON_SIZE,
 					   cgs.media.armorModel, 0, origin, angles );
 	}
         
@@ -615,7 +616,7 @@ static void CG_DrawStatusBar( void ) {
 		} else {
 			handle = cgs.media.blueCubeModel;
 		}
-		CG_Draw3DModel( 480 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, handle, 0, origin, angles );
+		CG_Draw3DModel( 480 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - ouyaShift, 432 - ouyaShift, ICON_SIZE, ICON_SIZE, handle, 0, origin, angles );
 	}
         
         

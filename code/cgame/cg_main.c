@@ -283,6 +283,7 @@ vmCvar_t	cg_weaponBarAtBottom;
 vmCvar_t	cg_holdingUsableItem;
 vmCvar_t	cg_touchscreenControls;
 vmCvar_t	cg_thirdPersonConfigOptionInSettings; // Any uglier name please?
+vmCvar_t	cl_runningOnOuya;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -483,6 +484,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{&cg_holdingUsableItem, "cg_holdingUsableItem", "0", 0 },
 	{&cg_touchscreenControls, "cg_touchscreenControls", "0", CVAR_ARCHIVE },
 	{&cg_thirdPersonConfigOptionInSettings, "cg_thirdPersonConfigOptionInSettings", "1", CVAR_ARCHIVE },
+	{&cl_runningOnOuya, "cl_runningOnOuya", "0", 0 },
 };
 
 static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );

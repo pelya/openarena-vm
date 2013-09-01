@@ -504,10 +504,12 @@ void UI_MainMenu( void ) {
 	}
 	Menu_AddItem( &s_main.menu,	&s_main.mods );
 	Menu_AddItem( &s_main.menu,	&s_main.exit );
-	Menu_AddItem( &s_main.menu,	&s_main.aimingmode );
-	Menu_AddItem( &s_main.menu,	&s_main.thirdperson );
-	Menu_AddItem( &s_main.menu,	&s_main.gyroscope );
-	Menu_AddItem( &s_main.menu,	&s_main.voicechat );
+	if (!uis.runningOnOuya) {
+		Menu_AddItem( &s_main.menu,	&s_main.aimingmode );
+		Menu_AddItem( &s_main.menu,	&s_main.thirdperson );
+		Menu_AddItem( &s_main.menu,	&s_main.gyroscope );
+		Menu_AddItem( &s_main.menu,	&s_main.voicechat );
+	}
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;

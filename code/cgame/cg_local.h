@@ -1393,6 +1393,7 @@ extern vmCvar_t			cg_weaponBarAtBottom;
 extern vmCvar_t			cg_holdingUsableItem;
 extern vmCvar_t			cg_touchscreenControls;
 extern vmCvar_t			cg_thirdPersonConfigOptionInSettings;
+extern vmCvar_t			cl_runningOnOuya;
 
 //unlagged - cg_unlagged.c
 void CG_PredictWeaponEffects( centity_t *cent );

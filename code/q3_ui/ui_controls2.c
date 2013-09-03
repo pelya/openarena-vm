@@ -1871,13 +1871,13 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdperson );
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdpersonrange );
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );
+	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscope );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscopeSensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscopeAxesSwap );
 	Menu_AddItem( &s_controls.menu, &s_controls.swipeAngle );
 	Menu_AddItem( &s_controls.menu, &s_controls.swipeSensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.widefov );
-	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
 	// Stupid Ouya does not want it's games to contain button names of PC keyboard - only it's gamepad is allowed

@@ -190,8 +190,8 @@ static char* netnames[] = {
 };
 
 static const char *platform_items[] = {
-	"Android",
-	"PC",
+	"Android servers",
+	"PC servers",
 	NULL
 };
 
@@ -256,6 +256,11 @@ typedef struct {
 	menubitmap_s		specify;
 	menubitmap_s		create;
 	menubitmap_s		go;
+
+	menutext_s			pc_servers_warning1;
+	menutext_s			pc_servers_warning2;
+	menutext_s			pc_servers_warning3;
+	menutext_s			pc_servers_warning4;
 
 	pinglist_t			pinglist[MAX_PINGREQUESTS];
 	table_t				table[MAX_LISTBOXITEMS];
@@ -1455,6 +1460,19 @@ int ArenaServers_SetType( int type )
 	return type;
 }
 
+static void ArenaServers_UpdatePcServersWarning( void ) {
+	if( g_arenaservers.platform.curvalue ) {
+		g_arenaservers.pc_servers_warning1.generic.flags &= ~QMF_HIDDEN;
+		g_arenaservers.pc_servers_warning2.generic.flags &= ~QMF_HIDDEN;
+		g_arenaservers.pc_servers_warning3.generic.flags &= ~QMF_HIDDEN;
+		g_arenaservers.pc_servers_warning4.generic.flags &= ~QMF_HIDDEN;
+	} else {
+		g_arenaservers.pc_servers_warning1.generic.flags |= QMF_HIDDEN;
+		g_arenaservers.pc_servers_warning2.generic.flags |= QMF_HIDDEN;
+		g_arenaservers.pc_servers_warning3.generic.flags |= QMF_HIDDEN;
+		g_arenaservers.pc_servers_warning4.generic.flags |= QMF_HIDDEN;
+	}
+}
 /*
 =================
 ArenaServers_Event
@@ -1479,6 +1497,7 @@ static void ArenaServers_Event( void* ptr, int event ) {
 
 	case ID_PLATFORM:
 		trap_Cvar_Set( "cl_serverlistGamename", g_arenaservers.platform.curvalue == 0 ? GAMENAME_FOR_MASTER : GAMENAME_FOR_MASTER_PC );
+		ArenaServers_UpdatePcServersWarning();
 		ArenaServers_StartRefresh();
 		break;
 
@@ -1629,6 +1648,7 @@ static void ArenaServers_MenuInit( void ) {
 	int			value;
 	static char	statusbuffer[MAX_STATUSLENGTH];
 	char		platformStr[64];
+	static float color_actual_red[] = {0.90f, 0.00f, 0.00f, 1.00f}; // color_red is actually blue, what would you expect?
 
 	// zero set all our globals
 	memset( &g_arenaservers, 0 ,sizeof(arenaservers_t) );
@@ -1659,13 +1679,45 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.master.itemnames				= master_items;
 
 	g_arenaservers.platform.generic.type			= MTYPE_SPINCONTROL;
-	g_arenaservers.platform.generic.name			= "For:";
+	g_arenaservers.platform.generic.name			= "Show:";
 	g_arenaservers.platform.generic.flags			= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	g_arenaservers.platform.generic.callback		= ArenaServers_Event;
 	g_arenaservers.platform.generic.id				= ID_PLATFORM;
 	g_arenaservers.platform.generic.x				= 500;
 	g_arenaservers.platform.generic.y				= y;
 	g_arenaservers.platform.itemnames				= platform_items;
+
+	g_arenaservers.pc_servers_warning1.generic.type  = MTYPE_TEXT;
+	g_arenaservers.pc_servers_warning1.generic.flags = QMF_LEFT_JUSTIFY;
+	g_arenaservers.pc_servers_warning1.generic.x	 = 508;
+	g_arenaservers.pc_servers_warning1.generic.y	 = y + SMALLCHAR_HEIGHT;
+	g_arenaservers.pc_servers_warning1.string		 = "PC servers are";
+	g_arenaservers.pc_servers_warning1.style		 = UI_LEFT|UI_SMALLFONT;
+	g_arenaservers.pc_servers_warning1.color		 = color_actual_red;
+
+	g_arenaservers.pc_servers_warning2.generic.type  = MTYPE_TEXT;
+	g_arenaservers.pc_servers_warning2.generic.flags = QMF_LEFT_JUSTIFY;
+	g_arenaservers.pc_servers_warning2.generic.x	 = 508;
+	g_arenaservers.pc_servers_warning2.generic.y	 = y + SMALLCHAR_HEIGHT*2;
+	g_arenaservers.pc_servers_warning2.string		 = "not officially";
+	g_arenaservers.pc_servers_warning2.style		 = UI_LEFT|UI_SMALLFONT;
+	g_arenaservers.pc_servers_warning2.color		 = color_actual_red;
+
+	g_arenaservers.pc_servers_warning3.generic.type  = MTYPE_TEXT;
+	g_arenaservers.pc_servers_warning3.generic.flags = QMF_LEFT_JUSTIFY;
+	g_arenaservers.pc_servers_warning3.generic.x	 = 508;
+	g_arenaservers.pc_servers_warning3.generic.y	 = y + SMALLCHAR_HEIGHT*3;
+	g_arenaservers.pc_servers_warning3.string		 = "supported.";
+	g_arenaservers.pc_servers_warning3.style		 = UI_LEFT|UI_SMALLFONT;
+	g_arenaservers.pc_servers_warning3.color		 = color_actual_red;
+
+	g_arenaservers.pc_servers_warning4.generic.type  = MTYPE_TEXT;
+	g_arenaservers.pc_servers_warning4.generic.flags = QMF_LEFT_JUSTIFY;
+	g_arenaservers.pc_servers_warning4.generic.x	 = 508;
+	g_arenaservers.pc_servers_warning4.generic.y	 = y + SMALLCHAR_HEIGHT*4;
+	g_arenaservers.pc_servers_warning4.string		 = "We warned you.";
+	g_arenaservers.pc_servers_warning4.style		 = UI_LEFT|UI_SMALLFONT;
+	g_arenaservers.pc_servers_warning4.color		 = color_actual_red;
 
 	y += SMALLCHAR_HEIGHT;
 	g_arenaservers.gametype.generic.type		= MTYPE_SPINCONTROL;
@@ -1860,6 +1912,10 @@ static void ArenaServers_MenuInit( void ) {
 
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.master );
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.platform );
+	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.pc_servers_warning1 );
+	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.pc_servers_warning2 );
+	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.pc_servers_warning3 );
+	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.pc_servers_warning4);
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.gametype );
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.sortkey );
 	Menu_AddItem( &g_arenaservers.menu, (void*) &g_arenaservers.showfull);
@@ -1895,6 +1951,7 @@ static void ArenaServers_MenuInit( void ) {
 
 	trap_Cvar_VariableStringBuffer( "cl_serverlistGamename", platformStr, sizeof(platformStr) );
 	g_arenaservers.platform.curvalue = strcmp(platformStr, GAMENAME_FOR_MASTER) == 0 ? 0 : 1;
+	ArenaServers_UpdatePcServersWarning();
 
 	g_gametype = Com_Clamp( 0, 12, ui_browserGameType.integer );
 	g_arenaservers.gametype.curvalue = g_gametype;

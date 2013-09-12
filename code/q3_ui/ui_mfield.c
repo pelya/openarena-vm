@@ -392,6 +392,7 @@ MenuField_Key
 sfxHandle_t MenuField_Key( menufield_s* m, int* key )
 {
 	int keycode;
+	static int lastKeypress = 0;
 
 	keycode = *key;
 
@@ -400,8 +401,11 @@ sfxHandle_t MenuField_Key( menufield_s* m, int* key )
 		case K_KP_ENTER:
 		case K_ENTER:
 		case K_MOUSE1:
-			trap_ScreenKeyboardTextInput( m->field.buffer );
-			MField_Clear( &m->field );
+			if (uis.realtime > lastKeypress + 300 || keycode != K_ENTER) // Prevent text input window re-appearing on Ouya
+			{
+				trap_ScreenKeyboardTextInput( m->field.buffer );
+				MField_Clear( &m->field );
+			}
 			break;
 		case K_JOY1:
 		case K_JOY2:
@@ -434,6 +438,7 @@ sfxHandle_t MenuField_Key( menufield_s* m, int* key )
 				MField_KeyDownEvent( &m->field, keycode );
 			break;
 	}
+	lastKeypress = uis.realtime;
 
 	return (0);
 }

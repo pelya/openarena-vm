@@ -1886,9 +1886,9 @@ static void Controls_MenuInit( void )
 	{
 		Menu_AddItem( &s_controls.menu, &s_controls.zoomview );
 		Menu_AddItem( &s_controls.menu, &s_controls.zoomviewbig );
-		Menu_AddItem( &s_controls.menu, &s_controls.railautozoom );
 	}
 
+	Menu_AddItem( &s_controls.menu, &s_controls.railautozoom );
 	Menu_AddItem( &s_controls.menu, &s_controls.alwaysrun );
 	if (!uis.runningOnOuya)
 	{

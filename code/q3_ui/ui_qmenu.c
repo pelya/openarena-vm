@@ -586,43 +586,31 @@ Slider_Key
 */
 static sfxHandle_t Slider_Key( menuslider_s *s, int key )
 {
-	sfxHandle_t	sound;
+	sfxHandle_t	sound = 0;
 	int			x;
-	int			oldvalue;
+	int			oldvalue = s->curvalue;
+	float		step = (s->maxvalue - s->minvalue) / 20.0f;
+
+	if (step <= 0)
+		step = 1;
 
 	switch (key)
 	{
 		case K_MOUSE1:
 			x           = uis.cursorx - s->generic.x - 2*SMALLCHAR_WIDTH;
-			oldvalue    = s->curvalue;
 			s->curvalue = (x/(float)(SLIDER_RANGE*SMALLCHAR_WIDTH)) * (s->maxvalue-s->minvalue) + s->minvalue;
-
-			if (s->curvalue < s->minvalue)
-				s->curvalue = s->minvalue;
-			else if (s->curvalue > s->maxvalue)
-				s->curvalue = s->maxvalue;
-			if (s->curvalue != oldvalue)
-				sound = menu_move_sound;
-			else
-				sound = 0;
 			break;
 
 		case K_LEFTARROW:
 			if (s->curvalue > s->minvalue)
-			{
-				s->curvalue--;
-				sound = menu_move_sound;
-			}
+				s->curvalue -= step;
 			else
 				sound = menu_buzz_sound;
 			break;			
 
 		case K_RIGHTARROW:
 			if (s->curvalue < s->maxvalue)
-			{
-				s->curvalue++;
-				sound = menu_move_sound;
-			}
+				s->curvalue += step;
 			else
 				sound = menu_buzz_sound;
 			break;			
@@ -632,6 +620,13 @@ static sfxHandle_t Slider_Key( menuslider_s *s, int key )
 			sound = 0;
 			break;
 	}
+
+	if (s->curvalue < s->minvalue)
+		s->curvalue = s->minvalue;
+	else if (s->curvalue > s->maxvalue)
+		s->curvalue = s->maxvalue;
+	if (s->curvalue != oldvalue)
+		sound = menu_move_sound;
 
 	if ( sound && s->generic.callback )
 		s->generic.callback( s, QM_ACTIVATED );

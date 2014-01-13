@@ -83,7 +83,9 @@ static errorMessage_t s_errorMessage;
 static const char *s_main_aimingmode_items[] = {
 	"shoot button",
 	"tap to shoot",
-	"single-touch shooting",
+	"floating crosshair",
+	"shoot under finger",
+	"aim under finger",
 	NULL
 };
 
@@ -161,7 +163,7 @@ void Main_MenuEvent (void* ptr, int event) {
 
 	case ID_AIMING_MODE:
 		trap_Cvar_SetValue( "cg_touchscreenControls", s_main.aimingmode.curvalue );
-		if ( s_main.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING && trap_Cvar_VariableValue( "cg_thirdPersonConfigOptionInSettings" ) == 0 )
+		if ( s_main.aimingmode.curvalue == TOUCHSCREEN_FLOATING_CROSSHAIR && trap_Cvar_VariableValue( "cg_thirdPersonConfigOptionInSettings" ) == 0 )
 			trap_Cvar_SetValue( "cg_drawGun", 0 );
 		break;
 
@@ -462,7 +464,7 @@ void UI_MainMenu( void ) {
 	s_main.aimingmode.generic.name		= "touchscreen controls:";
 	s_main.aimingmode.generic.id		= ID_AIMING_MODE;
 	s_main.aimingmode.generic.callback	= Main_MenuEvent;
-	s_main.aimingmode.curvalue			= UI_ClampCvar( TOUCHSCREEN_FIRE_BUTTON, TOUCHSCREEN_SWIPE_FREE_AIMING, trap_Cvar_VariableValue( "cg_touchscreenControls" ) );
+	s_main.aimingmode.curvalue			= UI_ClampCvar( TOUCHSCREEN_FIRE_BUTTON, TOUCHSCREEN_AIM_UNDER_FINGER, trap_Cvar_VariableValue( "cg_touchscreenControls" ) );
 	s_main.aimingmode.itemnames			= s_main_aimingmode_items;
 
 	s_main.thirdperson.generic.type		= MTYPE_RADIOBUTTON;

@@ -276,7 +276,9 @@ static const char *autoswitch_items[] = {
 static const char *s_controls_aimingmode_items[] = {
 	"shoot button",
 	"tap to shoot",
-	"single-touch shooting",
+	"floating crosshair",
+	"shoot under finger",
+	"aim under finger",
 	NULL
 };
 
@@ -946,7 +948,7 @@ static void Controls_GetConfig( void )
 	s_controls.gyroscopeAxesSwap.curvalue = UI_ClampCvar( 0, 7, Controls_GetCvarValue( "in_gyroscopeAxesSwap" ) );
 	s_controls.swipeAngle.curvalue = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "in_swipeAngle" ) / 90.0f );
 	s_controls.swipeSensitivity.curvalue = UI_ClampCvar( 0, 40, 50 - Controls_GetCvarValue( "in_swipeSensitivity" ) );
-	s_controls.aimingmode.curvalue   = UI_ClampCvar( TOUCHSCREEN_FIRE_BUTTON, TOUCHSCREEN_SWIPE_FREE_AIMING, Controls_GetCvarValue( "cg_touchscreenControls" ) );
+	s_controls.aimingmode.curvalue   = UI_ClampCvar( TOUCHSCREEN_FIRE_BUTTON, TOUCHSCREEN_AIM_UNDER_FINGER, Controls_GetCvarValue( "cg_touchscreenControls" ) );
 	s_controls.crosshairOffset.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "in_swipeFreeCrosshairOffset" ) );
 	s_controls.crosshairEdges.curvalue   = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_swipeFreeStickyEdges" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
@@ -999,7 +1001,7 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "in_swipeAngle", s_controls.swipeAngle.curvalue * 90.0f );
 	trap_Cvar_SetValue( "in_swipeSensitivity", 50 - s_controls.swipeSensitivity.curvalue );
 	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
-	if ( s_controls.aimingmode.curvalue == TOUCHSCREEN_SWIPE_FREE_AIMING && s_controls.thirdperson.curvalue == 0 )
+	if ( s_controls.aimingmode.curvalue == TOUCHSCREEN_FLOATING_CROSSHAIR && s_controls.thirdperson.curvalue == 0 )
 		trap_Cvar_SetValue( "cg_drawGun", 0 );
 	trap_Cvar_SetValue( "in_swipeFreeCrosshairOffset", s_controls.crosshairOffset.curvalue );
 	trap_Cvar_SetValue( "in_swipeFreeStickyEdges", s_controls.crosshairEdges.curvalue );

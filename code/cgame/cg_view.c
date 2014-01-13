@@ -545,7 +545,7 @@ void CG_ZoomDown_f( void ) {
 	trap_Cvar_Set("cg_thirdperson", "0");
 	trap_Cvar_Set("cl_pitchAutoCenter", "0");
 	cg.zoomFov = cg_zoomFovMinor.value;
-	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR )
 		CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
 }
 
@@ -569,7 +569,7 @@ void CG_ZoomToggleDown_f( void ) {
 		//trap_SendConsoleCommand("weapon 7"); // Select railgun
 		trap_Cvar_Set("cg_thirdperson", "0");
 		cg.zoomFov = cg_zoomFov.value;
-		if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
+		if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR )
 			CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
 	} else {
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
@@ -651,7 +651,7 @@ static int CG_CalcFov( void ) {
 				if ( cg_thirdPersonConfigOptionInSettings.integer && !cg_thirdPerson.integer ) {
 					trap_Cvar_Set("cg_thirdperson", "1");
 				}
-				if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING && cg.zoomAnglesNeedAdusting ) {
+				if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR && cg.zoomAnglesNeedAdusting ) {
 					cg.zoomAnglesNeedAdusting = qfalse;
 					CG_ZoomAdjustViewAnglesSwipeFree(cg.zoomFov, cg_fov.value, qfalse);
 				}
@@ -815,7 +815,7 @@ static int CG_CalcViewValues( void ) {
 		}
 	}
 
-	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING ) {
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
 		CG_AdjustAnglesAfterTeleport();
 
 		cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
@@ -830,7 +830,7 @@ static int CG_CalcViewValues( void ) {
 		CG_OffsetFirstPersonView();
 	}
 
-	if ( cg_touchscreenControls.integer == TOUCHSCREEN_SWIPE_FREE_AIMING )
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR )
 		calculateTouchscreenAimingAngles();
 
 	// position eye reletive to origin

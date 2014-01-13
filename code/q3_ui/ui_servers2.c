@@ -454,7 +454,7 @@ ArenaServers_Go
 static void ArenaServers_Go( void ) {
 	servernode_t*	servernode;
 
-	if( g_arenaservers.platform.curvalue != 0 && trap_Cvar_VariableValue( "cg_touchscreenControls" ) == TOUCHSCREEN_SWIPE_FREE_AIMING )
+	if( g_arenaservers.platform.curvalue != 0 && trap_Cvar_VariableValue( "cg_touchscreenControls" ) == TOUCHSCREEN_FLOATING_CROSSHAIR )
 		trap_Cvar_SetValue( "cg_touchscreenControls", TOUCHSCREEN_FIRE_BUTTON ); // Old VM does not recognize swipe-free aiming, and will crash
 
 	servernode = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;

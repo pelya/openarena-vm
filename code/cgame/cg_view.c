@@ -280,7 +280,6 @@ static void calculateTouchscreenAimingAngles(void)
 	VectorCopy( angles, oldAimingAngles );
 }
 
-
 /*
 ===============
 CG_OffsetThirdPersonView
@@ -313,13 +312,16 @@ static void CG_OffsetThirdPersonView( void ) {
 	if ( focusAngles[PITCH] > 45 ) {
 		focusAngles[PITCH] = 45;		// don't go too far overhead
 	}
-	AngleVectors( focusAngles, forward, NULL, NULL );
+	AngleVectors( focusAngles, forward, right, NULL );
 
 	VectorMA( cg.refdef.vieworg, FOCUS_DISTANCE, forward, focusPoint );
 
 	VectorCopy( cg.refdef.vieworg, view );
 
 	view[2] += 8;
+	if ( cg_cameraSideShift.value != 0.0f ) {
+		VectorMA( view, cg_cameraSideShift.value, right, view );
+	}
 
 	cg.refdefViewAngles[PITCH] *= 0.5;
 
@@ -358,6 +360,28 @@ static void CG_OffsetThirdPersonView( void ) {
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2( focusPoint[2], focusDist );
 	//cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
 	//cg.refdefViewAngles[ROLL] = 0;
+
+	if ( cg_cameraSideShift.value != 0.0f && cg_touchscreenControls.integer != TOUCHSCREEN_FLOATING_CROSSHAIR ) {
+		// Calculate player aiming, that will bump against level walls and other players
+		// First we calculate a distant point, where we'd be aiming if there are no walls around
+		AngleVectors( cg.refdefViewAngles, forward, NULL, NULL );
+
+		VectorMA( cg.refdef.vieworg, 10000.0f, forward, focusPoint );
+
+		// Bump it against the level walls
+		CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL, focusPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
+
+		// Calculate player aim angles
+		VectorSubtract( trace.endpos, cg.predictedPlayerState.origin, view );
+		view[2] -= cg.predictedPlayerState.viewheight;
+		vectoangles( view, focusAngles );
+
+		focusAngles[YAW] = AngleSubtract( focusAngles[YAW], SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ) );
+		focusAngles[PITCH] = AngleSubtract( focusAngles[PITCH], SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
+
+		trap_SetAimingAngles( focusAngles );
+		//trap_SetAimingAngles( cg.refdefViewAngles );
+	}
 }
 
 // this causes a compiler bug on mac MrC compiler
@@ -815,8 +839,10 @@ static int CG_CalcViewValues( void ) {
 		}
 	}
 
-	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
-		CG_AdjustAnglesAfterTeleport();
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR || cg_cameraSideShift.value != 0.0f ) {
+		if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
+			CG_AdjustAnglesAfterTeleport();
+		}
 
 		cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
 		cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];

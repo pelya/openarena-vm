@@ -138,6 +138,7 @@ typedef struct
 #define ID_THIRD_PERSON_RANGE	56
 #define ID_CROSSHAIR_OFFSET	57
 #define ID_CROSSHAIR_EDGES	58
+#define ID_CAMERA_SIDE_SHIFT	59
 
 
 #define ANIM_IDLE		0
@@ -222,6 +223,7 @@ typedef struct
 	menuradiobutton_s	crosshairEdges;
 	menuradiobutton_s	thirdperson;
 	menuslider_s		thirdpersonrange;
+	menuslider_s		camerasideshift;
 	menuradiobutton_s	widefov;
 	menuaction_s		centerview;
 	menuaction_s		zoomview;
@@ -364,6 +366,7 @@ static configcvar_t g_configcvars[] =
 	{"cg_touchscreenControls",	0,			0},
 	{"cg_thirdPersonConfigOptionInSettings",	1,	1},
 	{"cg_thirdPersonRange",	120,			120},
+	{"cg_cameraSideShift",	-30,			-30},
 	{"in_gyroscope",	1,					1},
 	{"in_gyroscopeSensitivity",	2,			2},
 	{"in_gyroscopeAxesSwap",	0,			0},
@@ -393,6 +396,9 @@ static menucommon_s *g_movement_controls[] =
 	(menucommon_s *)&s_controls.lookup,
 	(menucommon_s *)&s_controls.lookdown,
 	(menucommon_s *)&s_controls.mouselook,
+	(menucommon_s *)&s_controls.zoomview,
+	(menucommon_s *)&s_controls.zoomviewbig,
+	(menucommon_s *)&s_controls.centerview,
 	NULL
 };
 
@@ -423,6 +429,7 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.crosshairEdges,
 	(menucommon_s *)&s_controls.thirdperson,
 	(menucommon_s *)&s_controls.thirdpersonrange,
+	(menucommon_s *)&s_controls.camerasideshift,
 	(menucommon_s *)&s_controls.sensitivity,
 	(menucommon_s *)&s_controls.invertmouse,
 	(menucommon_s *)&s_controls.gyroscope,
@@ -432,9 +439,6 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.swipeSensitivity,
 	(menucommon_s *)&s_controls.widefov,
 	(menucommon_s *)&s_controls.railautozoom,
-	(menucommon_s *)&s_controls.zoomview,
-	(menucommon_s *)&s_controls.zoomviewbig,
-	(menucommon_s *)&s_controls.centerview,
 	(menucommon_s *)&s_controls.smoothmouse,
 	NULL,
 };
@@ -953,6 +957,7 @@ static void Controls_GetConfig( void )
 	s_controls.crosshairEdges.curvalue   = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_swipeFreeStickyEdges" ) );
 	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
 	s_controls.thirdpersonrange.curvalue  = UI_ClampCvar( 40, 300, Controls_GetCvarValue( "cg_thirdPersonRange" ) );
+	s_controls.camerasideshift.curvalue  = UI_ClampCvar( -100, 100, Controls_GetCvarValue( "cg_cameraSideShift" ) );
 	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
 	s_controls.railautozoom.curvalue = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_railgunAutoZoom" ) );
         s_controls.voip_teamonly.curvalue= UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_voipTeamOnly" ) );
@@ -1007,6 +1012,8 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "in_swipeFreeStickyEdges", s_controls.crosshairEdges.curvalue );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
 	trap_Cvar_SetValue( "cg_thirdPersonRange", s_controls.thirdpersonrange.curvalue );
+	trap_Cvar_SetValue( "cg_cameraSideShift", s_controls.camerasideshift.curvalue );
+
 	trap_Cvar_SetValue( "cg_fov", (s_controls.widefov.curvalue == 0 ? 90 : 140) );
 	trap_Cvar_SetValue( "cg_railgunAutoZoom", s_controls.railautozoom.curvalue );
         trap_Cvar_SetValue( "cg_voipTeamOnly", s_controls.voip_teamonly.curvalue);
@@ -1043,6 +1050,16 @@ static void Controls_SetDefaults( void )
 	s_controls.sensitivity.curvalue  = Controls_GetCvarDefault( "sensitivity" );
 	s_controls.gyroscope.curvalue    = Controls_GetCvarDefault( "in_gyroscope" );
 	s_controls.gyroscopeSensitivity.curvalue = Controls_GetCvarDefault( "in_gyroscopeSensitivity" );
+	s_controls.gyroscopeAxesSwap.curvalue = Controls_GetCvarDefault( "in_gyroscopeAxesSwap" );
+	s_controls.swipeAngle.curvalue = Controls_GetCvarDefault( "in_swipeAngle" ) / 90.0f;
+	s_controls.swipeSensitivity.curvalue = Controls_GetCvarDefault( "in_swipeSensitivity" );
+	s_controls.crosshairOffset.curvalue   = Controls_GetCvarDefault( "in_swipeFreeCrosshairOffset" );
+	s_controls.crosshairEdges.curvalue   = Controls_GetCvarDefault( "in_swipeFreeStickyEdges" );
+	s_controls.thirdperson.curvalue  = Controls_GetCvarDefault( "cg_thirdPersonConfigOptionInSettings" );
+	s_controls.thirdpersonrange.curvalue  = Controls_GetCvarDefault( "cg_thirdPersonRange" );
+	s_controls.camerasideshift.curvalue  = Controls_GetCvarDefault( "cg_cameraSideShift" );
+	s_controls.widefov.curvalue      = (Controls_GetCvarDefault( "cg_fov" ) <= 90 ? 0 : 1);
+	s_controls.railautozoom.curvalue = Controls_GetCvarDefault( "cg_railgunAutoZoom" );
 	s_controls.aimingmode.curvalue     = Controls_GetCvarDefault( "cg_touchscreenControls" );
         s_controls.voip_teamonly.curvalue= Controls_GetCvarDefault( "cg_voipTeamOnly");
 }
@@ -1270,6 +1287,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_AIMING_MODE:
 		case ID_THIRD_PERSON:
 		case ID_THIRD_PERSON_RANGE:
+		case ID_CAMERA_SIDE_SHIFT:
 		case ID_MOUSESPEED:
 		case ID_INVERTMOUSE:
 		case ID_SMOOTHMOUSE:
@@ -1669,6 +1687,16 @@ static void Controls_MenuInit( void )
 	s_controls.thirdpersonrange.maxvalue		= 300;
 	s_controls.thirdpersonrange.generic.statusbar = Controls_StatusBar;
 
+	s_controls.camerasideshift.generic.type		= MTYPE_SLIDER;
+	s_controls.camerasideshift.generic.x		= SCREEN_WIDTH/2;
+	s_controls.camerasideshift.generic.flags	= QMF_SMALLFONT;
+	s_controls.camerasideshift.generic.name		= "camera side shift";
+	s_controls.camerasideshift.generic.id		= ID_CAMERA_SIDE_SHIFT;
+	s_controls.camerasideshift.generic.callback = Controls_MenuEvent;
+	s_controls.camerasideshift.minvalue			= -100;
+	s_controls.camerasideshift.maxvalue			= 100;
+	s_controls.camerasideshift.generic.statusbar = Controls_StatusBar;
+
 	s_controls.widefov.generic.type			= MTYPE_RADIOBUTTON;
 	s_controls.widefov.generic.flags		= QMF_SMALLFONT;
 	s_controls.widefov.generic.x			= SCREEN_WIDTH/2;
@@ -1872,6 +1900,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.crosshairEdges );
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdperson );
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdpersonrange );
+	Menu_AddItem( &s_controls.menu, &s_controls.camerasideshift );
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscope );

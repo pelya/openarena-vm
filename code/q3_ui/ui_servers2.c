@@ -454,13 +454,6 @@ ArenaServers_Go
 static void ArenaServers_Go( void ) {
 	servernode_t*	servernode;
 
-	if ( g_arenaservers.platform.curvalue != 0 ) {
-		if ( trap_Cvar_VariableValue( "cg_touchscreenControls" ) == TOUCHSCREEN_FLOATING_CROSSHAIR )
-			trap_Cvar_SetValue( "cg_touchscreenControls", TOUCHSCREEN_FIRE_BUTTON ); // Old VM does not recognize swipe-free aiming, and will crash
-		if ( trap_Cvar_VariableValue( "cg_cameraSideShift" ) != 0.0f )
-			trap_Cvar_SetValue( "cg_cameraSideShift", 0.0f ); // The same is true about tricky camera handling
-	}
-
 	servernode = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;
 	if( servernode ) {
 		if(servernode->needPass) {

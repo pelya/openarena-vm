@@ -196,6 +196,8 @@ vmCvar_t	cg_drawFPS;
 vmCvar_t	cg_lagometer;
 vmCvar_t	cg_thirdPersonConfigOptionInSettings;
 vmCvar_t	cg_fov;
+vmCvar_t	cg_thirdPersonRange;
+vmCvar_t	cg_cameraSideShift;
 
 // bk001129 - made static to avoid aliasing.
 static cvarTable_t		cvarTable[] = {
@@ -296,6 +298,8 @@ static cvarTable_t		cvarTable[] = {
 	{ &cg_lagometer, "cg_lagometer", "0", CVAR_ARCHIVE },
 	{ &cg_thirdPersonConfigOptionInSettings, "cg_thirdPersonConfigOptionInSettings", "1", CVAR_ARCHIVE },
 	{ &cg_fov, "cg_fov", "90", CVAR_ARCHIVE },
+	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "120", CVAR_ARCHIVE },
+	{ &cg_cameraSideShift, "cg_cameraSideShift", "-30", CVAR_ARCHIVE },
 };
 
 // bk001129 - made static to avoid aliasing

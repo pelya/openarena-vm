@@ -476,17 +476,17 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_weaponBarStyle, "cg_weaponBarStyle", "0", CVAR_ARCHIVE},
 	{ &cg_weaponOrder,"cg_weaponOrder", "/1/2/4/3/6/7/8/9/5/", CVAR_ARCHIVE},
-	{&cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE },
-	{&cg_teamChatBeep, "cg_teamChatBeep", "1", CVAR_ARCHIVE },
+	{ &cg_chatBeep, "cg_chatBeep", "1", CVAR_ARCHIVE },
+	{ &cg_teamChatBeep, "cg_teamChatBeep", "1", CVAR_ARCHIVE },
 
-	{&cg_weaponBarActiveWidth, "cg_weaponBarActiveWidth", "0", 0 },
-	{&cg_weaponBarActiveWeapons, "cg_weaponBarActiveWeapons", "0", 0 },
-	{&cg_weaponBarAtBottom, "cg_weaponBarAtBottom", "0", CVAR_ARCHIVE },
-	{&cg_holdingUsableItem, "cg_holdingUsableItem", "0", 0 },
-	{&cg_touchscreenControls, "cg_touchscreenControls", "0", CVAR_ARCHIVE },
-	{&cg_thirdPersonConfigOptionInSettings, "cg_thirdPersonConfigOptionInSettings", "1", CVAR_ARCHIVE },
-	{&cl_runningOnOuya, "cl_runningOnOuya", "0", 0 },
-	{&cg_cameraSideShift, "cg_cameraSideShift", "-30", CVAR_ARCHIVE },
+	{ &cg_weaponBarActiveWidth, "cg_weaponBarActiveWidth", "0", 0 },
+	{ &cg_weaponBarActiveWeapons, "cg_weaponBarActiveWeapons", "0", 0 },
+	{ &cg_weaponBarAtBottom, "cg_weaponBarAtBottom", "0", CVAR_ARCHIVE },
+	{ &cg_holdingUsableItem, "cg_holdingUsableItem", "0", 0 },
+	{ &cg_touchscreenControls, "cg_touchscreenControls", "0", CVAR_ARCHIVE },
+	{ &cg_thirdPersonConfigOptionInSettings, "cg_thirdPersonConfigOptionInSettings", "1", CVAR_ARCHIVE },
+	{ &cl_runningOnOuya, "cl_runningOnOuya", "0", 0 },
+	{ &cg_cameraSideShift, "cg_cameraSideShift", "-30", CVAR_ARCHIVE },
 };
 
 static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );

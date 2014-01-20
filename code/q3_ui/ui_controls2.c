@@ -181,6 +181,7 @@ typedef struct
 	menubitmap_s		framel;
 	menubitmap_s		framer;
 	menubitmap_s		player;
+	menubitmap_s		ouyahelp;
 
 	menutext_s			movement;
 	menutext_s			looking;
@@ -383,6 +384,7 @@ static configcvar_t g_configcvars[] =
 static menucommon_s *g_movement_controls[] =
 {
 	(menucommon_s *)&s_controls.alwaysrun,     
+	(menucommon_s *)&s_controls.ouyahelp,
 	(menucommon_s *)&s_controls.run,            
 	(menucommon_s *)&s_controls.walkforward,
 	(menucommon_s *)&s_controls.backpedal,
@@ -1409,6 +1411,14 @@ static void Controls_MenuInit( void )
 	s_controls.framer.width  	    = 256;
 	s_controls.framer.height  	    = 334;
 
+	s_controls.ouyahelp.generic.type  = MTYPE_BITMAP;
+	s_controls.ouyahelp.generic.name  = "menu/ouya-help";
+	s_controls.ouyahelp.generic.flags = QMF_LEFT_JUSTIFY|QMF_INACTIVE;
+	s_controls.ouyahelp.generic.x     = 200;
+	s_controls.ouyahelp.generic.y     = 100;
+	s_controls.ouyahelp.width         = 370;
+	s_controls.ouyahelp.height        = 310;
+
 	s_controls.looking.generic.type     = MTYPE_PTEXT;
 	s_controls.looking.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_controls.looking.generic.id	    = ID_LOOKING;
@@ -1988,6 +1998,10 @@ static void Controls_MenuInit( void )
 
 	// initial default section
 	s_controls.section = C_LOOKING;
+	if (uis.runningOnOuya) {
+		s_controls.section = C_MOVEMENT;
+		Menu_AddItem( &s_controls.menu, &s_controls.ouyahelp );
+	}
 
 	// update the ui
 	Controls_Update();

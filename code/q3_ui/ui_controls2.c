@@ -139,6 +139,7 @@ typedef struct
 #define ID_CROSSHAIR_OFFSET	57
 #define ID_CROSSHAIR_EDGES	58
 #define ID_CAMERA_SIDE_SHIFT	59
+#define ID_SWAP_GAMEPAD_STICKS	60
 
 
 #define ANIM_IDLE		0
@@ -232,6 +233,7 @@ typedef struct
 	menuradiobutton_s	railautozoom;
 	menuaction_s		gesture;
 	menuradiobutton_s	invertmouse;
+	menuradiobutton_s	swapgamepadsticks;
 	menuslider_s		sensitivity;
 	menuradiobutton_s	smoothmouse;
 	menuradiobutton_s	alwaysrun;
@@ -364,6 +366,7 @@ static configcvar_t g_configcvars[] =
 	{"in_joystick",		0,					0},
 	{"joy_threshold",	0,					0},
 	{"m_filter",		0,					0},
+	{"in_swapGamepadSticks",	0,					0},
 	{"cg_touchscreenControls",	0,			0},
 	{"cg_thirdPersonConfigOptionInSettings",	1,	1},
 	{"cg_thirdPersonRange",	120,			120},
@@ -442,6 +445,7 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.widefov,
 	(menucommon_s *)&s_controls.railautozoom,
 	(menucommon_s *)&s_controls.smoothmouse,
+	(menucommon_s *)&s_controls.swapgamepadsticks,
 	NULL,
 };
 
@@ -946,6 +950,7 @@ static void Controls_GetConfig( void )
 
 	s_controls.invertmouse.curvalue  = Controls_GetCvarValue( "m_pitch" ) < 0;
 	s_controls.smoothmouse.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "m_filter" ) );
+	s_controls.swapgamepadsticks.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_swapGamepadSticks" ) );
 	s_controls.alwaysrun.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_run" ) );
 	s_controls.autoswitch.curvalue   = UI_ClampCvar( 0, 4, Controls_GetCvarValue( "cg_autoswitch" ) );
 	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 20, Controls_GetCvarValue( "sensitivity" ) );
@@ -999,6 +1004,7 @@ static void Controls_SetConfig( void )
 		trap_Cvar_SetValue( "m_pitch", fabs( trap_Cvar_VariableValue( "m_pitch" ) ) );
 
 	trap_Cvar_SetValue( "m_filter", s_controls.smoothmouse.curvalue );
+	trap_Cvar_SetValue( "in_swapGamepadSticks", s_controls.swapgamepadsticks.curvalue );
 	trap_Cvar_SetValue( "cl_run", s_controls.alwaysrun.curvalue );
 	trap_Cvar_SetValue( "cg_autoswitch", s_controls.autoswitch.curvalue );
 	trap_Cvar_SetValue( "sensitivity", s_controls.sensitivity.curvalue );
@@ -1292,6 +1298,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_CAMERA_SIDE_SHIFT:
 		case ID_MOUSESPEED:
 		case ID_INVERTMOUSE:
+		case ID_SWAP_GAMEPAD_STICKS:
 		case ID_SMOOTHMOUSE:
 		case ID_ALWAYSRUN:
 		case ID_AUTOSWITCH:
@@ -1761,6 +1768,14 @@ static void Controls_MenuInit( void )
 	s_controls.smoothmouse.generic.callback  = Controls_MenuEvent;
 	s_controls.smoothmouse.generic.statusbar = Controls_StatusBar;
 
+	s_controls.swapgamepadsticks.generic.type      = MTYPE_RADIOBUTTON;
+	s_controls.swapgamepadsticks.generic.flags	 = QMF_SMALLFONT;
+	s_controls.swapgamepadsticks.generic.x	     = SCREEN_WIDTH/2;
+	s_controls.swapgamepadsticks.generic.name	     = "swap gamepad sticks";
+	s_controls.swapgamepadsticks.generic.id        = ID_SWAP_GAMEPAD_STICKS;
+	s_controls.swapgamepadsticks.generic.callback  = Controls_MenuEvent;
+	s_controls.swapgamepadsticks.generic.statusbar = Controls_StatusBar;
+
 	s_controls.alwaysrun.generic.type      = MTYPE_RADIOBUTTON;
 	s_controls.alwaysrun.generic.flags	   = QMF_SMALLFONT;
 	s_controls.alwaysrun.generic.x	       = SCREEN_WIDTH/2;
@@ -1920,6 +1935,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.swipeSensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.widefov );
 	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );
+	Menu_AddItem( &s_controls.menu, &s_controls.swapgamepadsticks );
 	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
 	// Stupid Ouya does not want it's games to contain button names of PC keyboard - only it's gamepad is allowed
 	// So I'll hide them completely, mwahaha

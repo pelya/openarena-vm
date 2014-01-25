@@ -169,6 +169,7 @@ void Main_MenuEvent (void* ptr, int event) {
 
 	case ID_THIRD_PERSON:
 		trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_main.thirdperson.curvalue );
+		trap_Cvar_SetValue( "cg_thirdperson", s_main.thirdperson.curvalue );
 		break;
 
 	case ID_GYROSCOPE:

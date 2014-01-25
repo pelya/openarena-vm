@@ -1019,6 +1019,7 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "in_swipeFreeCrosshairOffset", s_controls.crosshairOffset.curvalue );
 	trap_Cvar_SetValue( "in_swipeFreeStickyEdges", s_controls.crosshairEdges.curvalue );
 	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
+	trap_Cvar_SetValue( "cg_thirdperson", s_controls.thirdperson.curvalue );
 	trap_Cvar_SetValue( "cg_thirdPersonRange", s_controls.thirdpersonrange.curvalue );
 	trap_Cvar_SetValue( "cg_cameraSideShift", s_controls.camerasideshift.curvalue );
 

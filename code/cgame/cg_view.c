@@ -319,9 +319,7 @@ static void CG_OffsetThirdPersonView( void ) {
 	VectorCopy( cg.refdef.vieworg, view );
 
 	view[2] += 8;
-	if ( cg_cameraSideShift.value != 0.0f ) {
-		VectorMA( view, cg_cameraSideShift.value, right, view );
-	}
+	VectorMA( view, cg_cameraSideShift.value, right, view );
 
 	cg.refdefViewAngles[PITCH] *= 0.5;
 
@@ -361,7 +359,7 @@ static void CG_OffsetThirdPersonView( void ) {
 	//cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
 	//cg.refdefViewAngles[ROLL] = 0;
 
-	if ( cg_cameraSideShift.value != 0.0f && cg_touchscreenControls.integer != TOUCHSCREEN_FLOATING_CROSSHAIR ) {
+	if ( cg_touchscreenControls.integer != TOUCHSCREEN_FLOATING_CROSSHAIR ) {
 		// Calculate player aiming, that will bump against level walls and other players
 		// First we calculate a distant point, where we'd be aiming if there are no walls around
 		AngleVectors( cg.refdefViewAngles, forward, NULL, NULL );
@@ -380,7 +378,6 @@ static void CG_OffsetThirdPersonView( void ) {
 		focusAngles[PITCH] = AngleSubtract( focusAngles[PITCH], SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
 
 		trap_SetAimingAngles( focusAngles );
-		//trap_SetAimingAngles( cg.refdefViewAngles );
 	}
 }
 
@@ -839,7 +836,7 @@ static int CG_CalcViewValues( void ) {
 		}
 	}
 
-	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR || cg_cameraSideShift.value != 0.0f ) {
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR || cg_thirdPerson.integer ) {
 		if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
 			CG_AdjustAnglesAfterTeleport();
 		}

@@ -2215,6 +2215,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum ) {
 	addChallenge(GENERAL_TEST);
 
 	trap_S_ClearLoopingSounds( qtrue );
+
+	trap_Cvar_Set("cl_touchscreenVmCallbacks", "1");
 }
 
 /*

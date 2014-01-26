@@ -223,7 +223,7 @@ typedef struct
 	menulist_s			aimingmode;
 	menuslider_s		crosshairOffset;
 	menuradiobutton_s	crosshairEdges;
-	menuradiobutton_s	thirdperson;
+	menuradiobutton_s	firstperson;
 	menuslider_s		thirdpersonrange;
 	menuslider_s		camerasideshift;
 	menuradiobutton_s	widefov;
@@ -432,7 +432,7 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.aimingmode,
 	(menucommon_s *)&s_controls.crosshairOffset,
 	(menucommon_s *)&s_controls.crosshairEdges,
-	(menucommon_s *)&s_controls.thirdperson,
+	(menucommon_s *)&s_controls.firstperson,
 	(menucommon_s *)&s_controls.thirdpersonrange,
 	(menucommon_s *)&s_controls.camerasideshift,
 	(menucommon_s *)&s_controls.sensitivity,
@@ -962,7 +962,7 @@ static void Controls_GetConfig( void )
 	s_controls.aimingmode.curvalue   = UI_ClampCvar( TOUCHSCREEN_FIRE_BUTTON, TOUCHSCREEN_AIM_UNDER_FINGER, Controls_GetCvarValue( "cg_touchscreenControls" ) );
 	s_controls.crosshairOffset.curvalue   = UI_ClampCvar( 0, 2, Controls_GetCvarValue( "in_swipeFreeCrosshairOffset" ) );
 	s_controls.crosshairEdges.curvalue   = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_swipeFreeStickyEdges" ) );
-	s_controls.thirdperson.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
+	s_controls.firstperson.curvalue  = ! UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_thirdPersonConfigOptionInSettings" ) );
 	s_controls.thirdpersonrange.curvalue  = UI_ClampCvar( 40, 300, Controls_GetCvarValue( "cg_thirdPersonRange" ) );
 	s_controls.camerasideshift.curvalue  = UI_ClampCvar( -100, 100, Controls_GetCvarValue( "cg_cameraSideShift" ) );
 	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
@@ -1014,12 +1014,12 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "in_swipeAngle", s_controls.swipeAngle.curvalue * 90.0f );
 	trap_Cvar_SetValue( "in_swipeSensitivity", 50 - s_controls.swipeSensitivity.curvalue );
 	trap_Cvar_SetValue( "cg_touchscreenControls", s_controls.aimingmode.curvalue );
-	if ( s_controls.aimingmode.curvalue == TOUCHSCREEN_FLOATING_CROSSHAIR && s_controls.thirdperson.curvalue == 0 )
+	if ( s_controls.aimingmode.curvalue == TOUCHSCREEN_FLOATING_CROSSHAIR && s_controls.firstperson.curvalue == 1 )
 		trap_Cvar_SetValue( "cg_drawGun", 0 );
 	trap_Cvar_SetValue( "in_swipeFreeCrosshairOffset", s_controls.crosshairOffset.curvalue );
 	trap_Cvar_SetValue( "in_swipeFreeStickyEdges", s_controls.crosshairEdges.curvalue );
-	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_controls.thirdperson.curvalue );
-	trap_Cvar_SetValue( "cg_thirdperson", s_controls.thirdperson.curvalue );
+	trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", !s_controls.firstperson.curvalue );
+	trap_Cvar_SetValue( "cg_thirdperson", !s_controls.firstperson.curvalue );
 	trap_Cvar_SetValue( "cg_thirdPersonRange", s_controls.thirdpersonrange.curvalue );
 	trap_Cvar_SetValue( "cg_cameraSideShift", s_controls.camerasideshift.curvalue );
 
@@ -1064,7 +1064,7 @@ static void Controls_SetDefaults( void )
 	s_controls.swipeSensitivity.curvalue = Controls_GetCvarDefault( "in_swipeSensitivity" );
 	s_controls.crosshairOffset.curvalue   = Controls_GetCvarDefault( "in_swipeFreeCrosshairOffset" );
 	s_controls.crosshairEdges.curvalue   = Controls_GetCvarDefault( "in_swipeFreeStickyEdges" );
-	s_controls.thirdperson.curvalue  = Controls_GetCvarDefault( "cg_thirdPersonConfigOptionInSettings" );
+	s_controls.firstperson.curvalue  = Controls_GetCvarDefault( "cg_thirdPersonConfigOptionInSettings" );
 	s_controls.thirdpersonrange.curvalue  = Controls_GetCvarDefault( "cg_thirdPersonRange" );
 	s_controls.camerasideshift.curvalue  = Controls_GetCvarDefault( "cg_cameraSideShift" );
 	s_controls.widefov.curvalue      = (Controls_GetCvarDefault( "cg_fov" ) <= 90 ? 0 : 1);
@@ -1687,13 +1687,13 @@ static void Controls_MenuInit( void )
 	s_controls.crosshairEdges.generic.callback	= Controls_MenuEvent;
 	s_controls.crosshairEdges.generic.statusbar	= Controls_StatusBar;
 
-	s_controls.thirdperson.generic.type		= MTYPE_RADIOBUTTON;
-	s_controls.thirdperson.generic.flags	= QMF_SMALLFONT;
-	s_controls.thirdperson.generic.x		= SCREEN_WIDTH/2;
-	s_controls.thirdperson.generic.name		= "third-person view";
-	s_controls.thirdperson.generic.id		= ID_THIRD_PERSON;
-	s_controls.thirdperson.generic.callback	= Controls_MenuEvent;
-	s_controls.thirdperson.generic.statusbar	= Controls_StatusBar;
+	s_controls.firstperson.generic.type		= MTYPE_RADIOBUTTON;
+	s_controls.firstperson.generic.flags	= QMF_SMALLFONT;
+	s_controls.firstperson.generic.x		= SCREEN_WIDTH/2;
+	s_controls.firstperson.generic.name		= "first-person view";
+	s_controls.firstperson.generic.id		= ID_THIRD_PERSON;
+	s_controls.firstperson.generic.callback	= Controls_MenuEvent;
+	s_controls.firstperson.generic.statusbar	= Controls_StatusBar;
 
 	s_controls.thirdpersonrange.generic.type	= MTYPE_SLIDER;
 	s_controls.thirdpersonrange.generic.x		= SCREEN_WIDTH/2;
@@ -1924,7 +1924,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.aimingmode );
 	Menu_AddItem( &s_controls.menu, &s_controls.crosshairOffset );
 	Menu_AddItem( &s_controls.menu, &s_controls.crosshairEdges );
-	Menu_AddItem( &s_controls.menu, &s_controls.thirdperson );
+	Menu_AddItem( &s_controls.menu, &s_controls.firstperson );
 	Menu_AddItem( &s_controls.menu, &s_controls.thirdpersonrange );
 	Menu_AddItem( &s_controls.menu, &s_controls.camerasideshift );
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );

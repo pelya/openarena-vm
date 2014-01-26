@@ -63,7 +63,7 @@ typedef struct {
 	menutext_s		mods;
 	menutext_s		exit;
 	menulist_s		aimingmode; // Hack for lazy Android users, who are too ignorant change game settings, but quick to downvote
-	menuradiobutton_s	thirdperson; // Another hack
+	menuradiobutton_s	firstperson; // Another hack
 	menuradiobutton_s	gyroscope; // Another hack
 	menulist_s		voicechat; // Another hack
 
@@ -168,8 +168,8 @@ void Main_MenuEvent (void* ptr, int event) {
 		break;
 
 	case ID_THIRD_PERSON:
-		trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", s_main.thirdperson.curvalue );
-		trap_Cvar_SetValue( "cg_thirdperson", s_main.thirdperson.curvalue );
+		trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", !s_main.firstperson.curvalue );
+		trap_Cvar_SetValue( "cg_thirdperson", !s_main.firstperson.curvalue );
 		break;
 
 	case ID_GYROSCOPE:
@@ -468,14 +468,14 @@ void UI_MainMenu( void ) {
 	s_main.aimingmode.curvalue			= UI_ClampCvar( TOUCHSCREEN_FIRE_BUTTON, TOUCHSCREEN_AIM_UNDER_FINGER, trap_Cvar_VariableValue( "cg_touchscreenControls" ) );
 	s_main.aimingmode.itemnames			= s_main_aimingmode_items;
 
-	s_main.thirdperson.generic.type		= MTYPE_RADIOBUTTON;
-	s_main.thirdperson.generic.flags	= QMF_SMALLFONT;
-	s_main.thirdperson.generic.x		= SCREEN_WIDTH - 60;
-	s_main.thirdperson.generic.y		= 15; // + SMALLCHAR_HEIGHT + 2;
-	s_main.thirdperson.generic.name		= "third-person view:";
-	s_main.thirdperson.generic.id		= ID_THIRD_PERSON;
-	s_main.thirdperson.generic.callback	= Main_MenuEvent;
-	s_main.thirdperson.curvalue			= trap_Cvar_VariableValue( "cg_thirdPersonConfigOptionInSettings" );
+	s_main.firstperson.generic.type		= MTYPE_RADIOBUTTON;
+	s_main.firstperson.generic.flags	= QMF_SMALLFONT;
+	s_main.firstperson.generic.x		= SCREEN_WIDTH - 60;
+	s_main.firstperson.generic.y		= 15; // + SMALLCHAR_HEIGHT + 2;
+	s_main.firstperson.generic.name		= "first-person view:";
+	s_main.firstperson.generic.id		= ID_THIRD_PERSON;
+	s_main.firstperson.generic.callback	= Main_MenuEvent;
+	s_main.firstperson.curvalue			= !trap_Cvar_VariableValue( "cg_thirdPersonConfigOptionInSettings" );
 
 	s_main.gyroscope.generic.type		= MTYPE_RADIOBUTTON;
 	s_main.gyroscope.generic.flags		= QMF_SMALLFONT;
@@ -509,7 +509,7 @@ void UI_MainMenu( void ) {
 	Menu_AddItem( &s_main.menu,	&s_main.exit );
 	if (!uis.runningOnOuya) {
 		Menu_AddItem( &s_main.menu,	&s_main.aimingmode );
-		Menu_AddItem( &s_main.menu,	&s_main.thirdperson );
+		Menu_AddItem( &s_main.menu,	&s_main.firstperson );
 		Menu_AddItem( &s_main.menu,	&s_main.gyroscope );
 		Menu_AddItem( &s_main.menu,	&s_main.voicechat );
 	}

@@ -560,10 +560,24 @@ void CG_ZoomAdjustViewAnglesSwipeFree( float from, float to, qboolean zoomIn ) {
 	*/
 
 	static vec3_t anglesDiff; // Lazy hack to restore old aiming angles
+
+	/*
+	CG_Printf ("cg.cameraAngles %f %f oldAimingAngles %f %f diff %f %f delta %f %f\n",
+		cg.cameraAngles[YAW], cg.cameraAngles[PITCH],
+		oldAimingAngles[YAW], oldAimingAngles[PITCH],
+		anglesDiff[YAW], anglesDiff[PITCH],
+		SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ), SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ));
+	*/
+
 	if ( zoomIn ) {
 		VectorSubtract( cg.cameraAngles, oldAimingAngles, anglesDiff );
+		anglesDiff[YAW] -= SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] );
+		anglesDiff[PITCH] -= SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] );
 		VectorCopy( oldAimingAngles, cg.cameraAngles );
 	} else {
+		//cg.cameraAngles[YAW] = AngleSubtract( cg.refdefViewAngles[YAW], -SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ) );
+		//cg.cameraAngles[PITCH] = AngleSubtract( cg.refdefViewAngles[PITCH], -SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
+		VectorCopy( cg.refdefViewAngles, cg.cameraAngles );
 		VectorAdd( cg.cameraAngles, anglesDiff, cg.cameraAngles );
 	}
 	trap_SetCameraAngles( cg.cameraAngles );
@@ -577,9 +591,9 @@ void CG_ZoomDown_f( void ) {
 	cg.zoomed = qtrue;
 	cg.zoomTime = cg.time;
 	trap_Cvar_Set("cg_thirdperson", "0");
-	trap_Cvar_Set("cl_pitchAutoCenter", "0");
+	//trap_Cvar_Set("cl_pitchAutoCenter", "0");
 	cg.zoomFov = cg_zoomFovMinor.value;
-	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR )
+	if ( cg_thirdPersonConfigOptionInSettings.integer )
 		CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
 }
 
@@ -591,7 +605,7 @@ void CG_ZoomUp_f( void ) {
 	if ( cg_thirdPersonConfigOptionInSettings.integer )
 		cg.zoomAnglesNeedAdjusting = qtrue;
 	cg.zoomTime = cg.time;
-	trap_Cvar_Set("cl_pitchAutoCenter", "1");
+	//trap_Cvar_Set("cl_pitchAutoCenter", "1");
 }
 
 void CG_ZoomToggleDown_f( void ) {
@@ -600,14 +614,14 @@ void CG_ZoomToggleDown_f( void ) {
 	cg.zoomTime = cg.time;
 
 	if ( cg.zoomed ) {
-		trap_Cvar_Set("cl_pitchAutoCenter", "0");
+		//trap_Cvar_Set("cl_pitchAutoCenter", "0");
 		//trap_SendConsoleCommand("weapon 7"); // Select railgun
 		trap_Cvar_Set("cg_thirdperson", "0");
 		cg.zoomFov = cg_zoomFov.value;
-		if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR )
+		if ( cg_thirdPersonConfigOptionInSettings.integer )
 			CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
 	} else {
-		trap_Cvar_Set("cl_pitchAutoCenter", "1");
+		//trap_Cvar_Set("cl_pitchAutoCenter", "1");
 		if ( cg_thirdPersonConfigOptionInSettings.integer )
 			cg.zoomAnglesNeedAdjusting = qtrue;
 	}

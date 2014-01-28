@@ -378,6 +378,7 @@ static void CG_OffsetThirdPersonView( void ) {
 		focusAngles[PITCH] = AngleSubtract( focusAngles[PITCH], SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
 
 		trap_SetAimingAngles( focusAngles );
+		VectorCopy( focusAngles, oldAimingAngles );
 	}
 }
 
@@ -534,6 +535,7 @@ static void CG_OffsetFirstPersonView( void ) {
 //======================================================================
 
 void CG_ZoomAdjustViewAnglesSwipeFree( float from, float to, qboolean zoomIn ) {
+	/*
 	float toScale = tan(DEG2RAD(to * 0.5f));
 	float mouseX = (float)cg.mouseX / (float)cgs.glconfig.vidWidth;
 	float mouseY = (float)cg.mouseY / (float)cgs.glconfig.vidWidth; // (float)cgs.glconfig.vidHeight;
@@ -555,7 +557,18 @@ void CG_ZoomAdjustViewAnglesSwipeFree( float from, float to, qboolean zoomIn ) {
 	}
 
 	trap_SetCameraAngles( cg.cameraAngles );
+	*/
+
+	static vec3_t anglesDiff; // Lazy hack to restore old aiming angles
+	if ( zoomIn ) {
+		VectorSubtract( cg.cameraAngles, oldAimingAngles, anglesDiff );
+		VectorCopy( oldAimingAngles, cg.cameraAngles );
+	} else {
+		VectorAdd( cg.cameraAngles, anglesDiff, cg.cameraAngles );
+	}
+	trap_SetCameraAngles( cg.cameraAngles );
 }
+
 
 void CG_ZoomDown_f( void ) {
 	if ( cg.zoomed || cg.zoomLocked ) {
@@ -575,7 +588,8 @@ void CG_ZoomUp_f( void ) {
 		return;
 	}
 	cg.zoomed = qfalse;
-	cg.zoomAnglesNeedAdusting = qtrue;
+	if ( cg_thirdPersonConfigOptionInSettings.integer )
+		cg.zoomAnglesNeedAdjusting = qtrue;
 	cg.zoomTime = cg.time;
 	trap_Cvar_Set("cl_pitchAutoCenter", "1");
 }
@@ -594,7 +608,8 @@ void CG_ZoomToggleDown_f( void ) {
 			CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
 	} else {
 		trap_Cvar_Set("cl_pitchAutoCenter", "1");
-		cg.zoomAnglesNeedAdusting = qtrue;
+		if ( cg_thirdPersonConfigOptionInSettings.integer )
+			cg.zoomAnglesNeedAdjusting = qtrue;
 	}
 }
 
@@ -672,8 +687,8 @@ static int CG_CalcFov( void ) {
 				if ( cg_thirdPersonConfigOptionInSettings.integer && !cg_thirdPerson.integer ) {
 					trap_Cvar_Set("cg_thirdperson", "1");
 				}
-				if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR && cg.zoomAnglesNeedAdusting ) {
-					cg.zoomAnglesNeedAdusting = qfalse;
+				if ( cg.zoomAnglesNeedAdjusting ) {
+					cg.zoomAnglesNeedAdjusting = qfalse;
 					CG_ZoomAdjustViewAnglesSwipeFree(cg.zoomFov, cg_fov.value, qfalse);
 				}
 			} else {
@@ -837,9 +852,7 @@ static int CG_CalcViewValues( void ) {
 	}
 
 	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR || cg_thirdPerson.integer ) {
-		if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
-			CG_AdjustAnglesAfterTeleport();
-		}
+		CG_AdjustAnglesAfterTeleport();
 
 		cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
 		cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];

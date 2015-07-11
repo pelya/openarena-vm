@@ -598,7 +598,7 @@ void CG_ZoomDown_f( void ) {
 	cg.zoomed = qtrue;
 	cg.zoomTime = cg.time;
 	trap_Cvar_Set("cg_thirdperson", "0");
-	//trap_Cvar_Set("cl_pitchAutoCenter", "0");
+	trap_Cvar_Set("cl_pitchAutoCenter", "0");
 	cg.zoomFov = cg_zoomFovMinor.value;
 	if ( cg_thirdPersonConfigOptionInSettings.integer )
 		CG_ZoomAdjustViewAngles(cg_fov.value, cg.zoomFov, qtrue);
@@ -612,7 +612,7 @@ void CG_ZoomUp_f( void ) {
 	if ( cg_thirdPersonConfigOptionInSettings.integer )
 		cg.zoomAnglesNeedAdjusting = qtrue;
 	cg.zoomTime = cg.time;
-	//trap_Cvar_Set("cl_pitchAutoCenter", "1");
+	trap_Cvar_Set("cl_pitchAutoCenter", "1");
 }
 
 void CG_ZoomToggleDown_f( void ) {
@@ -621,12 +621,13 @@ void CG_ZoomToggleDown_f( void ) {
 	cg.zoomTime = cg.time;
 
 	if ( cg.zoomed ) {
+		trap_Cvar_Set("cl_pitchAutoCenter", "0");
 		trap_Cvar_Set("cg_thirdperson", "0");
 		cg.zoomFov = cg_zoomFov.value;
 		if ( cg_thirdPersonConfigOptionInSettings.integer )
 			CG_ZoomAdjustViewAngles(cg_fov.value, cg.zoomFov, qtrue);
 	} else {
-		//trap_Cvar_Set("cl_pitchAutoCenter", "1");
+		trap_Cvar_Set("cl_pitchAutoCenter", "1");
 		if ( cg_thirdPersonConfigOptionInSettings.integer )
 			cg.zoomAnglesNeedAdjusting = qtrue;
 	}

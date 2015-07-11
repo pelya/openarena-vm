@@ -534,21 +534,8 @@ static void CG_OffsetFirstPersonView( void ) {
 
 //======================================================================
 
-void CG_ZoomAdjustViewAnglesSwipeFree( float from, float to, qboolean zoomIn ) {
+static void CG_ZoomAdjustViewAnglesShoulderView( float from, float to, qboolean zoomIn ) {
 	static vec3_t anglesDiff; // Lazy hack to restore old aiming angles
-
-	/*
-	CG_Printf ("cg.cameraAngles %f %f oldAimingAngles %f %f diff %f %f delta %f %f refdefViewAngles %f %f\n",
-		cg.cameraAngles[YAW], cg.cameraAngles[PITCH],
-		oldAimingAngles[YAW], oldAimingAngles[PITCH],
-		anglesDiff[YAW], anglesDiff[PITCH],
-		SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ), SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ),
-		cg.refdefViewAngles[YAW], cg.refdefViewAngles[PITCH]);
-	*/
-
-	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
-		return;
-	}
 
 	if ( zoomIn ) {
 		VectorSubtract( cg.cameraAngles, oldAimingAngles, anglesDiff );
@@ -564,6 +551,45 @@ void CG_ZoomAdjustViewAnglesSwipeFree( float from, float to, qboolean zoomIn ) {
 	trap_SetCameraAngles( cg.cameraAngles );
 }
 
+static void CG_ZoomAdjustViewAnglesSwipeFree( float from, float to, qboolean zoomIn ) {
+	float toScale = tan(DEG2RAD(to * 0.5f));
+	float mouseX = (float)cg.mouseX / (float)cgs.glconfig.vidWidth;
+	float mouseY = (float)cg.mouseY / (float)cgs.glconfig.vidWidth; // (float)cgs.glconfig.vidHeight;
+	float toAngleX = atan2(mouseX * toScale, 0.5f);
+	float toAngleY = atan2(mouseY * toScale, 0.5f);
+
+	if ( zoomIn ) {
+		cg.cameraAngles[YAW] = AngleSubtract( oldAimingAngles[YAW], -SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ) );
+		cg.cameraAngles[PITCH] = AngleSubtract( oldAimingAngles[PITCH], -SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ) );
+		cg.cameraAngles[ROLL] = 0;
+		cg.cameraAngles[YAW] += RAD2DEG(toAngleX);
+		cg.cameraAngles[PITCH] -= RAD2DEG(toAngleY);
+	} else {
+		float fromScale = tan(DEG2RAD(from * 0.5f));
+		float fromAngleX = atan2(mouseX * fromScale, 0.5f);
+		float fromAngleY = atan2(mouseY * fromScale, 0.5f);
+		cg.cameraAngles[YAW] += RAD2DEG(toAngleX - fromAngleX);
+		cg.cameraAngles[PITCH] -= RAD2DEG(toAngleY - fromAngleY);
+	}
+	trap_SetCameraAngles( cg.cameraAngles );
+}
+
+static void CG_ZoomAdjustViewAngles( float from, float to, qboolean zoomIn ) {
+	/*
+	CG_Printf ("cg.cameraAngles %f %f oldAimingAngles %f %f diff %f %f delta %f %f refdefViewAngles %f %f\n",
+		cg.cameraAngles[YAW], cg.cameraAngles[PITCH],
+		oldAimingAngles[YAW], oldAimingAngles[PITCH],
+		anglesDiff[YAW], anglesDiff[PITCH],
+		SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ), SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] ),
+		cg.refdefViewAngles[YAW], cg.refdefViewAngles[PITCH]);
+	*/
+
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
+		CG_ZoomAdjustViewAnglesSwipeFree( from, to, zoomIn );
+	} else {
+		CG_ZoomAdjustViewAnglesShoulderView( from, to, zoomIn );
+	}
+}
 
 void CG_ZoomDown_f( void ) {
 	if ( cg.zoomed || cg.zoomLocked ) {
@@ -575,7 +601,7 @@ void CG_ZoomDown_f( void ) {
 	//trap_Cvar_Set("cl_pitchAutoCenter", "0");
 	cg.zoomFov = cg_zoomFovMinor.value;
 	if ( cg_thirdPersonConfigOptionInSettings.integer )
-		CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
+		CG_ZoomAdjustViewAngles(cg_fov.value, cg.zoomFov, qtrue);
 }
 
 void CG_ZoomUp_f( void ) {
@@ -598,7 +624,7 @@ void CG_ZoomToggleDown_f( void ) {
 		trap_Cvar_Set("cg_thirdperson", "0");
 		cg.zoomFov = cg_zoomFov.value;
 		if ( cg_thirdPersonConfigOptionInSettings.integer )
-			CG_ZoomAdjustViewAnglesSwipeFree(cg_fov.value, cg.zoomFov, qtrue);
+			CG_ZoomAdjustViewAngles(cg_fov.value, cg.zoomFov, qtrue);
 	} else {
 		//trap_Cvar_Set("cl_pitchAutoCenter", "1");
 		if ( cg_thirdPersonConfigOptionInSettings.integer )
@@ -682,7 +708,7 @@ static int CG_CalcFov( void ) {
 				}
 				if ( cg.zoomAnglesNeedAdjusting ) {
 					cg.zoomAnglesNeedAdjusting = qfalse;
-					CG_ZoomAdjustViewAnglesSwipeFree(cg.zoomFov, cg_fov.value, qfalse);
+					CG_ZoomAdjustViewAngles(cg.zoomFov, cg_fov.value, qfalse);
 				}
 			} else {
 				fov_x = zoomFov + f * ( fov_x - zoomFov );

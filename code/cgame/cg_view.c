@@ -546,6 +546,10 @@ void CG_ZoomAdjustViewAnglesSwipeFree( float from, float to, qboolean zoomIn ) {
 		cg.refdefViewAngles[YAW], cg.refdefViewAngles[PITCH]);
 	*/
 
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
+		return;
+	}
+
 	if ( zoomIn ) {
 		VectorSubtract( cg.cameraAngles, oldAimingAngles, anglesDiff );
 		anglesDiff[YAW] -= SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] );

@@ -208,6 +208,10 @@ void CG_Respawn( void ) {
 	if ( cg.zoomed ) {
 		CG_ZoomToggleDown_f ();
 		CG_ZoomToggleUp_f ();
+		cg.zoomTime = 0;
+		cg.zoomAnglesNeedAdjusting = qfalse;
+		VectorCopy( cg.refdefViewAngles, cg.cameraAngles );
+		trap_SetCameraAngles( cg.cameraAngles );
 	}
 }
 

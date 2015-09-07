@@ -285,6 +285,7 @@ vmCvar_t	cg_touchscreenControls;
 vmCvar_t	cg_thirdPersonConfigOptionInSettings; // Any uglier name please?
 vmCvar_t	cl_runningOnOuya;
 vmCvar_t	cg_cameraSideShift;
+vmCvar_t	r_cardboardStereo;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -487,6 +488,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_thirdPersonConfigOptionInSettings, "cg_thirdPersonConfigOptionInSettings", "1", CVAR_ARCHIVE },
 	{ &cl_runningOnOuya, "cl_runningOnOuya", "0", 0 },
 	{ &cg_cameraSideShift, "cg_cameraSideShift", "-30", CVAR_ARCHIVE },
+	{ &r_cardboardStereo, "r_cardboardStereo", "0", CVAR_ARCHIVE },
 };
 
 static int  cvarTableSize = sizeof( cvarTable ) / sizeof( cvarTable[0] );

@@ -3400,6 +3400,9 @@ Perform all drawing needed to completely fill the screen
 */
 void CG_DrawActive( stereoFrame_t stereoView ) {
 	// optionally draw the info screen instead
+	int oldWidth;
+	int oldX;
+
 	if ( !cg.snap ) {
 		CG_DrawInformation();
 		return;
@@ -3419,10 +3422,23 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 		CG_DrawCrosshair3D();
 
 	// draw 3D view
+	oldWidth = cg.refdef.width;
+	oldX = cg.refdef.x;
+
+	if (r_cardboardStereo.value && stereoView != STEREO_CENTER)
+	{
+		cg.refdef.width /= 2;
+		if (stereoView == STEREO_RIGHT)
+			cg.refdef.x += cg.refdef.width;
+	}
+
 	trap_R_RenderScene( &cg.refdef );
 
 	// draw status bar and other floating elements
- 	CG_Draw2D(stereoView);
+	CG_Draw2D(stereoView);
+
+	cg.refdef.width = oldWidth;
+	cg.refdef.x = oldX;
 }
 
 vec3_t crosshairDebug[10];

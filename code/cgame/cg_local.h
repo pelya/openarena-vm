@@ -1395,6 +1395,7 @@ extern vmCvar_t			cg_touchscreenControls;
 extern vmCvar_t			cg_thirdPersonConfigOptionInSettings;
 extern vmCvar_t			cl_runningOnOuya;
 extern vmCvar_t			cg_cameraSideShift;
+extern vmCvar_t			r_cardboardStereo;
 
 //unlagged - cg_unlagged.c
 void CG_PredictWeaponEffects( centity_t *cent );

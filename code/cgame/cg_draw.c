@@ -2465,13 +2465,14 @@ CROSSHAIR
 ================================================================================
 */
 
+static void CG_DrawCrosshair3D(qhandle_t hShader, float w, float h);
 
 /*
 =================
 CG_DrawCrosshair
 =================
 */
-static void CG_DrawCrosshair(void)
+static void CG_DrawCrosshair(stereoFrame_t stereoFrame)
 {
 	float		w, h;
 	qhandle_t	hShader;
@@ -2611,6 +2612,16 @@ static void CG_DrawCrosshair(void)
 		x += cg.mouseX;
 		y += cg.mouseY;
 	}
+	if ( r_cardboardStereo.integer ) {
+		//CG_DrawCrosshair3D(hShader, w, h);
+		float xmax;
+		xmax = 64.0f * tan(90.0f * M_PI / 360.0f);
+		if (stereoFrame == STEREO_LEFT)
+			x -= xmax;
+		if (stereoFrame == STEREO_RIGHT)
+			x += xmax;
+	}
+
 	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, hShader );
 }
 
@@ -2619,51 +2630,20 @@ static void CG_DrawCrosshair(void)
 CG_DrawCrosshair3D
 =================
 */
-static void CG_DrawCrosshair3D(void)
+void CG_DrawCrosshair3D(qhandle_t hShader, float w, float h)
 {
-	float		w, h;
-	qhandle_t	hShader;
-	float		f;
-	int			ca;
-
 	trace_t trace;
 	vec3_t endpos;
 	float stereoSep, zProj, maxdist, xmax;
 	char rendererinfos[128];
 	refEntity_t ent;
 
-	if ( !cg_drawCrosshair.integer ) {
-		return;
-	}
-
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
-		return;
-	}
-
-	w = h = cg_crosshairSize.value;
-
-	// pulse the size of the crosshair when picking up items
-	f = cg.time - cg.itemPickupBlendTime;
-	if ( f > 0 && f < ITEM_BLOB_TIME ) {
-		f /= ITEM_BLOB_TIME;
-		w *= ( 1 + f );
-		h *= ( 1 + f );
-	}
-
-	ca = cg_drawCrosshair.integer;
-	if (ca < 0) {
-		ca = 0;
-	}
-	hShader = cgs.media.crosshairShader[ ca % NUM_CROSSHAIRS ];
-
-        if(!hShader)
-            hShader = cgs.media.crosshairShader[ ca % 10 ];
-
 	// Use a different method rendering the crosshair so players don't see two of them when
 	// focusing their eyes at distant objects with high stereo separation
 	// We are going to trace to the next shootable object and place the crosshair in front of it.
 
 	// first get all the important renderer information
+	// TODO: less strcpy
 	trap_Cvar_VariableStringBuffer("r_zProj", rendererinfos, sizeof(rendererinfos));
 	zProj = atof(rendererinfos);
 	trap_Cvar_VariableStringBuffer("r_stereoSeparation", rendererinfos, sizeof(rendererinfos));
@@ -3310,7 +3290,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 		CG_DrawSpectator();
 
 		if(stereoFrame == STEREO_CENTER)
-			CG_DrawCrosshair();
+			CG_DrawCrosshair(STEREO_CENTER);
 
 		CG_DrawCrosshairNames();
 	} else {
@@ -3330,8 +3310,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 			CG_DrawAmmoWarning();
 
 			CG_DrawProxWarning();
-			//if(stereoFrame == STEREO_CENTER)
-			CG_DrawCrosshair();
+			CG_DrawCrosshair(stereoFrame);
 			CG_DrawCrosshairNames();
 			CG_DrawWeaponSelect();
 
@@ -3417,9 +3396,6 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 
 	// clear around the rendered view if sized down
 	CG_TileClear();
-
-	//if(stereoView != STEREO_CENTER)
-	//	CG_DrawCrosshair3D();
 
 	// draw 3D view
 	oldWidth = cg.refdef.width;

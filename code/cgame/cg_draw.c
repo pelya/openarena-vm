@@ -547,7 +547,7 @@ static void CG_DrawStatusBar( void ) {
 	vec3_t		angles;
 	vec3_t		origin;
         qhandle_t	handle;
-	float ouyaShift = cl_runningOnOuya.integer ? 480 * OUYA_BORDER / 100 * 2 / 3 : 0;
+	float ouyaShift = cl_runningOnOuya.integer || r_cardboardStereo.integer ? 480 * OUYA_BORDER / 100 * 2 / 3 : 0;
 
 	static float colors[4][4] = { 
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
@@ -3425,7 +3425,7 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	oldWidth = cg.refdef.width;
 	oldX = cg.refdef.x;
 
-	if (r_cardboardStereo.value && stereoView != STEREO_CENTER)
+	if (r_cardboardStereo.integer && stereoView != STEREO_CENTER)
 	{
 		cg.refdef.width /= 2;
 		if (stereoView == STEREO_RIGHT)

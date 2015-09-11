@@ -1269,14 +1269,14 @@ void UI_Refresh( int realtime )
 				uis.firstdraw = qfalse;
 			}
 		}
+		// draw cursor
+		UI_SetColor( NULL );
+		UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
+
 		uis.bias = SCREEN_WIDTH * uis.xscale;
 	}
 	uis.bias = 0;
 	uis.xscale = oldXscale;
-
-	// draw cursor
-	UI_SetColor( NULL );
-	UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
 
 #ifndef NDEBUG
 	if (uis.debug)

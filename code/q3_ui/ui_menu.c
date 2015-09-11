@@ -253,20 +253,23 @@ static void Main_MenuDraw( void ) {
 
 	// add the model
 
-	memset( &ent, 0, sizeof(ent) );
+	if (!s_main.cardboardVR.curvalue)
+	{
+		memset( &ent, 0, sizeof(ent) );
 
-	adjust = 5.0 * sin( (float)uis.realtime / 5000 );
-	VectorSet( angles, 0, 180 + adjust, 0 );
-	AnglesToAxis( angles, ent.axis );
-	ent.hModel = s_main.bannerModel;
-	VectorCopy( origin, ent.origin );
-	VectorCopy( origin, ent.lightingOrigin );
-	ent.renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
-	VectorCopy( ent.origin, ent.oldorigin );
+		adjust = 5.0 * sin( (float)uis.realtime / 5000 );
+		VectorSet( angles, 0, 180 + adjust, 0 );
+		AnglesToAxis( angles, ent.axis );
+		ent.hModel = s_main.bannerModel;
+		VectorCopy( origin, ent.origin );
+		VectorCopy( origin, ent.lightingOrigin );
+		ent.renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
+		VectorCopy( ent.origin, ent.oldorigin );
 
-	trap_R_AddRefEntityToScene( &ent );
+		trap_R_AddRefEntityToScene( &ent );
 
-	trap_R_RenderScene( &refdef );
+		trap_R_RenderScene( &refdef );
+	}
 	
 	if (strlen(s_errorMessage.errorMessage))
 	{

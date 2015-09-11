@@ -3330,8 +3330,8 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 			CG_DrawAmmoWarning();
 
 			CG_DrawProxWarning();
-			if(stereoFrame == STEREO_CENTER)
-				CG_DrawCrosshair();
+			//if(stereoFrame == STEREO_CENTER)
+			CG_DrawCrosshair();
 			CG_DrawCrosshairNames();
 			CG_DrawWeaponSelect();
 
@@ -3418,8 +3418,8 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 	// clear around the rendered view if sized down
 	CG_TileClear();
 
-	if(stereoView != STEREO_CENTER)
-		CG_DrawCrosshair3D();
+	//if(stereoView != STEREO_CENTER)
+	//	CG_DrawCrosshair3D();
 
 	// draw 3D view
 	oldWidth = cg.refdef.width;

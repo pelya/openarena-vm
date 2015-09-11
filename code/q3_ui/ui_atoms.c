@@ -1227,6 +1227,8 @@ UI_Refresh
 */
 void UI_Refresh( int realtime )
 {
+	int i;
+	float oldXscale;
 	uis.frametime = realtime - uis.realtime;
 	uis.realtime  = realtime;
 
@@ -1236,29 +1238,41 @@ void UI_Refresh( int realtime )
 
 	UI_UpdateCvars();
 
-	if ( uis.activemenu )
-	{
-		if (uis.activemenu->fullscreen)
-		{
-			// draw the background
-			if( uis.activemenu->showlogo ) {
-				UI_DrawBackgroundPic( uis.menuBackShader );
-			}
-			else {
-				UI_DrawBackgroundPic( uis.menuBackNoLogoShader );
-			}
-		}
-
-		if (uis.activemenu->draw)
-			uis.activemenu->draw();
-		else
-			Menu_Draw( uis.activemenu );
-
-		if( uis.firstdraw ) {
-			UI_MouseEvent( 0, 0 );
-			uis.firstdraw = qfalse;
-		}
+	uis.bias = 0;
+	oldXscale = uis.xscale;
+	if (r_cardboardStereo.integer) {
+		uis.xscale *= 0.5;
 	}
+	// Draw UI twice when in cardboard mode
+	for (i = 0; i <= r_cardboardStereo.integer; i++)
+	{
+		if ( uis.activemenu )
+		{
+			if (uis.activemenu->fullscreen && i == 0)
+			{
+				// draw the background
+				if( uis.activemenu->showlogo ) {
+					UI_DrawBackgroundPic( uis.menuBackShader );
+				}
+				else {
+					UI_DrawBackgroundPic( uis.menuBackNoLogoShader );
+				}
+			}
+
+			if (uis.activemenu->draw)
+				uis.activemenu->draw();
+			else
+				Menu_Draw( uis.activemenu );
+
+			if( uis.firstdraw ) {
+				UI_MouseEvent( 0, 0 );
+				uis.firstdraw = qfalse;
+			}
+		}
+		uis.bias = SCREEN_WIDTH * uis.xscale;
+	}
+	uis.bias = 0;
+	uis.xscale = oldXscale;
 
 	// draw cursor
 	UI_SetColor( NULL );

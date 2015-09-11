@@ -45,6 +45,7 @@ MAIN MENU
 #define ID_THIRD_PERSON			19
 #define ID_GYROSCOPE			20
 #define ID_VOICECHAT			21
+#define ID_CARDBOARDVR			22
 
 #define MAIN_BANNER_MODEL				"models/mapobjects/banner/banner5.md3"
 #define MAIN_MENU_VERTICAL_SPACING		34
@@ -66,6 +67,7 @@ typedef struct {
 	menuradiobutton_s	firstperson; // Another hack
 	menuradiobutton_s	gyroscope; // Another hack
 	menulist_s		voicechat; // Another hack
+	menuradiobutton_s	cardboardVR; // Another hack
 
 	qhandle_t		bannerModel;
 } mainmenu_t;
@@ -178,6 +180,10 @@ void Main_MenuEvent (void* ptr, int event) {
 
 	case ID_VOICECHAT:
 		trap_Cvar_SetValue( "cl_voip", s_main.voicechat.curvalue );
+		break;
+
+	case ID_CARDBOARDVR:
+		trap_Cvar_SetValue( "r_cardboardStereo", s_main.cardboardVR.curvalue );
 		break;
 	}
 }
@@ -496,6 +502,15 @@ void UI_MainMenu( void ) {
 	s_main.voicechat.itemnames				= main_voicechat_items;
 	s_main.voicechat.curvalue				= trap_Cvar_VariableValue( "cl_voip" );
 
+	s_main.cardboardVR.generic.type		= MTYPE_RADIOBUTTON;
+	s_main.cardboardVR.generic.flags	= QMF_SMALLFONT;
+	s_main.cardboardVR.generic.x		= 120;
+	s_main.cardboardVR.generic.y		= 360;
+	s_main.cardboardVR.generic.name		= "cardboard vr:";
+	s_main.cardboardVR.generic.id		= ID_CARDBOARDVR;
+	s_main.cardboardVR.generic.callback	= Main_MenuEvent;
+	s_main.cardboardVR.curvalue			= trap_Cvar_VariableValue( "r_cardboardStereo" );
+
 	Menu_AddItem( &s_main.menu,	&s_main.singleplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.multiplayer );
 	Menu_AddItem( &s_main.menu,	&s_main.setup );
@@ -512,6 +527,7 @@ void UI_MainMenu( void ) {
 		Menu_AddItem( &s_main.menu,	&s_main.firstperson );
 		Menu_AddItem( &s_main.menu,	&s_main.gyroscope );
 		Menu_AddItem( &s_main.menu,	&s_main.voicechat );
+		Menu_AddItem( &s_main.menu,	&s_main.cardboardVR );
 	}
 
 	trap_Key_SetCatcher( KEYCATCH_UI );

@@ -128,6 +128,7 @@ extern vmCvar_t ui_setupchecked;
 
 //new in beta 23:
 extern vmCvar_t ui_browserOnlyHumans;
+extern vmCvar_t	r_cardboardStereo;
 
 //
 // ui_qmenu.c

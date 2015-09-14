@@ -2612,17 +2612,15 @@ static void CG_DrawCrosshair(stereoFrame_t stereoFrame)
 		x += cg.mouseX;
 		y += cg.mouseY;
 	}
-	/*
+
 	if ( r_cardboardStereo.integer ) {
-		//CG_DrawCrosshair3D(hShader, w, h);
-		float xmax;
-		xmax = 64.0f * tan(90.0f * M_PI / 360.0f);
+		// Adjust for 2D border, move crosshair back to the center of the screen
+		f = (100 + OUYA_BORDER) / 100.0f - 1.0f;
 		if (stereoFrame == STEREO_LEFT)
-			x -= xmax;
+			x -= cg.refdef.width * f;
 		if (stereoFrame == STEREO_RIGHT)
-			x += xmax;
+			x += cg.refdef.width * f;
 	}
-	*/
 
 	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, hShader );
 }

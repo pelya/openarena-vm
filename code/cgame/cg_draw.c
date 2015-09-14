@@ -2612,6 +2612,7 @@ static void CG_DrawCrosshair(stereoFrame_t stereoFrame)
 		x += cg.mouseX;
 		y += cg.mouseY;
 	}
+	/*
 	if ( r_cardboardStereo.integer ) {
 		//CG_DrawCrosshair3D(hShader, w, h);
 		float xmax;
@@ -2621,6 +2622,7 @@ static void CG_DrawCrosshair(stereoFrame_t stereoFrame)
 		if (stereoFrame == STEREO_RIGHT)
 			x += xmax;
 	}
+	*/
 
 	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, hShader );
 }

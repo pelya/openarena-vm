@@ -76,7 +76,7 @@ intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 		CG_EventHandling(arg0);
 		return 0;
 	case CG_ADJUST_CAMERA_ANGLES:
-		CG_AdjustCameraAngles(arg0, arg1);
+		CG_AdjustCameraAngles(arg0, arg1, arg2);
 		return 0;
 	default:
 		CG_Error( "vmMain: unknown command %i", command );

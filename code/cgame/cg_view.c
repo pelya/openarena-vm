@@ -225,10 +225,11 @@ void CG_MouseEvent(int x, int y)
 	cg.mouseY = (y - cgs.glconfig.vidHeight / 2);
 }
 
-void CG_AdjustCameraAngles(int yaw, int pitch)
+void CG_AdjustCameraAngles(int yaw, int pitch, int roll)
 {
 	cg.cameraAngles[YAW] = yaw * 0.001f;
 	cg.cameraAngles[PITCH] = pitch * 0.001f;
+	cg.cameraAngles[ROLL] = roll * 0.001f;
 }
 #endif
 
@@ -876,6 +877,7 @@ static int CG_CalcViewValues( void ) {
 
 		cg.refdefViewAngles[PITCH] = cg.cameraAngles[PITCH];
 		cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];
+		cg.refdefViewAngles[ROLL] = cg.cameraAngles[ROLL];
 	}
 
 	if ( cg.renderingThirdPerson ) {

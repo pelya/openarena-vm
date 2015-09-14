@@ -237,7 +237,7 @@ typedef enum {
 //	void (*CG_EventHandling)(int type);
 
 	CG_ADJUST_CAMERA_ANGLES,
-//	void	CG_AdjustCameraAngles(int yaw, int pitch);
+//	void	CG_AdjustCameraAngles(int yaw, int pitch, int roll);
 } cgameExport_t;
 
 //----------------------------------------------

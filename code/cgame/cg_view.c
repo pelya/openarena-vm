@@ -288,7 +288,7 @@ CG_OffsetThirdPersonView
 ===============
 */
 #define	FOCUS_DISTANCE	512
-static void CG_OffsetThirdPersonView( void ) {
+static void CG_OffsetThirdPersonView( stereoFrame_t stereoView ) {
 	vec3_t		forward, right, up;
 	vec3_t		view;
 	vec3_t		focusAngles;
@@ -321,6 +321,10 @@ static void CG_OffsetThirdPersonView( void ) {
 
 	view[2] += 8;
 	VectorMA( view, cg_cameraSideShift.value, right, view );
+	if (stereoView == STEREO_LEFT)
+		VectorMA( view, -r_stereoSeparation.value, right, view );
+	if (stereoView == STEREO_RIGHT)
+		VectorMA( view, r_stereoSeparation.value, right, view );
 
 	cg.refdefViewAngles[PITCH] *= 0.5;
 
@@ -807,7 +811,7 @@ CG_CalcViewValues
 Sets cg.refdef view values
 ===============
 */
-static int CG_CalcViewValues( void ) {
+static int CG_CalcViewValues( stereoFrame_t stereoView ) {
 	playerState_t	*ps;
 
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
@@ -882,7 +886,7 @@ static int CG_CalcViewValues( void ) {
 
 	if ( cg.renderingThirdPerson ) {
 		// back away from character
-		CG_OffsetThirdPersonView();
+		CG_OffsetThirdPersonView(stereoView);
 	} else {
 		// offset for local bobbing and kicks
 		CG_OffsetFirstPersonView();
@@ -1013,7 +1017,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	cg.renderingThirdPerson = cg_thirdPerson.integer || (cg.snap->ps.stats[STAT_HEALTH] <= 0);
 
 	// build cg.refdef
-	inwater = CG_CalcViewValues();
+	inwater = CG_CalcViewValues(stereoView);
 
 	// first person blend blobs, done after AnglesToAxis
 	if ( !cg.renderingThirdPerson ) {

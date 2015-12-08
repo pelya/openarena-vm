@@ -2465,8 +2465,6 @@ CROSSHAIR
 ================================================================================
 */
 
-static void CG_DrawCrosshair3D(qhandle_t hShader, float w, float h);
-
 /*
 =================
 CG_DrawCrosshair
@@ -2621,7 +2619,7 @@ static void CG_DrawCrosshair(stereoFrame_t stereoFrame)
 CG_DrawCrosshair3D
 =================
 */
-void CG_DrawCrosshair3D(qhandle_t hShader, float w, float h)
+static void CG_DrawCrosshair3D(qhandle_t hShader, float w, float h)
 {
 	trace_t trace;
 	vec3_t endpos;
@@ -3287,7 +3285,7 @@ static void CG_Draw2D(stereoFrame_t stereoFrame)
 	} else {
 		// don't draw any status if dead or the scoreboard is being explicitly shown
 		if ( !cg.showScores && cg.snap->ps.stats[STAT_HEALTH] > 0 ) {
-			int underWater = CG_PointContents( cg.refdef.vieworg, -1 ) & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA );
+			//int underWater = CG_PointContents( cg.refdef.vieworg, -1 ) & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA );
 
 #ifdef MISSIONPACK
 			if ( cg_drawStatus.integer ) {

@@ -525,13 +525,11 @@ void UI_MainMenu( void ) {
 	}
 	Menu_AddItem( &s_main.menu,	&s_main.mods );
 	Menu_AddItem( &s_main.menu,	&s_main.exit );
-	if (!uis.runningOnOuya) {
-		Menu_AddItem( &s_main.menu,	&s_main.aimingmode );
-		Menu_AddItem( &s_main.menu,	&s_main.firstperson );
-		Menu_AddItem( &s_main.menu,	&s_main.gyroscope );
-		Menu_AddItem( &s_main.menu,	&s_main.voicechat );
-		Menu_AddItem( &s_main.menu,	&s_main.cardboardVR );
-	}
+	Menu_AddItem( &s_main.menu,	&s_main.aimingmode );
+	Menu_AddItem( &s_main.menu,	&s_main.firstperson );
+	Menu_AddItem( &s_main.menu,	&s_main.gyroscope );
+	Menu_AddItem( &s_main.menu,	&s_main.voicechat );
+	Menu_AddItem( &s_main.menu,	&s_main.cardboardVR );
 
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;

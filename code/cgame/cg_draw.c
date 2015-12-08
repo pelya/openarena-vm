@@ -547,7 +547,7 @@ static void CG_DrawStatusBar( void ) {
 	vec3_t		angles;
 	vec3_t		origin;
         qhandle_t	handle;
-	float ouyaShift = cl_runningOnOuya.integer || r_cardboardStereo.integer ? 480 * OUYA_BORDER / 100 * 2 / 3 : 0;
+	float ouyaShift = r_cardboardStereo.integer ? 480 * OUYA_BORDER / 100 * 2 / 3 : 0;
 
 	static float colors[4][4] = { 
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
@@ -2611,15 +2611,6 @@ static void CG_DrawCrosshair(stereoFrame_t stereoFrame)
 	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
 		x += cg.mouseX;
 		y += cg.mouseY;
-	}
-
-	if ( r_cardboardStereo.integer ) {
-		// Adjust for 2D border, move crosshair back to the center of the screen
-		f = (100 + OUYA_BORDER) / 100.0f - 1.0f;
-		if (stereoFrame == STEREO_LEFT)
-			x -= cg.refdef.width * f;
-		if (stereoFrame == STEREO_RIGHT)
-			x += cg.refdef.width * f;
 	}
 
 	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, hShader );

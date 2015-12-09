@@ -30,7 +30,6 @@ CG_AdjustFrom640
 Adjusted for resolution and screen aspect ratio
 ================
 */
-enum { CARDBOARD_BORDER_X = 25, CARDBOARD_BORDER_Y = 20 }; // Scaled for 640x480 screen
 void CG_AdjustFrom640( float *x, float *y, float *w, float *h ) {
 #if 0
 	// adjust for wide screens
@@ -43,20 +42,12 @@ void CG_AdjustFrom640( float *x, float *y, float *w, float *h ) {
 	*y *= cgs.screenYScale;
 	*w *= cgs.screenXScale;
 	*h *= cgs.screenYScale;
+
 	if (cg.stereoFrame == STEREO_LEFT || cg.stereoFrame == STEREO_RIGHT) {
-		/*
-		*w *= (640 - CARDBOARD_BORDER_X * 2) / 640 / 2;
-		*x *= (640 - CARDBOARD_BORDER_X * 2) / 640 / 2;
-		if (cg.stereoFrame == STEREO_LEFT) {
-			*x += cgs.glconfig.vidWidth * CARDBOARD_BORDER_X / 640;
-		} else {
-			*x += cgs.glconfig.vidWidth / 2;
-		}
-		*/
+		enum { CARDBOARD_BORDER_X = 25, CARDBOARD_BORDER_Y = 20 }; // Scaled for 640x480 screen
+
 		*y = *y * (480 - CARDBOARD_BORDER_Y * 2) / 480 + cgs.glconfig.vidHeight * CARDBOARD_BORDER_Y / 480;
 		*h = *h * (480 - CARDBOARD_BORDER_Y * 2) / 480;
-
-
 		*w = *w * (640 - CARDBOARD_BORDER_X * 2) / 640 / 2;
 		*x = *x * (640 - CARDBOARD_BORDER_X * 2) / 640 / 2;
 		if (cg.stereoFrame == STEREO_LEFT) {

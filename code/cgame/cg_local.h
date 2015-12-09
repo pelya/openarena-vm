@@ -1394,7 +1394,6 @@ extern vmCvar_t			cg_weaponBarAtBottom;
 extern vmCvar_t			cg_holdingUsableItem;
 extern vmCvar_t			cg_touchscreenControls;
 extern vmCvar_t			cg_thirdPersonConfigOptionInSettings;
-extern vmCvar_t			cl_runningOnOuya;
 extern vmCvar_t			cg_cameraSideShift;
 extern vmCvar_t			r_cardboardStereo;
 extern vmCvar_t			r_stereoSeparation;

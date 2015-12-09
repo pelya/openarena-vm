@@ -1110,7 +1110,6 @@ void UI_Init( void ) {
 		// no wide screen
 		uis.bias = 0;
 	}
-	uis.runningOnOuya = trap_Cvar_VariableValue( "cl_runningOnOuya" );
 
 	// initialize the menu system
 	Menu_Cache();

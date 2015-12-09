@@ -547,7 +547,6 @@ static void CG_DrawStatusBar( void ) {
 	vec3_t		angles;
 	vec3_t		origin;
         qhandle_t	handle;
-	float ouyaShift = r_cardboardStereo.integer ? 480 * OUYA_BORDER / 100 * 2 / 3 : 0;
 
 	static float colors[4][4] = { 
 //		{ 0.2, 1.0, 0.2, 1.0 } , { 1.0, 0.2, 0.2, 1.0 }, {0.5, 0.5, 0.5, 1} };
@@ -583,18 +582,18 @@ static void CG_DrawStatusBar( void ) {
 		origin[1] = 0;
 		origin[2] = 0;
 		angles[YAW] = 90 + 20 * sin( cg.time / 1000.0 );
-		CG_Draw3DModel( 130 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ouyaShift/3, 432 - ouyaShift, ICON_SIZE, ICON_SIZE,
+		CG_Draw3DModel( 130 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
 					   cg_weapons[ cent->currentState.weapon ].ammoModel, 0, origin, angles );
 	}
 
-	CG_DrawStatusBarHead( 285 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - 5 - ouyaShift/3, 480 - ouyaShift );
+	CG_DrawStatusBarHead( 285 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - 5, 480);
 
 	if( cg.predictedPlayerState.powerups[PW_REDFLAG] ) {
-		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480 - ouyaShift, TEAM_RED );
+		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480, TEAM_RED );
 	} else if( cg.predictedPlayerState.powerups[PW_BLUEFLAG] ) {
-		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480 - ouyaShift, TEAM_BLUE );
+		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480, TEAM_BLUE );
 	} else if( cg.predictedPlayerState.powerups[PW_NEUTRALFLAG] ) {
-		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480 - ouyaShift, TEAM_FREE );
+		CG_DrawStatusBarFlag( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE + ICON_SIZE, 480, TEAM_FREE );
 	}
 
 	if ( ps->stats[ STAT_ARMOR ] ) {
@@ -602,7 +601,7 @@ static void CG_DrawStatusBar( void ) {
 		origin[1] = 0;
 		origin[2] = -10;
 		angles[YAW] = ( cg.time & 2047 ) * 360 / 2048.0;
-		CG_Draw3DModel( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - ouyaShift*5/4, 432 - ouyaShift, ICON_SIZE, ICON_SIZE,
+		CG_Draw3DModel( 435 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE,
 					   cgs.media.armorModel, 0, origin, angles );
 	}
         
@@ -616,7 +615,7 @@ static void CG_DrawStatusBar( void ) {
 		} else {
 			handle = cgs.media.blueCubeModel;
 		}
-		CG_Draw3DModel( 480 + CHAR_WIDTH*3 + TEXT_ICON_SPACE - ouyaShift*3/2, 432 - ouyaShift, ICON_SIZE, ICON_SIZE, handle, 0, origin, angles );
+		CG_Draw3DModel( 480 + CHAR_WIDTH*3 + TEXT_ICON_SPACE, 432, ICON_SIZE, ICON_SIZE, handle, 0, origin, angles );
 	}
         
         

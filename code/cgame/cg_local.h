@@ -682,6 +682,7 @@ typedef struct {
         float mouseX;
         float mouseY;
         vec3_t cameraAngles;
+        stereoFrame_t stereoFrame;
 } cg_t;
 
 

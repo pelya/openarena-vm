@@ -353,8 +353,8 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 	// draw the colored text
 	trap_R_SetColor( color );
 	
-	ax = x * uis.xscale + uis.bias;
-	ay = y * uis.yscale;
+	ax = x * uis.xscale + uis.xbias;
+	ay = y * uis.yscale + uis.ybias;
 
 	s = str;
 	while ( *s )
@@ -463,8 +463,8 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 	// draw the colored text
 	trap_R_SetColor( color );
 	
-	ax = x * uis.xscale + uis.bias;
-	ay = y * uis.yscale;
+	ax = x * uis.xscale + uis.xbias;
+	ay = y * uis.yscale + uis.ybias;
 
 	s = str;
 	while ( *s )
@@ -654,8 +654,8 @@ static void UI_DrawString2( int x, int y, const char* str, vec4_t color, int cha
 	// draw the colored text
 	trap_R_SetColor( color );
 	
-	ax = x * uis.xscale + uis.bias;
-	ay = y * uis.yscale;
+	ax = x * uis.xscale + uis.xbias;
+	ay = y * uis.yscale + uis.ybias;
 	aw = charw * uis.xscale;
 	ah = charh * uis.yscale;
 
@@ -882,16 +882,16 @@ void UI_MouseEvent( int dx, int dy )
 
 	// update mouse screen position
 	uis.cursorx += dx;
-	if (uis.cursorx < -uis.bias)
-		uis.cursorx = -uis.bias;
-	else if (uis.cursorx > SCREEN_WIDTH+uis.bias)
-		uis.cursorx = SCREEN_WIDTH+uis.bias;
+	if (uis.cursorx < -uis.xbias)
+		uis.cursorx = -uis.xbias;
+	else if (uis.cursorx > SCREEN_WIDTH + uis.xbias)
+		uis.cursorx = SCREEN_WIDTH + uis.xbias;
 
 	uis.cursory += dy;
-	if (uis.cursory < 0)
-		uis.cursory = 0;
-	else if (uis.cursory > SCREEN_HEIGHT)
-		uis.cursory = SCREEN_HEIGHT;
+	if (uis.cursory < -uis.ybias)
+		uis.cursory = -uis.ybias;
+	else if (uis.cursory > SCREEN_HEIGHT + uis.ybias)
+		uis.cursory = SCREEN_HEIGHT + uis.ybias;
 
 	//Com_Printf("UI_MouseEvent: %d %d\n", uis.cursorx, uis.cursory);
 
@@ -1097,18 +1097,20 @@ void UI_Init( void ) {
 	// for 640x480 virtualized screen
 	uis.xscale = uis.glconfig.vidWidth * (1.0/640.0);
 	uis.yscale = uis.glconfig.vidHeight * (1.0/480.0);
-	uis.bias = 0;
+	uis.xbias = 0;
+	uis.ybias = 0;
 /*
 	if ( uis.glconfig.vidWidth * 480 > uis.glconfig.vidHeight * 640 ) {
 		// wide screen
-		uis.bias = 0.5 * ( uis.glconfig.vidWidth - ( uis.glconfig.vidHeight * (640.0/480.0) ) );
+		uis.xbias = 0.5 * ( uis.glconfig.vidWidth - ( uis.glconfig.vidHeight * (640.0/480.0) ) );
 		uis.xscale = uis.yscale;
 	}
 	else
 */
 	{
 		// no wide screen
-		uis.bias = 0;
+		uis.xbias = 0;
+		uis.ybias = 0;
 	}
 
 	// initialize the menu system
@@ -1127,8 +1129,8 @@ Adjusted for resolution and screen aspect ratio
 */
 void UI_AdjustFrom640( float *x, float *y, float *w, float *h ) {
 	// expect valid pointers
-	*x = *x * uis.xscale + uis.bias;
-	*y *= uis.yscale;
+	*x = *x * uis.xscale + uis.xbias;
+	*y = *y * uis.yscale + uis.ybias;
 	*w *= uis.xscale;
 	*h *= uis.yscale;
 }
@@ -1227,7 +1229,7 @@ UI_Refresh
 void UI_Refresh( int realtime )
 {
 	int i;
-	float oldXscale;
+	float oldXscale, oldYscale;
 	uis.frametime = realtime - uis.realtime;
 	uis.realtime  = realtime;
 
@@ -1237,10 +1239,15 @@ void UI_Refresh( int realtime )
 
 	UI_UpdateCvars();
 
-	uis.bias = 0;
+	uis.xbias = 0;
+	uis.ybias = 0;
 	oldXscale = uis.xscale;
+	oldYscale = uis.yscale;
 	if (r_cardboardStereo.integer) {
-		uis.xscale *= 0.5;
+		uis.xbias = 0;//SCREEN_WIDTH * 0.05f;
+		uis.xscale *= 0.5f;
+		uis.yscale *= 0.92f;
+		uis.ybias = SCREEN_HEIGHT * 0.04f;
 	}
 	// Draw UI twice when in cardboard mode
 	for (i = 0; i <= r_cardboardStereo.integer; i++)
@@ -1272,10 +1279,12 @@ void UI_Refresh( int realtime )
 		UI_SetColor( NULL );
 		UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
 
-		uis.bias = SCREEN_WIDTH * uis.xscale;
+		uis.xbias = SCREEN_WIDTH * 0.5f;
 	}
-	uis.bias = 0;
+	uis.xbias = 0;
+	uis.ybias = 0;
 	uis.xscale = oldXscale;
+	uis.yscale = oldYscale;
 
 #ifndef NDEBUG
 	if (uis.debug)

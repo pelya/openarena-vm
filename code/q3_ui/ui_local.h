@@ -655,7 +655,8 @@ typedef struct {
 	qhandle_t			rb_off;
 	float				xscale;
 	float				yscale;
-	float				bias;
+	float				xbias;
+	float				ybias;
 	qboolean			demoversion;
 	qboolean			firstdraw;
 	stereoFrame_t		stereoFrame;

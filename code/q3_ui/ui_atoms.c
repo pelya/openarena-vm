@@ -1229,7 +1229,7 @@ UI_Refresh
 void UI_Refresh( int realtime )
 {
 	int i;
-	float oldXscale, oldYscale;
+	float oldXscale, oldYscale, halfScreenBias;
 	uis.frametime = realtime - uis.realtime;
 	uis.realtime  = realtime;
 
@@ -1244,8 +1244,9 @@ void UI_Refresh( int realtime )
 	oldXscale = uis.xscale;
 	oldYscale = uis.yscale;
 	if (r_cardboardStereo.integer) {
-		uis.xbias = 0;//SCREEN_WIDTH * 0.05f;
-		uis.xscale *= 0.5f;
+		halfScreenBias = SCREEN_WIDTH * uis.xscale * 0.5f;
+		uis.xbias = SCREEN_WIDTH * uis.xscale * 0.05f;
+		uis.xscale *= 0.45f;
 		uis.yscale *= 0.92f;
 		uis.ybias = SCREEN_HEIGHT * 0.04f;
 	}
@@ -1279,7 +1280,7 @@ void UI_Refresh( int realtime )
 		UI_SetColor( NULL );
 		UI_DrawHandlePic( uis.cursorx-16, uis.cursory-16, 32, 32, uis.cursor);
 
-		uis.xbias = SCREEN_WIDTH * 0.5f;
+		uis.xbias = halfScreenBias;
 	}
 	uis.xbias = 0;
 	uis.ybias = 0;

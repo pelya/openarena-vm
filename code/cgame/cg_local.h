@@ -682,6 +682,7 @@ typedef struct {
         float mouseX;
         float mouseY;
         vec3_t cameraAngles;
+        vec3_t aimingSpot; // Where player is aiming, for stereo view
         stereoFrame_t stereoFrame;
 } cg_t;
 

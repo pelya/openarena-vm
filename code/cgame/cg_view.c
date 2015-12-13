@@ -321,10 +321,12 @@ static void CG_OffsetThirdPersonView( stereoFrame_t stereoView ) {
 
 	view[2] += 8;
 	VectorMA( view, cg_cameraSideShift.value, right, view );
-	if (stereoView == STEREO_LEFT)
+	if (stereoView == STEREO_LEFT) {
 		VectorMA( view, -r_stereoSeparation.value, right, view );
-	if (stereoView == STEREO_RIGHT)
+	}
+	if (stereoView == STEREO_RIGHT) {
 		VectorMA( view, r_stereoSeparation.value, right, view );
+	}
 
 	cg.refdefViewAngles[PITCH] *= 0.5;
 
@@ -364,15 +366,20 @@ static void CG_OffsetThirdPersonView( stereoFrame_t stereoView ) {
 	//cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle.value;
 	//cg.refdefViewAngles[ROLL] = 0;
 
-	if ( cg_touchscreenControls.integer != TOUCHSCREEN_FLOATING_CROSSHAIR ) {
+	if ( cg_touchscreenControls.integer != TOUCHSCREEN_FLOATING_CROSSHAIR && stereoView != STEREO_RIGHT ) {
 		// Calculate player aiming, that will bump against level walls and other players
 		// First we calculate a distant point, where we'd be aiming if there are no walls around
-		AngleVectors( cg.refdefViewAngles, forward, NULL, NULL );
+		VectorCopy( cg.refdef.vieworg, view );
+		if (stereoView == STEREO_LEFT) {
+			VectorMA( view, r_stereoSeparation.value, right, view );
+		}
 
-		VectorMA( cg.refdef.vieworg, 10000.0f, forward, focusPoint );
+		AngleVectors( cg.refdefViewAngles, forward, NULL, NULL );
+		VectorMA( view, 10000.0f, forward, focusPoint );
 
 		// Bump it against the level walls
-		CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL, focusPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
+		CG_Trace( &trace, view, NULL, NULL, focusPoint, cg.predictedPlayerState.clientNum, MASK_SHOT );
+		VectorCopy( trace.endpos, cg.aimingSpot ); // Save for later, to draw crosshair
 
 		// Calculate player aim angles
 		VectorSubtract( trace.endpos, cg.predictedPlayerState.origin, view );

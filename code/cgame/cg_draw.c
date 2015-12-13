@@ -2469,38 +2469,24 @@ CROSSHAIR
 CG_DrawCrosshair
 =================
 */
-static void CG_DrawCrosshair(stereoFrame_t stereoFrame)
-{
+static void CG_GetCrosshairShader(qhandle_t *hShaderPtr, vec4_t color, vec4_t coords) {
 	float		w, h;
 	qhandle_t	hShader;
 	float		f;
 	float		x, y;
-	int			ca = 0; //only to get rid of the warning(not useful)
+	int			ca = 0;
 	int 		currentWeapon;
-	
+
 	currentWeapon = cg.predictedPlayerState.weapon;
-
-	if ( !cg_drawCrosshair.integer ) {
-		return;
-	}
-
-	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
-		return;
-	}
 
 	// set color based on health
 	if ( cg_crosshairHealth.integer ) {
-		vec4_t		hcolor;
-
-		CG_ColorForHealth( hcolor );
-		trap_R_SetColor( hcolor );
+		CG_ColorForHealth( color );
 	} else {
-                vec4_t         color;
-                color[0]=cg_crosshairColorRed.value;
-                color[1]=cg_crosshairColorGreen.value;
-                color[2]=cg_crosshairColorBlue.value;
-                color[3]=1.0f;
-		trap_R_SetColor( color );
+		color[0]=cg_crosshairColorRed.value;
+		color[1]=cg_crosshairColorGreen.value;
+		color[2]=cg_crosshairColorBlue.value;
+		color[3]=1.0f;
 	}
 
 	if( cg_differentCrosshairs.integer == 1 ){
@@ -2557,10 +2543,10 @@ static void CG_DrawCrosshair(stereoFrame_t stereoFrame)
 				w = h = cg_ch13size.value;
 				ca = cg_ch13.integer;
 				break;
-                        default:
-                                w = h = cg_crosshairSize.value;
-                                ca = cg_drawCrosshair.integer;
-                                break;
+			default:
+				w = h = cg_crosshairSize.value;
+				ca = cg_drawCrosshair.integer;
+				break;
 		}
 	}
 	else{
@@ -2602,63 +2588,89 @@ static void CG_DrawCrosshair(stereoFrame_t stereoFrame)
 			hShader = cgs.media.crosshairRailgunReloading;
 		}
 	}
+	*hShaderPtr = hShader;
+	coords[0] = x;
+	coords[1] = y;
+	coords[2] = w;
+	coords[3] = h;
+}
 
-	x += cg.refdef.x + 0.5 * (cg.refdef.width - w);
-	y += cg.refdef.y + 0.5 * (cg.refdef.height - h);
-	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
-		x += cg.mouseX;
-		y += cg.mouseY;
+static void CG_DrawCrosshair(stereoFrame_t stereoFrame) {
+	qhandle_t	hShader;
+	vec4_t		color, coords;
+
+	if ( !cg_drawCrosshair.integer ) {
+		return;
 	}
 
-	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, hShader );
+	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
+		return;
+	}
+
+	if (stereoFrame != STEREO_CENTER && cg.renderingThirdPerson) {
+		return;
+	}
+
+	CG_GetCrosshairShader( &hShader, color, coords );
+	trap_R_SetColor( color );
+
+	if (stereoFrame == STEREO_LEFT) {
+		
+	}
+
+	coords[0] += cg.refdef.x + 0.5 * (cg.refdef.width - coords[2]);
+	coords[1] += cg.refdef.y + 0.5 * (cg.refdef.height - coords[3]);
+	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR ) {
+		coords[0] += cg.mouseX;
+		coords[1] += cg.mouseY;
+	}
+
+	trap_R_DrawStretchPic( coords[0], coords[1], coords[2], coords[3], 0, 0, 1, 1, hShader );
 }
 
-/*
-=================
-CG_DrawCrosshair3D
-=================
-*/
-static void CG_DrawCrosshair3D(qhandle_t hShader, float w, float h)
-{
-	trace_t trace;
-	vec3_t endpos;
-	float stereoSep, zProj, maxdist, xmax;
-	char rendererinfos[128];
+static void CG_DrawCrosshair3D(stereoFrame_t stereoFrame) {
+	qhandle_t	hShader;
+	vec4_t		color, coords;
 	refEntity_t ent;
+	float dist;
 
-	// Use a different method rendering the crosshair so players don't see two of them when
-	// focusing their eyes at distant objects with high stereo separation
-	// We are going to trace to the next shootable object and place the crosshair in front of it.
+	if ( !cg_drawCrosshair.integer ) {
+		return;
+	}
 
-	// first get all the important renderer information
-	// TODO: less strcpy
-	trap_Cvar_VariableStringBuffer("r_zProj", rendererinfos, sizeof(rendererinfos));
-	zProj = atof(rendererinfos);
-	trap_Cvar_VariableStringBuffer("r_stereoSeparation", rendererinfos, sizeof(rendererinfos));
-	stereoSep = zProj / atof(rendererinfos);
-	
-	xmax = zProj * tan(cg.refdef.fov_x * M_PI / 360.0f);
-	
-	// let the trace run through until a change in stereo separation of the crosshair becomes less than one pixel.
-	maxdist = cgs.glconfig.vidWidth * stereoSep * zProj / (2 * xmax);
-	VectorMA(cg.refdef.vieworg, maxdist, cg.refdef.viewaxis[0], endpos);
-	CG_Trace(&trace, cg.refdef.vieworg, NULL, NULL, endpos, 0, MASK_SHOT);
-	
+	if ( cg.snap->ps.persistant[PERS_TEAM] == TEAM_SPECTATOR) {
+		return;
+	}
+
+	if (stereoFrame == STEREO_CENTER || !cg.renderingThirdPerson) {
+		return;
+	}
+
+	CG_GetCrosshairShader( &hShader, color, coords );
+
+	dist = Distance( cg.aimingSpot, cg.refdef.vieworg );
+	if (dist < 0.1f) {
+		dist = 0.1f;
+	}
+
 	memset(&ent, 0, sizeof(ent));
 	ent.reType = RT_SPRITE;
-	ent.renderfx = RF_DEPTHHACK | RF_CROSSHAIR;
-	
-	VectorCopy(trace.endpos, ent.origin);
-	
-	// scale the crosshair so it appears the same size for all distances
-	ent.radius = w / 640 * xmax * trace.fraction * maxdist / zProj;
+	ent.renderfx = RF_DEPTHHACK | RF_MINLIGHT | RF_CROSSHAIR;
+	ent.renderfx = RF_DEPTHHACK;
 	ent.customShader = hShader;
 
-	trap_R_AddRefEntityToScene(&ent);
+	VectorCopy( cg.aimingSpot, ent.origin );
+	// scale the crosshair so it appears the same size for all distances
+	ent.radius = 2.0f * coords[2] / SCREEN_WIDTH * dist;
+
+	// Set appropriate color, scale it because level lighting makes all 2D entities dimmer
+	ent.shaderRGBA[0] = color[0] * 1000.0f;
+	ent.shaderRGBA[1] = color[1] * 1000.0f;
+	ent.shaderRGBA[2] = color[2] * 1000.0f;
+	ent.shaderRGBA[3] = 1000.0f;
+
+	trap_R_AddRefEntityToScene( &ent );
 }
-
-
-
 
 /*
 =================
@@ -3396,6 +3408,8 @@ void CG_DrawActive( stereoFrame_t stereoView ) {
 			cg.refdef.x += cg.refdef.width;
 	}
 
+	CG_DrawCrosshair3D(stereoView); // Need to be drawn before R_RenderScene call
+	
 	trap_R_RenderScene( &cg.refdef );
 
 	// draw status bar and other floating elements

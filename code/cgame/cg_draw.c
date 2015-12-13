@@ -2614,8 +2614,11 @@ static void CG_DrawCrosshair(stereoFrame_t stereoFrame) {
 	CG_GetCrosshairShader( &hShader, color, coords );
 	trap_R_SetColor( color );
 
-	if (stereoFrame == STEREO_LEFT) {
-		
+	if (stereoFrame != STEREO_CENTER) {
+		coords[0] = cg_crosshairX.integer;
+		coords[1] = cg_crosshairY.integer;
+		coords[2] *= 1.4f;
+		coords[3] *= 1.4f;
 	}
 
 	coords[0] += cg.refdef.x + 0.5 * (cg.refdef.width - coords[2]);
@@ -2661,7 +2664,7 @@ static void CG_DrawCrosshair3D(stereoFrame_t stereoFrame) {
 
 	VectorCopy( cg.aimingSpot, ent.origin );
 	// scale the crosshair so it appears the same size for all distances
-	ent.radius = 2.0f * coords[2] / SCREEN_WIDTH * dist;
+	ent.radius = 1.7f * coords[2] / SCREEN_WIDTH * dist;
 
 	// Set appropriate color, scale it because level lighting makes all 2D entities dimmer
 	ent.shaderRGBA[0] = color[0] * 1000.0f;

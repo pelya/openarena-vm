@@ -616,19 +616,27 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 	float	fcol;
 	float	fwidth;
 	float	fheight;
+	float	xscale;
 
 	// draw the colored text
 	trap_R_SetColor( color );
 	
-	ax = x * cgs.screenXScale + cgs.screenXBias;
-	ay = y * cgs.screenYScale;
+	ax = x;
+	ay = y;
+	aw = 0;
+	ah = 0;
+	xscale = 1.0f;
+	CG_AdjustFrom640(&ax, &ay, &aw, &ah);
+	if (cg.stereoFrame != STEREO_CENTER) {
+		xscale /= 2.0f;
+	}
 
 	s = str;
 	while ( *s )
 	{
 		ch = *s & 127;
 		if ( ch == ' ' ) {
-			ax += ((float)PROPB_SPACE_WIDTH + (float)PROPB_GAP_WIDTH)* cgs.screenXScale;
+			ax += ((float)PROPB_SPACE_WIDTH + (float)PROPB_GAP_WIDTH)* cgs.screenXScale * xscale;
 		}
 		else if ( ch >= 'A' && ch <= 'Z' ) {
 			ch -= 'A';
@@ -636,10 +644,10 @@ static void UI_DrawBannerString2( int x, int y, const char* str, vec4_t color )
 			frow = (float)propMapB[ch][1] / 256.0f;
 			fwidth = (float)propMapB[ch][2] / 256.0f;
 			fheight = (float)PROPB_HEIGHT / 256.0f;
-			aw = (float)propMapB[ch][2] * cgs.screenXScale;
+			aw = (float)propMapB[ch][2] * cgs.screenXScale * xscale;
 			ah = (float)PROPB_HEIGHT * cgs.screenXScale;
 			trap_R_DrawStretchPic( ax, ay, aw, ah, fcol, frow, fcol+fwidth, frow+fheight, cgs.media.charsetPropB );
-			ax += (aw + (float)PROPB_GAP_WIDTH * cgs.screenXScale);
+			ax += (aw + (float)PROPB_GAP_WIDTH * cgs.screenXScale * xscale);
 		}
 		s++;
 	}
@@ -730,8 +738,14 @@ static void UI_DrawProportionalString2( int x, int y, const char* str, vec4_t co
 	// draw the colored text
 	trap_R_SetColor( color );
 	
-	ax = x * cgs.screenXScale + cgs.screenXBias;
-	ay = y * cgs.screenXScale;
+	ax = x;
+	ay = y;
+	aw = 0;
+	ah = 0;
+	CG_AdjustFrom640(&ax, &ay, &aw, &ah);
+	if (cg.stereoFrame != STEREO_CENTER) {
+		sizeScale /= 2.0f;
+	}
 
 	s = str;
 	while ( *s )

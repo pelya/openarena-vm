@@ -145,11 +145,11 @@ CG_DrawInformation
 Draw all the status / pacifier stuff during level loading
 ====================
 */
-void CG_DrawInformation( void ) {
+static void CG_DrawInformation2( void ) {
 	const char	*s;
 	const char	*info;
 	const char	*sysInfo;
-	int			y;
+	float		x, y, w, h;
 	int			value;
 	qhandle_t	levelshot;
 	qhandle_t	detail;
@@ -168,7 +168,13 @@ void CG_DrawInformation( void ) {
 
 	// blend a detail texture over it
 	detail = trap_R_RegisterShader( "levelShotDetail" );
-	trap_R_DrawStretchPic( 0, 0, cgs.glconfig.vidWidth, cgs.glconfig.vidHeight, 0, 0, 2.5, 2, detail );
+	x = 0;
+	y = 0;
+	w = SCREEN_WIDTH;
+	h = SCREEN_HEIGHT;
+	CG_AdjustFrom640( &x, &y, &w, &h );
+	trap_R_DrawStretchPic( x, y, w, h, 0, 0, 2.5, 2, detail );
+	//Com_Printf( "Loading screen: frame %d coords %f %f %f %f\n", cg.stereoFrame, x, y, w, h );
 
 	// draw the icons of things as they are loaded
 	CG_DrawLoadingIcons();
@@ -310,3 +316,13 @@ void CG_DrawInformation( void ) {
 	}
 }
 
+void CG_DrawInformation( void ) {
+	if (r_cardboardStereo.integer) {
+		cg.stereoFrame = STEREO_LEFT;
+		CG_DrawInformation2();
+		cg.stereoFrame = STEREO_RIGHT;
+		CG_DrawInformation2();
+	} else {
+		CG_DrawInformation2();
+	}
+}

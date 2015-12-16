@@ -659,7 +659,6 @@ typedef struct {
 	float				ybias;
 	qboolean			demoversion;
 	qboolean			firstdraw;
-	stereoFrame_t		stereoFrame;
 } uiStatic_t;
 
 extern void			UI_Init( void );

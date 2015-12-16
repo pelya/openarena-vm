@@ -1588,13 +1588,24 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 	sfxHandle_t		sound = 0;
 	menucommon_s	*item;
 	int				cursor_prev;
+	uiClientState_t	cstate;
 
 	// menu system keys
 	switch ( key )
 	{
 		case K_MOUSE2:
 		case K_ESCAPE:
-			UI_PopMenu();
+			//UI_PopMenu();
+			trap_GetClientState( &cstate );
+			if ( cstate.connState <= CA_DISCONNECTED ) {
+				if (uis.menusp <= 1) {
+					UI_CreditMenu(); // Exit game
+				} else {
+					UI_PopMenu();
+				}
+			} else {
+				trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
+			}
 			return menu_out_sound;
 	}
 

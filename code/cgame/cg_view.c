@@ -818,6 +818,20 @@ CG_CalcViewValues
 Sets cg.refdef view values
 ===============
 */
+static vec3_t debugAngles[6];
+static unsigned char debugAnglesFrame;
+
+static void debugPrintChangedAngles(vec3_t newAngles, vec3_t oldAngles, const char *msg)
+{
+	if ( fabs(oldAngles[PITCH] - newAngles[PITCH]) + fabs(oldAngles[YAW] - newAngles[YAW]) + fabs(oldAngles[ROLL] - newAngles[ROLL]) >= 2.0f )
+	{
+		Com_Printf( "%02x %s: %4d %4d %4d -> %4d %4d %4d\n", debugAnglesFrame, msg,
+			(int)oldAngles[YAW], (int)oldAngles[PITCH], (int)oldAngles[ROLL],
+			(int)newAngles[YAW], (int)newAngles[PITCH], (int)newAngles[ROLL]);
+		VectorCopy(newAngles, oldAngles);
+	}
+}
+
 static int CG_CalcViewValues( stereoFrame_t stereoView ) {
 	playerState_t	*ps;
 
@@ -883,6 +897,8 @@ static int CG_CalcViewValues( stereoFrame_t stereoView ) {
 		}
 	}
 
+	debugAnglesFrame++;
+	debugPrintChangedAngles(cg.cameraAngles, debugAngles[1],          "cameraAngles   ");
 	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR || cg_thirdPerson.integer ) {
 		CG_AdjustAnglesAfterTeleport();
 
@@ -890,6 +906,12 @@ static int CG_CalcViewValues( stereoFrame_t stereoView ) {
 		cg.refdefViewAngles[YAW] = cg.cameraAngles[YAW];
 		cg.refdefViewAngles[ROLL] = cg.cameraAngles[ROLL];
 	}
+	debugPrintChangedAngles(cg.cameraAngles, debugAngles[1],          "cameraAnglesTLP");
+	debugPrintChangedAngles(ps->viewangles, debugAngles[0],           "ps->viewangles ");
+	debugAngles[2][YAW] = SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] );
+	debugAngles[2][PITCH] = SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] );
+	debugAngles[2][ROLL] = SHORT2ANGLE( cg.snap->ps.delta_angles[ROLL] );
+	debugPrintChangedAngles(debugAngles[2], debugAngles[3], "ps.delta_angles");
 
 	if ( cg.renderingThirdPerson ) {
 		// back away from character

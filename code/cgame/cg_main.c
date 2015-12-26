@@ -489,7 +489,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_thirdPersonConfigOptionInSettings, "cg_thirdPersonConfigOptionInSettings", "1", CVAR_ARCHIVE },
 	{ &cg_cameraSideShift, "cg_cameraSideShift", "-30", CVAR_ARCHIVE },
 	{ &r_cardboardStereo, "r_cardboardStereo", "0", CVAR_ARCHIVE },
-	{ &r_stereoSeparation, "r_stereoSeparation", "64", CVAR_ARCHIVE },
+	{ &r_stereoSeparation, "r_stereoSeparation2", "10", CVAR_ARCHIVE },
 
 };
 

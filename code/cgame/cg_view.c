@@ -242,6 +242,7 @@ void CG_AdjustAnglesAfterTeleport(void)
 	static float oldDeltaAngleYaw = 0;
 
 	if ( fabs( AngleSubtract( deltaAngleYaw, oldDeltaAngleYaw ) ) > 3.0f ) {
+		Com_Printf("CG_AdjustAnglesAfterTeleport\n");
 		cg.cameraAngles[YAW] = AngleSubtract( oldAimingAngles[YAW], -deltaAngleYaw );
 		cg.cameraAngles[PITCH] = 0;
 		cg.cameraAngles[ROLL] = 0;
@@ -818,7 +819,7 @@ CG_CalcViewValues
 Sets cg.refdef view values
 ===============
 */
-static vec3_t debugAngles[6];
+static vec3_t debugAngles[6] = { {-999, -999, -999}, {-999, -999, -999}, {-999, -999, -999}, {-999, -999, -999}, {-999, -999, -999}, {-999, -999, -999}, };
 static unsigned char debugAnglesFrame;
 
 static void debugPrintChangedAngles(vec3_t newAngles, vec3_t oldAngles, const char *msg)

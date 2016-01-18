@@ -1824,7 +1824,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 
 	y += ( SMALLCHAR_HEIGHT * 0.3f );
 	s_serveroptions.timescale.generic.type		= MTYPE_SLIDER;
-	s_serveroptions.timescale.generic.flags		= QMF_SMALLFONT;
+	s_serveroptions.timescale.generic.flags		= QMF_SMALLFONT|QMF_PULSEIFFOCUS;
 	s_serveroptions.timescale.generic.x			= 128;
 	s_serveroptions.timescale.generic.y			= y;
 	s_serveroptions.timescale.generic.name		= "Game speed";

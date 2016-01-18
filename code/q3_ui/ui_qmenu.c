@@ -588,7 +588,7 @@ static sfxHandle_t Slider_Key( menuslider_s *s, int key )
 {
 	sfxHandle_t	sound = 0;
 	int			x;
-	int			oldvalue = s->curvalue;
+	float		oldvalue = s->curvalue;
 	float		step = (s->maxvalue - s->minvalue) / 20.0f;
 
 	if (step <= 0)

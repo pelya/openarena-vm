@@ -204,13 +204,6 @@ void CG_Respawn( void ) {
 				(int)cg.snap->ps.viewangles[YAW], (int)cg.snap->ps.viewangles[PITCH], (int)cg.snap->ps.viewangles[ROLL]);
 	trap_Cvar_Set("cg_thirdperson", cg_thirdPersonConfigOptionInSettings.integer ? "1" : "0");
 	CG_AdjustAnglesAfterTeleport(); // Clear old state
-	/*
-	cg.cameraAngles[YAW] = SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] ); // Camera faces the same way as player does
-	cg.cameraAngles[YAW] = cg.refdefViewAngles[YAW];
-	cg.cameraAngles[PITCH] = 0;
-	cg.cameraAngles[ROLL] = 0;
-	*/
-	//VectorCopy( cg.refdefViewAngles, cg.cameraAngles );
 	VectorCopy( cg.snap->ps.viewangles, cg.cameraAngles );
 	trap_SetCameraAngles( cg.cameraAngles );
 	// Reset sniper view when respawning

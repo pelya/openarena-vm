@@ -240,9 +240,10 @@ void CG_AdjustAnglesAfterTeleport(void)
 	// The teleport bit is unreliable, so we'll just watch for big change between old and new delta_angles
 	float deltaAngleYaw = SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] );
 	static float oldDeltaAngleYaw = 0;
+	qboolean ret = qfalse;
+	vec3_t savedCameraAngles;
 
 	if ( fabs( AngleSubtract( deltaAngleYaw, oldDeltaAngleYaw ) ) > 3.0f ) {
-		Com_Printf("CG_AdjustAnglesAfterTeleport\n");
 		cg.cameraAngles[YAW] = AngleSubtract( oldAimingAngles[YAW], -deltaAngleYaw );
 		cg.cameraAngles[PITCH] = 0;
 		cg.cameraAngles[ROLL] = 0;
@@ -555,11 +556,13 @@ static void CG_ZoomAdjustViewAnglesShoulderView( float from, float to, qboolean 
 		anglesDiff[YAW] -= SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] );
 		anglesDiff[PITCH] -= SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] );
 		oldAimingAngles[PITCH] += SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] );
+		oldAimingAngles[PITCH] = AngleNormalize180( oldAimingAngles[PITCH] );
 		VectorCopy( oldAimingAngles, cg.cameraAngles );
 	} else {
 		VectorCopy( cg.refdefViewAngles, cg.cameraAngles );
 		//anglesDiff[PITCH] += SHORT2ANGLE( cg.snap->ps.delta_angles[PITCH] );
 		VectorAdd( cg.cameraAngles, anglesDiff, cg.cameraAngles );
+		cg.cameraAngles[PITCH] = AngleNormalize180( cg.cameraAngles[PITCH] );
 	}
 	trap_SetCameraAngles( cg.cameraAngles );
 }
@@ -1117,4 +1120,3 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 
 
 }
-

@@ -1245,10 +1245,10 @@ void UI_Refresh( int realtime )
 	oldYscale = uis.yscale;
 	if (r_cardboardStereo.integer) {
 		halfScreenBias = SCREEN_WIDTH * uis.xscale * 0.5f;
-		uis.xbias = SCREEN_WIDTH * uis.xscale * 0.05f;
-		uis.xscale *= 0.45f;
-		uis.yscale *= 0.92f;
-		uis.ybias = SCREEN_HEIGHT * 0.04f;
+		uis.xbias = SCREEN_WIDTH * uis.xscale * 0.10f;
+		uis.xscale *= 0.40f;
+		uis.yscale *= 0.80f;
+		uis.ybias = SCREEN_HEIGHT * 0.10f;
 	}
 	// Draw UI twice when in cardboard mode
 	for (i = 0; i <= r_cardboardStereo.integer; i++)

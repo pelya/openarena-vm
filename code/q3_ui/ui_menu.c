@@ -68,6 +68,7 @@ typedef struct {
 	menuradiobutton_s	gyroscope; // Another hack
 	menulist_s		voicechat; // Another hack
 	menuradiobutton_s	cardboardVR; // Another hack
+	qhandle_t		cardboardVRicon; // This hack has it's own icon
 
 	qhandle_t		bannerModel;
 } mainmenu_t;
@@ -201,6 +202,7 @@ MainMenu_Cache
 */
 void MainMenu_Cache( void ) {
 	s_main.bannerModel = trap_R_RegisterModel( MAIN_BANNER_MODEL );
+	s_main.cardboardVRicon = trap_R_RegisterShaderNoMip( "gfx/2d/cardboard-vr-icon" );
 }
 
 sfxHandle_t ErrorMessage_Key(int key)
@@ -285,6 +287,10 @@ static void Main_MenuDraw( void ) {
 		// standard menu drawing
 		Menu_Draw( &s_main.menu );		
 	}
+
+	//UI_SetColor( (s_main.cardboardVR.generic.flags & QMF_HASMOUSEFOCUS) ? color_white : text_color_normal );
+	UI_SetColor( Menu_ItemAtCursor(&s_main.menu) == &s_main.cardboardVR.generic ? color_white : text_color_normal );
+	UI_DrawHandlePic( s_main.cardboardVR.generic.x - 70, s_main.cardboardVR.generic.y - SMALLCHAR_HEIGHT / 4 - 1, 32, 32, s_main.cardboardVRicon );
 
 		UI_DrawProportionalString( 320, 372, "", UI_CENTER|UI_SMALLFONT, color );
 		UI_DrawString( 320, 390, "OpenArena(c) 2005-2013 OpenArena Team", UI_CENTER|UI_SMALLFONT, color );
@@ -514,7 +520,7 @@ void UI_MainMenu( void ) {
 	s_main.cardboardVR.generic.flags	= QMF_SMALLFONT;
 	s_main.cardboardVR.generic.x		= 120;
 	s_main.cardboardVR.generic.y		= 360;
-	s_main.cardboardVR.generic.name		= "cardboard vr:";
+	s_main.cardboardVR.generic.name		= "vr:";
 	s_main.cardboardVR.generic.id		= ID_CARDBOARDVR;
 	s_main.cardboardVR.generic.callback	= Main_MenuEvent;
 	s_main.cardboardVR.curvalue			= trap_Cvar_VariableValue( "r_cardboardStereo" );
@@ -539,5 +545,5 @@ void UI_MainMenu( void ) {
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;
 	UI_PushMenu ( &s_main.menu );
-		
+
 }

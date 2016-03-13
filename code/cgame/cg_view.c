@@ -240,8 +240,6 @@ void CG_AdjustAnglesAfterTeleport(void)
 	// The teleport bit is unreliable, so we'll just watch for big change between old and new delta_angles
 	float deltaAngleYaw = SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] );
 	static float oldDeltaAngleYaw = 0;
-	qboolean ret = qfalse;
-	vec3_t savedCameraAngles;
 
 	if ( fabs( AngleSubtract( deltaAngleYaw, oldDeltaAngleYaw ) ) > 3.0f ) {
 		cg.cameraAngles[YAW] = AngleSubtract( oldAimingAngles[YAW], -deltaAngleYaw );
@@ -393,6 +391,13 @@ static void CG_OffsetThirdPersonView( stereoFrame_t stereoView ) {
 
 		trap_SetAimingAngles( focusAngles );
 		VectorCopy( focusAngles, oldAimingAngles );
+	}
+
+	if (stereoView == STEREO_LEFT) {
+		cg.refdefViewAngles[YAW] += r_stereoAngle.value;
+	}
+	if (stereoView == STEREO_RIGHT) {
+		cg.refdefViewAngles[YAW] -= r_stereoAngle.value;
 	}
 }
 

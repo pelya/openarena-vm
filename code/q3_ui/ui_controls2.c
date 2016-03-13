@@ -65,16 +65,18 @@ typedef struct
 #define C_LOOKING		1
 #define C_WEAPONS		2
 #define C_MISC			3
-#define C_MAX			4
+#define C_VIEW			4
+#define C_MAX			5
 
 #define ID_MOVEMENT		100
 #define ID_LOOKING		101
 #define ID_WEAPONS		102
 #define ID_MISC			103
-#define ID_DEFAULTS		104
-#define ID_BACK			105
-#define ID_SAVEANDEXIT	106
-#define ID_EXIT			107
+#define ID_VIEW			104
+#define ID_DEFAULTS		105
+#define ID_BACK			106
+#define ID_SAVEANDEXIT	107
+#define ID_EXIT			108
 
 // bindable actions
 #define ID_SHOWSCORES	0
@@ -140,6 +142,9 @@ typedef struct
 #define ID_CROSSHAIR_EDGES	58
 #define ID_CAMERA_SIDE_SHIFT	59
 #define ID_SWAP_GAMEPAD_STICKS	60
+#define ID_CARDBOARD_STEREO	61
+#define ID_STEREO_SEPARATION	62
+#define ID_STEREO_ANGLE	63
 
 
 #define ANIM_IDLE		0
@@ -184,6 +189,7 @@ typedef struct
 	menubitmap_s		player;
 
 	menutext_s			movement;
+	menutext_s			view;
 	menutext_s			looking;
 	menutext_s			weapons;
 	menutext_s			misc;
@@ -252,6 +258,9 @@ typedef struct
 	menulist_s			gyroscopeAxesSwap;
 	menulist_s			swipeAngle;
 	menuslider_s		swipeSensitivity;
+	menuradiobutton_s	cardboardStereo;
+	menuslider_s		stereoSeparation;
+	menuslider_s		stereoAngle;
 	int					section;
 	qboolean			waitingforkey;
 	char				playerModel[64];
@@ -380,6 +389,9 @@ static configcvar_t g_configcvars[] =
 	{"cg_fov",			90,					90},
 	{"cg_railgunAutoZoom",	1,					1},
         {"cg_voipTeamOnly",	0,					0},
+	{"r_cardboardStereo",	0,					0},
+	{"r_stereoSeparation2", 10,					10},
+	{"r_stereoAngle",		0,					0},
 	{NULL,				0,					0}
 };
 
@@ -430,9 +442,6 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.aimingmode,
 	(menucommon_s *)&s_controls.crosshairOffset,
 	(menucommon_s *)&s_controls.crosshairEdges,
-	(menucommon_s *)&s_controls.firstperson,
-	(menucommon_s *)&s_controls.thirdpersonrange,
-	(menucommon_s *)&s_controls.camerasideshift,
 	(menucommon_s *)&s_controls.sensitivity,
 	(menucommon_s *)&s_controls.invertmouse,
 	(menucommon_s *)&s_controls.gyroscope,
@@ -440,7 +449,6 @@ static menucommon_s *g_looking_controls[] = {
 	(menucommon_s *)&s_controls.gyroscopeAxesSwap,
 	(menucommon_s *)&s_controls.swipeAngle,
 	(menucommon_s *)&s_controls.swipeSensitivity,
-	(menucommon_s *)&s_controls.widefov,
 	(menucommon_s *)&s_controls.railautozoom,
 	(menucommon_s *)&s_controls.smoothmouse,
 	(menucommon_s *)&s_controls.swapgamepadsticks,
@@ -460,11 +468,23 @@ static menucommon_s *g_misc_controls[] = {
 	NULL,
 };
 
+static menucommon_s *g_view_controls[] = {
+	(menucommon_s *)&s_controls.firstperson,
+	(menucommon_s *)&s_controls.thirdpersonrange,
+	(menucommon_s *)&s_controls.camerasideshift,
+	(menucommon_s *)&s_controls.widefov,
+	(menucommon_s *)&s_controls.cardboardStereo,
+	(menucommon_s *)&s_controls.stereoSeparation,
+	(menucommon_s *)&s_controls.stereoAngle,
+	NULL,
+};
+
 static menucommon_s **g_controls[] = {
 	g_movement_controls,
 	g_looking_controls,
 	g_weapons_controls,
 	g_misc_controls,
+	g_view_controls,
 };
 
 /*
@@ -748,11 +768,13 @@ static void Controls_Update( void ) {
 	s_controls.movement.generic.flags &= ~(QMF_GRAYED|QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 	s_controls.weapons.generic.flags  &= ~(QMF_GRAYED|QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 	s_controls.misc.generic.flags     &= ~(QMF_GRAYED|QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
+	s_controls.view.generic.flags     &= ~(QMF_GRAYED|QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 
 	s_controls.looking.generic.flags  |= QMF_PULSEIFFOCUS;
 	s_controls.movement.generic.flags |= QMF_PULSEIFFOCUS;
 	s_controls.weapons.generic.flags  |= QMF_PULSEIFFOCUS;
 	s_controls.misc.generic.flags     |= QMF_PULSEIFFOCUS;
+	s_controls.view.generic.flags     |= QMF_PULSEIFFOCUS;
 
 	// set buttons
 	switch( s_controls.section ) {
@@ -774,6 +796,11 @@ static void Controls_Update( void ) {
 	case C_MISC:
 		s_controls.misc.generic.flags &= ~QMF_PULSEIFFOCUS;
 		s_controls.misc.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
+		break;
+
+	case C_VIEW:
+		s_controls.view.generic.flags &= ~QMF_PULSEIFFOCUS;
+		s_controls.view.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 		break;
 	}
 }
@@ -966,6 +993,9 @@ static void Controls_GetConfig( void )
 	s_controls.widefov.curvalue      = (Controls_GetCvarValue( "cg_fov" ) <= 90 ? 0 : 1);
 	s_controls.railautozoom.curvalue = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_railgunAutoZoom" ) );
         s_controls.voip_teamonly.curvalue= UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_voipTeamOnly" ) );
+	s_controls.cardboardStereo.curvalue = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "r_cardboardStereo" ) );
+	s_controls.stereoSeparation.curvalue = UI_ClampCvar( -16, 64, Controls_GetCvarValue( "r_stereoSeparation2" ) );
+	s_controls.stereoAngle.curvalue = UI_ClampCvar( -15, 45, Controls_GetCvarValue( "r_stereoAngle" ) );
 }
 
 /*
@@ -1024,6 +1054,9 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "cg_fov", (s_controls.widefov.curvalue == 0 ? 90 : 140) );
 	trap_Cvar_SetValue( "cg_railgunAutoZoom", s_controls.railautozoom.curvalue );
         trap_Cvar_SetValue( "cg_voipTeamOnly", s_controls.voip_teamonly.curvalue);
+	trap_Cvar_SetValue( "r_cardboardStereo", s_controls.cardboardStereo.curvalue );
+	trap_Cvar_SetValue( "r_stereoSeparation2", s_controls.stereoSeparation.curvalue );
+	trap_Cvar_SetValue( "r_stereoAngle", s_controls.stereoAngle.curvalue );
 	trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
 }
 
@@ -1069,6 +1102,9 @@ static void Controls_SetDefaults( void )
 	s_controls.railautozoom.curvalue = Controls_GetCvarDefault( "cg_railgunAutoZoom" );
 	s_controls.aimingmode.curvalue     = Controls_GetCvarDefault( "cg_touchscreenControls" );
         s_controls.voip_teamonly.curvalue= Controls_GetCvarDefault( "cg_voipTeamOnly");
+	s_controls.cardboardStereo.curvalue = Controls_GetCvarDefault( "r_cardboardStereo" );
+	s_controls.stereoSeparation.curvalue = Controls_GetCvarDefault( "r_stereoSeparation2" );
+	s_controls.stereoAngle.curvalue = Controls_GetCvarDefault( "r_stereoAngle" );
 }
 
 /*
@@ -1260,6 +1296,14 @@ static void Controls_MenuEvent( void* ptr, int event )
 			}
 			break;
 
+		case ID_VIEW:
+			if (event == QM_ACTIVATED)
+			{
+				s_controls.section = C_VIEW;
+				Controls_Update();
+			}
+			break;
+
 		case ID_DEFAULTS:
 			if (event == QM_ACTIVATED)
 			{
@@ -1311,6 +1355,10 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_RAILAUTOZOOM:
 		case ID_CROSSHAIR_OFFSET:
 		case ID_CROSSHAIR_EDGES:
+		case ID_CARDBOARD_STEREO:
+		case ID_STEREO_SEPARATION:
+		case ID_STEREO_ANGLE:
+
 			if (event == QM_ACTIVATED)
 			{
 				s_controls.changesmade = qtrue;
@@ -1417,13 +1465,23 @@ static void Controls_MenuInit( void )
 	s_controls.framer.width  	    = 256;
 	s_controls.framer.height  	    = 334;
 
+	s_controls.view.generic.type		= MTYPE_PTEXT;
+	s_controls.view.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
+	s_controls.view.generic.id			= ID_VIEW;
+	s_controls.view.generic.callback	= Controls_MenuEvent;
+	s_controls.view.generic.x			= 152;
+	s_controls.view.generic.y	    	= 240 - 3 * PROP_HEIGHT;
+	s_controls.view.string				= "VIEW";
+	s_controls.view.style				= UI_RIGHT;
+	s_controls.view.color				= color_red;
+
 	s_controls.looking.generic.type     = MTYPE_PTEXT;
 	s_controls.looking.generic.flags    = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_controls.looking.generic.id	    = ID_LOOKING;
 	s_controls.looking.generic.callback	= Controls_MenuEvent;
 	s_controls.looking.generic.x	    = 152;
 	s_controls.looking.generic.y	    = 240 - 2 * PROP_HEIGHT;
-	s_controls.looking.string			= "LOOK";
+	s_controls.looking.string			= "AIM";
 	s_controls.looking.style			= UI_RIGHT;
 	s_controls.looking.color			= color_red;
 
@@ -1688,7 +1746,7 @@ static void Controls_MenuInit( void )
 	s_controls.thirdpersonrange.generic.type	= MTYPE_SLIDER;
 	s_controls.thirdpersonrange.generic.x		= SCREEN_WIDTH/2;
 	s_controls.thirdpersonrange.generic.flags	= QMF_SMALLFONT;
-	s_controls.thirdpersonrange.generic.name	= "camera distance";
+	s_controls.thirdpersonrange.generic.name	= "view distance";
 	s_controls.thirdpersonrange.generic.id		= ID_THIRD_PERSON_RANGE;
 	s_controls.thirdpersonrange.generic.callback = Controls_MenuEvent;
 	s_controls.thirdpersonrange.minvalue		= 40;
@@ -1698,7 +1756,7 @@ static void Controls_MenuInit( void )
 	s_controls.camerasideshift.generic.type		= MTYPE_SLIDER;
 	s_controls.camerasideshift.generic.x		= SCREEN_WIDTH/2;
 	s_controls.camerasideshift.generic.flags	= QMF_SMALLFONT;
-	s_controls.camerasideshift.generic.name		= "camera side shift";
+	s_controls.camerasideshift.generic.name		= "view side shift";
 	s_controls.camerasideshift.generic.id		= ID_CAMERA_SIDE_SHIFT;
 	s_controls.camerasideshift.generic.callback = Controls_MenuEvent;
 	s_controls.camerasideshift.minvalue			= -100;
@@ -1892,6 +1950,34 @@ static void Controls_MenuInit( void )
 	s_controls.railautozoom.generic.callback  = Controls_MenuEvent;
 	s_controls.railautozoom.generic.statusbar = Controls_StatusBar;
 
+	s_controls.cardboardStereo.generic.type			= MTYPE_RADIOBUTTON;
+	s_controls.cardboardStereo.generic.flags		= QMF_SMALLFONT;
+	s_controls.cardboardStereo.generic.x			= SCREEN_WIDTH/2;
+	s_controls.cardboardStereo.generic.name			= "cardboard vr";
+	s_controls.cardboardStereo.generic.id			= ID_CARDBOARD_STEREO;
+	s_controls.cardboardStereo.generic.callback		= Controls_MenuEvent;
+	s_controls.cardboardStereo.generic.statusbar	= Controls_StatusBar;
+
+	s_controls.stereoSeparation.generic.type		= MTYPE_SLIDER;
+	s_controls.stereoSeparation.generic.x			= SCREEN_WIDTH/2;
+	s_controls.stereoSeparation.generic.flags		= QMF_SMALLFONT;
+	s_controls.stereoSeparation.generic.name		= "vr eye separation";
+	s_controls.stereoSeparation.generic.id			= ID_STEREO_SEPARATION;
+	s_controls.stereoSeparation.generic.callback	= Controls_MenuEvent;
+	s_controls.stereoSeparation.minvalue			= -16.0f;
+	s_controls.stereoSeparation.maxvalue			= 64.0f;
+	s_controls.stereoSeparation.generic.statusbar	= Controls_StatusBar;
+
+	s_controls.stereoAngle.generic.type			= MTYPE_SLIDER;
+	s_controls.stereoAngle.generic.x			= SCREEN_WIDTH/2;
+	s_controls.stereoAngle.generic.flags		= QMF_SMALLFONT;
+	s_controls.stereoAngle.generic.name			= "vr eye angle";
+	s_controls.stereoAngle.generic.id			= ID_STEREO_ANGLE;
+	s_controls.stereoAngle.generic.callback		= Controls_MenuEvent;
+	s_controls.stereoAngle.minvalue				= -15.0f;
+	s_controls.stereoAngle.maxvalue				= 45.0f;
+	s_controls.stereoAngle.generic.statusbar	= Controls_StatusBar;
+
 	s_controls.name.generic.type	= MTYPE_PTEXT;
 	s_controls.name.generic.flags	= QMF_CENTER_JUSTIFY|QMF_INACTIVE;
 	s_controls.name.generic.x		= 320;
@@ -1906,6 +1992,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.player );
 	Menu_AddItem( &s_controls.menu, &s_controls.name );
 
+	Menu_AddItem( &s_controls.menu, &s_controls.view );
 	Menu_AddItem( &s_controls.menu, &s_controls.looking );
 	Menu_AddItem( &s_controls.menu, &s_controls.movement );
 	Menu_AddItem( &s_controls.menu, &s_controls.weapons );
@@ -1914,9 +2001,6 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.aimingmode );
 	Menu_AddItem( &s_controls.menu, &s_controls.crosshairOffset );
 	Menu_AddItem( &s_controls.menu, &s_controls.crosshairEdges );
-	Menu_AddItem( &s_controls.menu, &s_controls.firstperson );
-	Menu_AddItem( &s_controls.menu, &s_controls.thirdpersonrange );
-	Menu_AddItem( &s_controls.menu, &s_controls.camerasideshift );
 	Menu_AddItem( &s_controls.menu, &s_controls.sensitivity );
 	Menu_AddItem( &s_controls.menu, &s_controls.invertmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscope );
@@ -1924,7 +2008,6 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.gyroscopeAxesSwap );
 	Menu_AddItem( &s_controls.menu, &s_controls.swipeAngle );
 	Menu_AddItem( &s_controls.menu, &s_controls.swipeSensitivity );
-	Menu_AddItem( &s_controls.menu, &s_controls.widefov );
 	Menu_AddItem( &s_controls.menu, &s_controls.smoothmouse );
 	Menu_AddItem( &s_controls.menu, &s_controls.swapgamepadsticks );
 	Menu_AddItem( &s_controls.menu, &s_controls.centerview );
@@ -1975,6 +2058,14 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.voip_talk );
 	Menu_AddItem( &s_controls.menu, &s_controls.voip_teamonly );
 
+	Menu_AddItem( &s_controls.menu, &s_controls.firstperson );
+	Menu_AddItem( &s_controls.menu, &s_controls.thirdpersonrange );
+	Menu_AddItem( &s_controls.menu, &s_controls.camerasideshift );
+	Menu_AddItem( &s_controls.menu, &s_controls.widefov );
+	Menu_AddItem( &s_controls.menu, &s_controls.cardboardStereo );
+	Menu_AddItem( &s_controls.menu, &s_controls.stereoSeparation );
+	Menu_AddItem( &s_controls.menu, &s_controls.stereoAngle );
+
 	Menu_AddItem( &s_controls.menu, &s_controls.back );
 
 	trap_Cvar_VariableStringBuffer( "name", s_controls.name.string, 16 );
@@ -1993,8 +2084,7 @@ static void Controls_MenuInit( void )
 	Controls_InitWeapons ();
 
 	// initial default section
-	s_controls.section = C_LOOKING;
-	s_controls.section = C_MOVEMENT;
+	s_controls.section = C_VIEW;
 
 	// update the ui
 	Controls_Update();

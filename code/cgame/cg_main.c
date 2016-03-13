@@ -286,7 +286,7 @@ vmCvar_t	cg_thirdPersonConfigOptionInSettings; // Any uglier name please?
 vmCvar_t	cg_cameraSideShift;
 vmCvar_t	r_cardboardStereo;
 vmCvar_t	r_stereoSeparation;
-
+vmCvar_t	r_stereoAngle;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -490,6 +490,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_cameraSideShift, "cg_cameraSideShift", "-30", CVAR_ARCHIVE },
 	{ &r_cardboardStereo, "r_cardboardStereo", "0", CVAR_ARCHIVE },
 	{ &r_stereoSeparation, "r_stereoSeparation2", "10", CVAR_ARCHIVE },
+	{ &r_stereoAngle, "r_stereoAngle", "0", CVAR_ARCHIVE },
 
 };
 

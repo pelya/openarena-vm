@@ -1994,7 +1994,7 @@ static void Controls_MenuInit( void )
 
 	// initial default section
 	s_controls.section = C_LOOKING;
-	//s_controls.section = C_MOVEMENT;
+	s_controls.section = C_MOVEMENT;
 
 	// update the ui
 	Controls_Update();

@@ -103,6 +103,7 @@ static void VoteMapMenu_Event( void* ptr, int event )
                 trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote map %s", mappage.mapname[s_votemenu_map.selected-ID_MAPNAME0]) );
                 UI_PopMenu();
                 UI_PopMenu();
+                UI_PopMenu();
                 break;
          }
 }

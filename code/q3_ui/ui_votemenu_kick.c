@@ -126,6 +126,7 @@ static void VoteKickMenu_Event( void* ptr, int event )
                 trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote clientkick %d",s_votemenu_kick.players_profiles[(s_votemenu_kick.selected-20)+s_votemenu_kick.startIndex].id) );
                 UI_PopMenu();
                 UI_PopMenu();
+                UI_PopMenu();
                 break;
          }
 }

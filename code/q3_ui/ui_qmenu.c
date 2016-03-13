@@ -1604,7 +1604,11 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 					UI_PopMenu();
 				}
 			} else {
-				trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
+				if (uis.menusp == 1) {
+					trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
+				} else {
+					UI_PopMenu();
+				}
 			}
 			return menu_out_sound;
 	}

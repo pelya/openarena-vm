@@ -148,9 +148,11 @@ static void VoteMenu_Event( void* ptr, int event )
                     case ID_NEXTMAP:
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote nextmap" );
                         UI_PopMenu();
+                        UI_PopMenu();
                         break;
                     case ID_RESTART:
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote map_restart" );
+                        UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_DOWARMUP:
@@ -159,9 +161,11 @@ static void VoteMenu_Event( void* ptr, int event )
                         else
                             trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_doWarmup 1" );
                         UI_PopMenu();
+                        UI_PopMenu();
                         break;
                     case ID_SHUFFLE:
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote shuffle" );
+                        UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_FRAG:
@@ -191,9 +195,11 @@ static void VoteMenu_Event( void* ptr, int event )
                     case ID_YES:
                         trap_Cmd_ExecuteText( EXEC_APPEND, "vote yes" );
                         UI_PopMenu();
+                        UI_PopMenu();
                         break;
                     case ID_NO:
                         trap_Cmd_ExecuteText( EXEC_APPEND, "vote no" );
+                        UI_PopMenu();
                         UI_PopMenu();
                         break;
             /*

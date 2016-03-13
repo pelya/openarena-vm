@@ -96,6 +96,7 @@ static void VoteMenu_custom_Event( void* ptr, int event )
                 trap_Cmd_ExecuteText( EXEC_APPEND, va("callvote custom %s",s_votemenu_custom.bEntry[s_votemenu_custom.selection-ID_CUSTOM0].string ) );
                 UI_PopMenu();
                 UI_PopMenu();
+                UI_PopMenu();
                 break;
         }
 

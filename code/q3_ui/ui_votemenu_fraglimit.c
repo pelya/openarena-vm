@@ -103,9 +103,11 @@ static void VoteMenu_Fraglimit_Event( void* ptr, int event )
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote fraglimit 10" );
                         UI_PopMenu();
                         UI_PopMenu();
+                        UI_PopMenu();
                         break;
                     case ID_15:
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote fraglimit 15" );
+                        UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
@@ -113,9 +115,11 @@ static void VoteMenu_Fraglimit_Event( void* ptr, int event )
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote fraglimit 20" );
                         UI_PopMenu();
                         UI_PopMenu();
+                        UI_PopMenu();
                         break;
                     case ID_30:
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote fraglimit 30" );
+                        UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
@@ -123,14 +127,17 @@ static void VoteMenu_Fraglimit_Event( void* ptr, int event )
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote fraglimit 40" );
                         UI_PopMenu();
                         UI_PopMenu();
+                        UI_PopMenu();
                         break;
                     case ID_50:
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote fraglimit 50" );
                         UI_PopMenu();
                         UI_PopMenu();
+                        UI_PopMenu();
                         break;
                     case ID_INF:
                         trap_Cmd_ExecuteText( EXEC_APPEND, "callvote fraglimit 0" );
+                        UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;

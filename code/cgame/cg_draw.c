@@ -2664,7 +2664,7 @@ static void CG_DrawCrosshair3D(stereoFrame_t stereoFrame) {
 
 	VectorCopy( cg.aimingSpot, ent.origin );
 	// scale the crosshair so it appears the same size for all distances
-	ent.radius = 1.7f * coords[2] / SCREEN_WIDTH * dist;
+	ent.radius = 1.9f * coords[2] / cgs.glconfig.vidWidth * dist;
 
 	// Set appropriate color, scale it because level lighting makes all 2D entities dimmer
 	ent.shaderRGBA[0] = color[0] * 1000.0f;

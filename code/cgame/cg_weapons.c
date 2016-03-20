@@ -1075,13 +1075,24 @@ static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame ) {
 CG_CalculateWeaponPosition
 ==============
 */
-static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles ) {
+static void CG_CalculateWeaponPosition( vec3_t origin, vec3_t angles, stereoFrame_t stereoView ) {
 	float	scale;
 	int		delta;
 	float	fracsin;
 
 	VectorCopy( cg.refdef.vieworg, origin );
-	VectorCopy( cg.refdefViewAngles, angles );
+	if ( stereoView == STEREO_CENTER || qtrue ) {
+		VectorCopy( cg.refdefViewAngles, angles );
+	} else {
+		vec3_t aim;
+		VectorSubtract( cg.aimingSpot, origin, aim );
+		vectoangles( aim, angles );
+		/*
+		angles[YAW] = LerpAngle( angles[YAW], cg.refdefViewAngles[YAW], 0.5f );
+		angles[PITCH] = LerpAngle( angles[PITCH], cg.refdefViewAngles[PITCH], 0.5f );
+		angles[ROLL] = LerpAngle( angles[ROLL], cg.refdefViewAngles[ROLL], 0.5f );
+		*/
+	}
 
 	// on odd legs, invert some angles
 	if ( cg.bobcycle & 1 ) {
@@ -1569,7 +1580,7 @@ CG_AddViewWeapon
 Add the weapon, and flash for the player's view
 ==============
 */
-void CG_AddViewWeapon( playerState_t *ps ) {
+void CG_AddViewWeapon( playerState_t *ps, stereoFrame_t stereoView ) {
 	refEntity_t	hand;
 	centity_t	*cent;
 	clientInfo_t	*ci;
@@ -1624,11 +1635,14 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 	memset (&hand, 0, sizeof(hand));
 
 	// set up gun position
-	CG_CalculateWeaponPosition( hand.origin, angles );
+	CG_CalculateWeaponPosition( hand.origin, angles, stereoView );
 
 	VectorMA( hand.origin, cg_gun_x.value, cg.refdef.viewaxis[0], hand.origin );
 	VectorMA( hand.origin, cg_gun_y.value, cg.refdef.viewaxis[1], hand.origin );
 	VectorMA( hand.origin, (cg_gun_z.value+fovOffset), cg.refdef.viewaxis[2], hand.origin );
+	if ( stereoView == STEREO_LEFT ) {
+		VectorMA( hand.origin, -r_stereoSeparation.value / 3.0f, cg.refdef.viewaxis[1], hand.origin );
+	}
 
 	AnglesToAxis( angles, hand.axis );
 

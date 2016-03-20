@@ -553,11 +553,16 @@ static void CG_OffsetFirstPersonView( stereoFrame_t stereoView ) {
 	if (stereoView != STEREO_CENTER) {
 		vec3_t forward;
 		vec3_t right;
+		vec3_t oldOrigin;
+		vec3_t bumpWall;
+		trace_t trace;
+		static vec3_t	mins = { -4, -4, -4 };
+		static vec3_t	maxs = { 4, 4, 4 };
+
+		VectorCopy( origin, oldOrigin );
 		AngleVectors( angles, forward, right, NULL );
 
 		if (stereoView == STEREO_LEFT) {
-			trace_t trace;
-
 			// Calculate player aiming, that will bump against level walls and other players
 			// First we calculate a distant point, where we'd be aiming if there are no walls around
 			VectorMA( origin, 10000.0f, forward, cg.aimingSpot );
@@ -566,12 +571,23 @@ static void CG_OffsetFirstPersonView( stereoFrame_t stereoView ) {
 			CG_Trace( &trace, origin, NULL, NULL, cg.aimingSpot, cg.predictedPlayerState.clientNum, MASK_SHOT );
 			VectorCopy( trace.endpos, cg.aimingSpot ); // Save for later, to draw crosshair
 
-			VectorMA( origin, -r_stereoSeparation.value, right, origin );
+			VectorMA( origin, -r_stereoSeparation.value * 2.0f, right, bumpWall );
 			angles[YAW] += r_stereoAngle.value;
 		}
 		if (stereoView == STEREO_RIGHT) {
-			VectorMA( origin, r_stereoSeparation.value, right, origin );
+			VectorMA( origin, r_stereoSeparation.value * 2.0f, right, bumpWall );
 			angles[YAW] -= r_stereoAngle.value;
+		}
+
+		// Check if we put the camera into the wall, and move it back if necessary
+		CG_Trace( &trace, oldOrigin, mins, maxs, bumpWall, cg.predictedPlayerState.clientNum, MASK_SOLID );
+		if ( trace.fraction > 0.3f ) {
+			if (stereoView == STEREO_LEFT) {
+				VectorMA( origin, -r_stereoSeparation.value * (trace.fraction - 0.3f) / (1.0f - 0.3f), right, origin );
+			}
+			if (stereoView == STEREO_RIGHT) {
+				VectorMA( origin,  r_stereoSeparation.value * (trace.fraction - 0.3f) / (1.0f - 0.3f), right, origin );
+			}
 		}
 	}
 }

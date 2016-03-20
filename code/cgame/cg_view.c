@@ -419,7 +419,7 @@ CG_OffsetFirstPersonView
 
 ===============
 */
-static void CG_OffsetFirstPersonView( void ) {
+static void CG_OffsetFirstPersonView( stereoFrame_t stereoView ) {
 	float			*origin;
 	float			*angles;
 	float			bob;
@@ -549,6 +549,31 @@ static void CG_OffsetFirstPersonView( void ) {
 	VectorMA( cg.refdef.vieworg, NECK_LENGTH, up, cg.refdef.vieworg );
 	}
 #endif
+
+	if (stereoView != STEREO_CENTER) {
+		vec3_t forward;
+		vec3_t right;
+		AngleVectors( angles, forward, right, NULL );
+
+		if (stereoView == STEREO_LEFT) {
+			trace_t trace;
+
+			// Calculate player aiming, that will bump against level walls and other players
+			// First we calculate a distant point, where we'd be aiming if there are no walls around
+			VectorMA( origin, 10000.0f, forward, cg.aimingSpot );
+
+			// Bump it against the level walls
+			CG_Trace( &trace, origin, NULL, NULL, cg.aimingSpot, cg.predictedPlayerState.clientNum, MASK_SHOT );
+			VectorCopy( trace.endpos, cg.aimingSpot ); // Save for later, to draw crosshair
+
+			VectorMA( origin, -r_stereoSeparation.value, right, origin );
+			angles[YAW] += r_stereoAngle.value;
+		}
+		if (stereoView == STEREO_RIGHT) {
+			VectorMA( origin, r_stereoSeparation.value, right, origin );
+			angles[YAW] -= r_stereoAngle.value;
+		}
+	}
 }
 
 //======================================================================
@@ -906,7 +931,7 @@ static int CG_CalcViewValues( stereoFrame_t stereoView ) {
 		CG_OffsetThirdPersonView(stereoView);
 	} else {
 		// offset for local bobbing and kicks
-		CG_OffsetFirstPersonView();
+		CG_OffsetFirstPersonView(stereoView);
 	}
 
 	if ( cg_touchscreenControls.integer == TOUCHSCREEN_FLOATING_CROSSHAIR )

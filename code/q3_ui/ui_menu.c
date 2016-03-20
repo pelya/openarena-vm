@@ -185,11 +185,6 @@ void Main_MenuEvent (void* ptr, int event) {
 
 	case ID_CARDBOARDVR:
 		trap_Cvar_SetValue( "r_cardboardStereo", s_main.cardboardVR.curvalue );
-		if (s_main.cardboardVR.curvalue) {
-			s_main.firstperson.curvalue = 0;
-			trap_Cvar_SetValue( "cg_thirdPersonConfigOptionInSettings", !s_main.firstperson.curvalue );
-			trap_Cvar_SetValue( "cg_thirdperson", !s_main.firstperson.curvalue );
-		}
 		break;
 	}
 }

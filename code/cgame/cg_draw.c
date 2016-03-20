@@ -2607,7 +2607,7 @@ static void CG_DrawCrosshair(stereoFrame_t stereoFrame) {
 		return;
 	}
 
-	if (stereoFrame != STEREO_CENTER && cg.renderingThirdPerson) {
+	if (stereoFrame != STEREO_CENTER) {
 		return;
 	}
 
@@ -2645,7 +2645,7 @@ static void CG_DrawCrosshair3D(stereoFrame_t stereoFrame) {
 		return;
 	}
 
-	if (stereoFrame == STEREO_CENTER || !cg.renderingThirdPerson) {
+	if (stereoFrame == STEREO_CENTER) {
 		return;
 	}
 
@@ -2664,7 +2664,7 @@ static void CG_DrawCrosshair3D(stereoFrame_t stereoFrame) {
 
 	VectorCopy( cg.aimingSpot, ent.origin );
 	// scale the crosshair so it appears the same size for all distances
-	ent.radius = 1.9f * coords[2] / cgs.glconfig.vidWidth * dist;
+	ent.radius = 1.9f * coords[2] / cgs.glconfig.vidWidth * dist * cg.refdef.fov_x / 90.0f;
 
 	// Set appropriate color, scale it because level lighting makes all 2D entities dimmer
 	ent.shaderRGBA[0] = color[0] * 1000.0f;

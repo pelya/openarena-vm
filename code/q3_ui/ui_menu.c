@@ -520,7 +520,7 @@ void UI_MainMenu( void ) {
 	s_main.cardboardVR.generic.flags	= QMF_SMALLFONT;
 	s_main.cardboardVR.generic.x		= 120;
 	s_main.cardboardVR.generic.y		= 360;
-	s_main.cardboardVR.generic.name		= "vr:";
+	s_main.cardboardVR.generic.name		= "     vr:";
 	s_main.cardboardVR.generic.id		= ID_CARDBOARDVR;
 	s_main.cardboardVR.generic.callback	= Main_MenuEvent;
 	s_main.cardboardVR.curvalue			= trap_Cvar_VariableValue( "r_cardboardStereo" );

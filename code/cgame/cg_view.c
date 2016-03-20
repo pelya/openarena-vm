@@ -240,9 +240,8 @@ void CG_AdjustAnglesAfterTeleport(void)
 	// The teleport bit is unreliable, so we'll just watch for big change between old and new delta_angles
 	float deltaAngleYaw = SHORT2ANGLE( cg.snap->ps.delta_angles[YAW] );
 	static float oldDeltaAngleYaw = 0;
-	return;
 
-	if ( fabs( AngleSubtract( deltaAngleYaw, oldDeltaAngleYaw ) ) > 3.0f ) {
+	if ( cg_thirdPersonConfigOptionInSettings.integer && fabs( AngleSubtract( deltaAngleYaw, oldDeltaAngleYaw ) ) > 3.0f ) {
 		cg.cameraAngles[YAW] = AngleSubtract( oldAimingAngles[YAW], -deltaAngleYaw );
 		cg.cameraAngles[PITCH] = 0;
 		cg.cameraAngles[ROLL] = 0;

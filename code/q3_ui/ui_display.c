@@ -199,7 +199,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	displayOptionsInfo.brightness.minvalue			= 5;
 	displayOptionsInfo.brightness.maxvalue			= 20;
 	if( !uis.glconfig.deviceSupportsGamma ) {
-		displayOptionsInfo.brightness.generic.flags |= QMF_GRAYED;
+		//displayOptionsInfo.brightness.generic.flags |= QMF_GRAYED;
 	}
 
 	y += BIGCHAR_HEIGHT+2;

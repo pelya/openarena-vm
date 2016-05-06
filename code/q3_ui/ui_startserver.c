@@ -772,7 +772,7 @@ typedef struct {
 	menubitmap_s		mappic;
 	menubitmap_s		picframe;
 
-//	menulist_s			dedicated;
+	menulist_s			public;
 	menufield_s			timelimit;
 	menufield_s			fraglimit;
 	menufield_s			flaglimit;
@@ -812,12 +812,11 @@ typedef struct {
 
 static serveroptions_t s_serveroptions;
 
-/*static const char *dedicated_list[] = {
-	"No",
-	"LAN",
-	"Internet",
+static const char *public_list[] = {
+	"LAN only",
+	"Online",
 	NULL
-};*/
+};
 
 static const char *playerType_list[] = {
 	"Open",
@@ -892,7 +891,7 @@ static void ServerOptions_Start( void ) {
 	int		timelimit;
 	int		fraglimit;
 	int		maxclients;
-//	int		dedicated;
+	int		public;
 	int		friendlyfire;
 	int		flaglimit;
 	//int		pure;
@@ -911,7 +910,7 @@ static void ServerOptions_Start( void ) {
 	timelimit	 = atoi( s_serveroptions.timelimit.field.buffer );
 	fraglimit	 = atoi( s_serveroptions.fraglimit.field.buffer );
 	flaglimit	 = atoi( s_serveroptions.flaglimit.field.buffer );
-//	dedicated	 = s_serveroptions.dedicated.curvalue;
+	public		 = s_serveroptions.public.curvalue;
 	friendlyfire = s_serveroptions.friendlyfire.curvalue;
 	//pure		 = s_serveroptions.pure.curvalue;
         //lan              = s_serveroptions.lan.curvalue;
@@ -1001,7 +1000,7 @@ static void ServerOptions_Start( void ) {
 	}
 
 	trap_Cvar_SetValue( "sv_maxclients", Com_Clamp( 0, 12, maxclients ) );
-//	trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, dedicated ) );
+	trap_Cvar_SetValue( "sv_public", public );
 	trap_Cvar_SetValue ("timelimit", Com_Clamp( 0, timelimit, timelimit ) );
 	trap_Cvar_SetValue ("fraglimit", Com_Clamp( 0, fraglimit, fraglimit ) );
 	trap_Cvar_SetValue ("capturelimit", Com_Clamp( 0, flaglimit, flaglimit ) );
@@ -1195,7 +1194,6 @@ static void ServerOptions_Event( void* ptr, int event ) {
 		break;
 
 	case ID_MAXCLIENTS:
-//	case ID_DEDICATED:
 		ServerOptions_SetPlayerItems();
 		break;
 	case ID_GO:
@@ -1770,6 +1768,15 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.hostname.generic.y	        = y;
 		s_serveroptions.hostname.field.widthInChars = 18;
 		s_serveroptions.hostname.field.maxchars     = 64;
+
+		y += BIGCHAR_HEIGHT+2;
+		s_serveroptions.public.generic.type			= MTYPE_SPINCONTROL;
+		s_serveroptions.public.generic.flags		= QMF_SMALLFONT;
+		s_serveroptions.public.generic.name			= "Server type:";
+		s_serveroptions.public.generic.x			= OPTIONS_X;
+		s_serveroptions.public.generic.y			= y;
+		s_serveroptions.public.itemnames			= public_list;
+		s_serveroptions.public.curvalue				= trap_Cvar_VariableValue( "sv_public" );
 	}
 	
 	y = 70;
@@ -1906,6 +1913,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	if( s_serveroptions.multiplayer ) {
                 //Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.lan );
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.hostname );
+		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.public );
 	}
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.timescale );
 

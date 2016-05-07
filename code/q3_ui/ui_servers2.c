@@ -888,11 +888,13 @@ static void ArenaServers_Insert( char* adrstr, char* info, int pingtime )
 	char*			s;
 	int				i;
 
+	/*
 	if ((pingtime >= ArenaServers_MaxPing()) && (g_servertype != UIAS_FAVORITES))
 	{
 		// slow global or local servers do not get entered
 		return;
 	}
+	*/
 
 	if (*g_arenaservers.numservers >= g_arenaservers.maxservers) {
 		// list full;
@@ -1167,17 +1169,15 @@ static void ArenaServers_DoRefresh( void )
 				}
 			}
 
+			info[0] = '\0';
 			if (time > maxPing)
 			{
 				// stale it out
-				info[0] = '\0';
 				time    = maxPing;
-			}
-			else
-			{
-				trap_LAN_GetPingInfo( i, info, MAX_INFO_STRING );
+				strcpy( info, NAT_TRAVERSAL_SERVER_CVAR );
 			}
 
+			trap_LAN_GetPingInfo( i, info, MAX_INFO_STRING );
 			// insert ping results
 			ArenaServers_Insert( adrstr, info, time );
 

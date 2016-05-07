@@ -1315,4 +1315,6 @@ enum { VOIP_DISABLED, VOIP_ENABLED, VOIP_LISTEN_ONLY };
 #define CDKEY_LEN 16
 #define CDCHKSUM_LEN 2
 
+#define NAT_TRAVERSAL_SERVER_CVAR	"sv_master3"
+
 #endif	// __Q_SHARED_H

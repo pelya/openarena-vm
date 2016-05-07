@@ -1489,8 +1489,7 @@ static void ArenaServers_DetermineNatType( void ) {
 		return;
 	}
 
-	// trigger at 10Hz intervals
-	g_arenaservers.nextnatpingtime = uis.realtime + 10;
+	g_arenaservers.nextnatpingtime = uis.realtime + 50;
 
 	trap_Cmd_ExecuteText( EXEC_APPEND, "determine_nat_type\n" );
 }

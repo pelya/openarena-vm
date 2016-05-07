@@ -120,6 +120,8 @@ MULTIPLAYER MENU (SERVER BROWSER)
 #define GAMES_DOUBLE_D			11
 #define GAMES_DOM                       12
 
+#define PING_NAT 999
+#define NETTYPE_NAT 3
 
 static const char *master_items[] = {
 	"Local+Internet",
@@ -186,6 +188,7 @@ static char* netnames[] = {
 	"???",
 	"IP4",
         "IP6",
+	"NAT",
 	NULL
 };
 
@@ -219,6 +222,7 @@ typedef struct servernode_s {
 	int		maxPing;
 	//qboolean bPB;
 	qboolean	local;
+	char	country[4];
 
 } servernode_t; 
 
@@ -427,10 +431,10 @@ static int QDECL ArenaServers_Compare( const void *arg1, const void *arg2 ) {
 		return 1;
 
 	case SORT_PING:
-		if( t1->local && !t2->local && t1->pingtime < 999 ) {
+		if( t1->local && !t2->local && t1->pingtime < PING_NAT ) {
 			return -1;
 		}
-		if( !t1->local && t2->local && t2->pingtime < 999 ) {
+		if( !t1->local && t2->local && t2->pingtime < PING_NAT ) {
 			return 1;
 		}
 		if( t1->pingtime < t2->pingtime ) {
@@ -804,7 +808,10 @@ static void ArenaServers_UpdateMenu( void ) {
                 b += bufAddr;
                 *b++ = ' ';
                 
-		Com_sprintf( b, 12, "%s%3d ", 	pingColor, servernodeptr->pingtime );
+		if (servernodeptr->pingtime >= PING_NAT && servernodeptr->country[0])
+			Com_sprintf( b, 12, "%s%3s ", S_COLOR_MAGENTA, servernodeptr->country );
+		else
+			Com_sprintf( b, 12, "%s%3d ", pingColor, servernodeptr->pingtime );
 		j++;
 	}
 
@@ -922,8 +929,8 @@ static void ArenaServers_Insert( char* adrstr, char* info, int pingtime )
 	servernodeptr->pingtime   = pingtime;
 	servernodeptr->minPing    = atoi( Info_ValueForKey( info, "minPing") );
 	servernodeptr->maxPing    = atoi( Info_ValueForKey( info, "maxPing") );
+	Q_strncpyz( servernodeptr->country, Info_ValueForKey( info, "country"), sizeof(servernodeptr->country) );
 
-	
 	s = Info_ValueForKey( info, "nettype" );
 	for (i=0; ;i++)
 	{
@@ -940,6 +947,8 @@ static void ArenaServers_Insert( char* adrstr, char* info, int pingtime )
 	}
 	
 	servernodeptr->nettype = atoi(Info_ValueForKey(info, "nettype"));
+	if (pingtime == PING_NAT)
+		servernodeptr->nettype = NETTYPE_NAT;
 
 	s = Info_ValueForKey( info, "game");
 	i = atoi( Info_ValueForKey( info, "gametype") );
@@ -1173,7 +1182,7 @@ static void ArenaServers_DoRefresh( void )
 			if (time > maxPing)
 			{
 				// stale it out
-				time    = maxPing;
+				time    = PING_NAT;
 				strcpy( info, NAT_TRAVERSAL_SERVER_CVAR );
 			}
 

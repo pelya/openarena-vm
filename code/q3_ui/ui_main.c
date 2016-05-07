@@ -199,6 +199,7 @@ vmCvar_t	cg_fov;
 vmCvar_t	cg_thirdPersonRange;
 vmCvar_t	cg_cameraSideShift;
 vmCvar_t	r_cardboardStereo;
+vmCvar_t	cl_natType;
 
 // bk001129 - made static to avoid aliasing.
 static cvarTable_t		cvarTable[] = {
@@ -302,6 +303,7 @@ static cvarTable_t		cvarTable[] = {
 	{ &cg_thirdPersonRange, "cg_thirdPersonRange", "120", CVAR_ARCHIVE },
 	{ &cg_cameraSideShift, "cg_cameraSideShift", "-30", CVAR_ARCHIVE },
 	{ &r_cardboardStereo, "r_cardboardStereo", "0", CVAR_ARCHIVE },
+	{ &cl_natType, "cl_natType", "0", 0 },
 };
 
 // bk001129 - made static to avoid aliasing

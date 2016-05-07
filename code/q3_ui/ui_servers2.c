@@ -275,6 +275,7 @@ typedef struct {
 	int					currentping;
 	qboolean			refreshservers;
 	int					nextpingtime;
+	int					nextnatpingtime;
 	int					maxservers;
 	int					refreshtime;
 	char				favoriteaddresses[MAX_FAVORITESERVERS][MAX_ADDRESSLENGTH];
@@ -1479,6 +1480,21 @@ static void ArenaServers_UpdatePcServersWarning( void ) {
 		g_arenaservers.pc_servers_warning4.generic.flags |= QMF_HIDDEN;
 	}
 }
+
+
+static void ArenaServers_DetermineNatType( void ) {
+	if (cl_natType.integer > NAT_TYPE_PROCESSING || uis.realtime < g_arenaservers.nextnatpingtime)
+	{
+		// wait for time trigger
+		return;
+	}
+
+	// trigger at 10Hz intervals
+	g_arenaservers.nextnatpingtime = uis.realtime + 10;
+
+	trap_Cmd_ExecuteText( EXEC_APPEND, "determine_nat_type\n" );
+}
+
 /*
 =================
 ArenaServers_Event
@@ -1602,6 +1618,8 @@ static void ArenaServers_MenuDraw( void )
 {
 	if (g_arenaservers.refreshservers)
 		ArenaServers_DoRefresh();
+
+	ArenaServers_DetermineNatType();
 
 	Menu_Draw( &g_arenaservers.menu );
 }
@@ -1981,6 +1999,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.master.curvalue = g_servertype = ArenaServers_SetType(g_servertype);
 
 	trap_Cvar_Register(NULL, "debug_protocol", "", 0 );
+	trap_Cmd_ExecuteText( EXEC_APPEND, "determine_nat_type\n" ); // Kick off our own homegrown STUN algorithm, it may take a while
 }
 
 

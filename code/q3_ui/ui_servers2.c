@@ -1312,46 +1312,13 @@ static void ArenaServers_StartRefreshNoClearList( void )
 	if( (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) || g_servertype == UIAS_ALL_GLOBAL ) {
 		int masterserver = (g_servertype == UIAS_ALL_GLOBAL ? 0 : g_servertype - UIAS_GLOBAL1);
 		switch( g_arenaservers.gametype.curvalue ) {
-		default:
 		case GAMES_ALL:
 			myargs[0] = 0;
 			break;
-
-		case GAMES_FFA:
-			strcpy( myargs, " ffa" );
+		default:
+			// We are sending gametype as a number to masterserver
+			Com_sprintf( myargs, sizeof(myargs), " gametype=%d", g_arenaservers.gametype.curvalue );
 			break;
-
-		case GAMES_TEAMPLAY:
-			strcpy( myargs, " team" );
-			break;
-
-		case GAMES_TOURNEY:
-			strcpy( myargs, " tourney" );
-			break;
-
-		case GAMES_CTF:
-			strcpy( myargs, " ctf" );
-			break;
-
-		case GAMES_ELIMINATION:
-			strcpy( myargs, " elimination" );
-			break;
-
-		case GAMES_CTF_ELIMINATION:
-			strcpy( myargs, " ctfelimination" );
-			break;
-
-		case GAMES_LMS:
-			strcpy( myargs, " lms" );
-			break;
-		
-		case GAMES_DOUBLE_D:
-			strcpy( myargs, " dd" );
-			break;
-
-                case GAMES_DOM:
-                    strcpy( myargs, " dom" );
-                    break;
 		}
 
 

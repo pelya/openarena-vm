@@ -773,6 +773,7 @@ typedef struct {
 	menubitmap_s		picframe;
 
 	menulist_s			public;
+	menutext_s			bad_nat_warning;
 	menufield_s			timelimit;
 	menufield_s			fraglimit;
 	menufield_s			flaglimit;
@@ -1777,6 +1778,14 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.public.generic.y			= y;
 		s_serveroptions.public.itemnames			= public_list;
 		s_serveroptions.public.curvalue				= trap_Cvar_VariableValue( "sv_public" );
+
+		s_serveroptions.bad_nat_warning.generic.type  = MTYPE_TEXT;
+		s_serveroptions.bad_nat_warning.generic.flags = QMF_LEFT_JUSTIFY;
+		s_serveroptions.bad_nat_warning.generic.x	 = OPTIONS_X - 104;
+		s_serveroptions.bad_nat_warning.generic.y	 = y;
+		s_serveroptions.bad_nat_warning.string		 = "Server type:  ^1LAN only";
+		s_serveroptions.bad_nat_warning.style		 = UI_LEFT|UI_SMALLFONT;
+		s_serveroptions.bad_nat_warning.color		 = text_color_normal;
 	}
 	
 	y = 70;
@@ -1913,7 +1922,10 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	if( s_serveroptions.multiplayer ) {
                 //Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.lan );
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.hostname );
-		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.public );
+		if (cl_natType.integer == NAT_TYPE_GOOD)
+			Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.public );
+		else
+			Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.bad_nat_warning );
 	}
 	Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.timescale );
 

@@ -1001,7 +1001,7 @@ static void ServerOptions_Start( void ) {
 	}
 
 	trap_Cvar_SetValue( "sv_maxclients", Com_Clamp( 0, 12, maxclients ) );
-	trap_Cvar_SetValue( "sv_public", public );
+	trap_Cvar_SetValue( "sv_public", cl_natType.integer == NAT_TYPE_GOOD ? public : -1 );
 	trap_Cvar_SetValue ("timelimit", Com_Clamp( 0, timelimit, timelimit ) );
 	trap_Cvar_SetValue ("fraglimit", Com_Clamp( 0, fraglimit, fraglimit ) );
 	trap_Cvar_SetValue ("capturelimit", Com_Clamp( 0, flaglimit, flaglimit ) );
@@ -1777,7 +1777,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 		s_serveroptions.public.generic.x			= OPTIONS_X;
 		s_serveroptions.public.generic.y			= y;
 		s_serveroptions.public.itemnames			= public_list;
-		s_serveroptions.public.curvalue				= trap_Cvar_VariableValue( "sv_public" );
+		s_serveroptions.public.curvalue				= trap_Cvar_VariableValue( "sv_public" ) != 0;
 
 		s_serveroptions.bad_nat_warning.generic.type  = MTYPE_TEXT;
 		s_serveroptions.bad_nat_warning.generic.flags = QMF_LEFT_JUSTIFY;

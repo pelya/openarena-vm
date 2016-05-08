@@ -276,6 +276,7 @@ typedef struct {
 	qboolean			refreshservers;
 	int					nextpingtime;
 	int					nextnatpingtime;
+	int					masterserverresponsetime;
 	int					maxservers;
 	int					refreshtime;
 	char				favoriteaddresses[MAX_FAVORITESERVERS][MAX_ADDRESSLENGTH];
@@ -903,6 +904,10 @@ static void ArenaServers_Insert( char* adrstr, char* info, int pingtime )
 		return;
 	}
 	*/
+	if (!Info_ValueForKey( info, "hostname")[0] || !Info_ValueForKey( info, "mapname")[0])
+	{
+		return;
+	}
 
 	if (*g_arenaservers.numservers >= g_arenaservers.maxservers) {
 		// list full;
@@ -1202,9 +1207,17 @@ static void ArenaServers_DoRefresh( void )
 	// get results of servers query
 	// counts can increase as servers respond
 	if (g_servertype == UIAS_FAVORITES) {
-	  g_arenaservers.numqueriedservers = g_arenaservers.numfavoriteaddresses;
+		g_arenaservers.numqueriedservers = g_arenaservers.numfavoriteaddresses;
 	} else {
-	  g_arenaservers.numqueriedservers = trap_LAN_GetServerCount(ArenaServers_SourceForLAN());
+		i = trap_LAN_GetServerCount(ArenaServers_SourceForLAN());
+		if (i > g_arenaservers.numqueriedservers)
+			g_arenaservers.masterserverresponsetime = uis.realtime + 300;
+		g_arenaservers.numqueriedservers = i;
+	}
+
+	if (g_arenaservers.masterserverresponsetime > uis.realtime) {
+		//Com_Printf( "Delaying ping for %d ms\n", g_arenaservers.masterserverresponsetime - uis.realtime );
+		return; // Wait for all packets from masterserver to arrive before pinging individual servers
 	}
 
 //	if (g_arenaservers.numqueriedservers > g_arenaservers.maxservers)
@@ -1295,6 +1308,7 @@ static void ArenaServers_StartRefreshNoClearList( void )
 	g_arenaservers.refreshservers    = qtrue;
 	g_arenaservers.currentping       = 0;
 	g_arenaservers.nextpingtime      = 0;
+	g_arenaservers.masterserverresponsetime = 0;
 
 	// allow max 5 seconds for responses
 	g_arenaservers.refreshtime = uis.realtime + 5000;
@@ -1450,9 +1464,11 @@ static void ArenaServers_UpdatePcServersWarning( void ) {
 
 
 static void ArenaServers_DetermineNatType( void ) {
-	if (cl_natType.integer > NAT_TYPE_PROCESSING || uis.realtime < g_arenaservers.nextnatpingtime)
-	{
-		// wait for time trigger
+	if (cl_natType.integer > NAT_TYPE_PROCESSING ) {
+		g_arenaservers.create.generic.flags &= ~QMF_GRAYED; // Enable 'Create server' button
+		return;
+	}
+	if(uis.realtime < g_arenaservers.nextnatpingtime) {
 		return;
 	}
 
@@ -1886,6 +1902,7 @@ static void ArenaServers_MenuInit( void ) {
 	g_arenaservers.create.width				= 128;
 	g_arenaservers.create.height			= 64;
 	g_arenaservers.create.focuspic			= ART_CREATE1;
+	g_arenaservers.create.generic.flags		|= QMF_GRAYED; // Disable until we determine NAT type
 
 	g_arenaservers.go.generic.type			= MTYPE_BITMAP;
 	g_arenaservers.go.generic.name			= ART_CONNECT0;

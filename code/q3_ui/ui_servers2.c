@@ -1601,7 +1601,7 @@ static void ArenaServers_Event( void* ptr, int event ) {
 		break;
 
 	case ID_REFRESH:
-		if( g_servertype == UIAS_ALL_GLOBAL )
+		if( g_servertype == UIAS_ALL_GLOBAL || g_servertype == UIAS_ALL_GLOBAL_NAT )
 			g_servertype = UIAS_ALL_LOCAL;
 		if( g_arenaservers.refreshservers ) {
 			ArenaServers_StopRefresh();

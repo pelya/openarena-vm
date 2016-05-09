@@ -1362,7 +1362,7 @@ static void ArenaServers_StartRefreshNoClearList( void )
 	if( (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) ||
 		g_servertype == UIAS_ALL_GLOBAL || g_servertype == UIAS_ALL_GLOBAL_NAT ) {
 		int masterserver = (g_servertype == UIAS_ALL_GLOBAL) ? 0 :
-							(g_servertype == UIAS_ALL_GLOBAL_NAT) ? atoi(NAT_TRAVERSAL_SERVER_CVAR + sizeof(NAT_TRAVERSAL_SERVER_CVAR) - 2) - 1 : // ugly string parsing yeah
+							(g_servertype == UIAS_ALL_GLOBAL_NAT) ? NAT_TRAVERSAL_SERVER_IDX :
 							g_servertype - UIAS_GLOBAL1;
 		switch( g_arenaservers.gametype.curvalue ) {
 		case GAMES_ALL:

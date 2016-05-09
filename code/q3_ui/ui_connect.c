@@ -238,6 +238,9 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 	lastConnState = cstate.connState;
 
 	switch ( cstate.connState ) {
+	case CA_CONNECTING_NAT:
+		s = va("NAT traversal...%i", cstate.connectPacketCount);
+		break;
 	case CA_CONNECTING:
 		s = va("Awaiting challenge...%i", cstate.connectPacketCount);
 		break;

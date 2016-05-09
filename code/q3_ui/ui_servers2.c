@@ -465,11 +465,19 @@ static void ArenaServers_Go( void ) {
 
 	servernode = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;
 	if( servernode ) {
-		if(servernode->needPass) {
-			UI_SpecifyPasswordMenu( va( "connect %s\n", servernode->adrstr ), servernode->hostname );
+		if(servernode->pingtime >= PING_NAT) {
+			if(servernode->needPass) {
+				UI_SpecifyPasswordMenu( va( "connect -nat %s\n", servernode->adrstr ), servernode->hostname );
+			} else {
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect -nat %s\n", servernode->adrstr ) );
+			}
+		} else {
+			if(servernode->needPass) {
+				UI_SpecifyPasswordMenu( va( "connect %s\n", servernode->adrstr ), servernode->hostname );
+			} else {
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", servernode->adrstr ) );
+			}
 		}
-		else
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", servernode->adrstr ) );
 	}
 }
 

@@ -91,13 +91,14 @@ MULTIPLAYER MENU (SERVER BROWSER)
 
 #define UIAS_ALL_LOCAL			0
 #define UIAS_ALL_GLOBAL			1
-#define UIAS_LOCAL				2
-#define UIAS_GLOBAL1			3
-#define UIAS_GLOBAL2			4
-#define UIAS_GLOBAL3			5
-#define UIAS_GLOBAL4			6
-#define UIAS_GLOBAL5			7
-#define UIAS_FAVORITES			8
+#define UIAS_ALL_GLOBAL_NAT		2
+#define UIAS_LOCAL				3
+#define UIAS_GLOBAL1			4
+#define UIAS_GLOBAL2			5
+#define UIAS_GLOBAL3			6
+#define UIAS_GLOBAL4			7
+#define UIAS_GLOBAL5			8
+#define UIAS_FAVORITES			9
 
 #define SORT_HOST			0
 #define SORT_MAP			1
@@ -124,6 +125,7 @@ MULTIPLAYER MENU (SERVER BROWSER)
 #define NETTYPE_NAT 3
 
 static const char *master_items[] = {
+	"Local+Internet",
 	"Local+Internet",
 	"Local+Internet",
 	"Local",
@@ -324,6 +326,7 @@ int ArenaServers_SourceForLAN(void) {
 	case UIAS_GLOBAL4:
 	case UIAS_GLOBAL5:
 	case UIAS_ALL_GLOBAL:
+	case UIAS_ALL_GLOBAL_NAT:
 		return AS_GLOBAL;
 	case UIAS_FAVORITES:
 		return AS_FAVORITES;
@@ -583,7 +586,8 @@ static void ArenaServers_UpdateMenu( void ) {
 			g_arenaservers.go.generic.flags			&= ~QMF_GRAYED;
 
 			// update status bar
-			if( (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) || g_servertype == UIAS_ALL_GLOBAL ) {
+			if( (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) ||
+				g_servertype == UIAS_ALL_GLOBAL || g_servertype == UIAS_ALL_GLOBAL_NAT ) {
 				g_arenaservers.statusbar.string = quake3worldMessage;
 			}
 			else {
@@ -619,7 +623,8 @@ static void ArenaServers_UpdateMenu( void ) {
 			}
 
 			// update status bar
-			if( (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) || g_servertype == UIAS_ALL_GLOBAL ) {
+			if( (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) ||
+				g_servertype == UIAS_ALL_GLOBAL || g_servertype == UIAS_ALL_GLOBAL_NAT ) {
 				g_arenaservers.statusbar.string = quake3worldMessage;
 			}
 			else {
@@ -651,6 +656,12 @@ static void ArenaServers_UpdateMenu( void ) {
 
 	if( !g_arenaservers.refreshservers && g_servertype == UIAS_ALL_LOCAL ) {
 		g_servertype = UIAS_ALL_GLOBAL;
+		ArenaServers_StartRefreshNoClearList();
+		return;
+	}
+
+	if( !g_arenaservers.refreshservers && g_servertype == UIAS_ALL_GLOBAL ) {
+		g_servertype = UIAS_ALL_GLOBAL_NAT;
 		ArenaServers_StartRefreshNoClearList();
 		return;
 	}
@@ -906,16 +917,33 @@ static void ArenaServers_Insert( char* adrstr, char* info, int pingtime )
 	*/
 	if (!Info_ValueForKey( info, "hostname")[0] || !Info_ValueForKey( info, "mapname")[0])
 	{
+		// Ignore servers without info, those are servers that are not registered on NAT masterserver and cannot be pinged
 		return;
 	}
 
-	if (*g_arenaservers.numservers >= g_arenaservers.maxservers) {
+	// Search for duplicates
+	for (i = 0; i < *g_arenaservers.numservers; i++) {
+		if (!strcmp(adrstr, g_arenaservers.serverlist[i].adrstr)) {
+			break;
+		}
+	}
+
+	if (i < *g_arenaservers.numservers) {
+		servernodeptr = g_arenaservers.serverlist + i; // Override duplicate entry with new info
+	} else if (*g_arenaservers.numservers >= g_arenaservers.maxservers) {
 		// list full;
 		servernodeptr = g_arenaservers.serverlist+(*g_arenaservers.numservers)-1;
+		servernodeptr->pingtime = PING_NAT + 1;
 	} else {
 		// next slot
 		servernodeptr = g_arenaservers.serverlist+(*g_arenaservers.numservers);
+		servernodeptr->pingtime = PING_NAT + 1;
 		(*g_arenaservers.numservers)++;
+	}
+
+	if (servernodeptr->pingtime < pingtime) {
+		// Don't override server info with info from NAT masterserver, if the server responds to ping
+		return;
 	}
 
 	Q_strncpyz( servernodeptr->adrstr, adrstr, MAX_ADDRESSLENGTH );
@@ -1323,8 +1351,11 @@ static void ArenaServers_StartRefreshNoClearList( void )
 		return;
 	}
 
-	if( (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) || g_servertype == UIAS_ALL_GLOBAL ) {
-		int masterserver = (g_servertype == UIAS_ALL_GLOBAL ? 0 : g_servertype - UIAS_GLOBAL1);
+	if( (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) ||
+		g_servertype == UIAS_ALL_GLOBAL || g_servertype == UIAS_ALL_GLOBAL_NAT ) {
+		int masterserver = (g_servertype == UIAS_ALL_GLOBAL) ? 0 :
+							(g_servertype == UIAS_ALL_GLOBAL_NAT) ? atoi(NAT_TRAVERSAL_SERVER_CVAR + sizeof(NAT_TRAVERSAL_SERVER_CVAR) - 2) - 1 : // ugly string parsing yeah
+							g_servertype - UIAS_GLOBAL1;
 		switch( g_arenaservers.gametype.curvalue ) {
 		case GAMES_ALL:
 			myargs[0] = 0;

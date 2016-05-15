@@ -668,7 +668,8 @@ static void ArenaServers_UpdateMenu( void ) {
 		return;
 	}
 
-	if( !g_arenaservers.refreshservers && g_servertype == UIAS_ALL_GLOBAL ) {
+	if( !g_arenaservers.refreshservers && g_servertype == UIAS_ALL_GLOBAL &&
+		cl_natType.integer == NAT_TYPE_GOOD ) {
 		g_servertype = UIAS_ALL_GLOBAL_NAT;
 		ArenaServers_StartRefreshNoClearList();
 		return;

@@ -1001,7 +1001,7 @@ static void ServerOptions_Start( void ) {
 	}
 
 	trap_Cvar_SetValue( "sv_maxclients", Com_Clamp( 0, 12, maxclients ) );
-	trap_Cvar_SetValue( "sv_public", cl_natType.integer == NAT_TYPE_GOOD ? public : -1 );
+	trap_Cvar_SetValue( "sv_public", (cl_natType.integer == NAT_TYPE_GOOD || cl_publicIPv6.integer) ? public : -1 );
 	trap_Cvar_SetValue ("timelimit", Com_Clamp( 0, timelimit, timelimit ) );
 	trap_Cvar_SetValue ("fraglimit", Com_Clamp( 0, fraglimit, fraglimit ) );
 	trap_Cvar_SetValue ("capturelimit", Com_Clamp( 0, flaglimit, flaglimit ) );
@@ -1922,7 +1922,7 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 	if( s_serveroptions.multiplayer ) {
                 //Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.lan );
 		Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.hostname );
-		if (cl_natType.integer == NAT_TYPE_GOOD)
+		if (cl_natType.integer == NAT_TYPE_GOOD || cl_publicIPv6.integer)
 			Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.public );
 		else
 			Menu_AddItem( &s_serveroptions.menu, &s_serveroptions.bad_nat_warning );

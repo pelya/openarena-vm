@@ -130,6 +130,7 @@ extern vmCvar_t ui_setupchecked;
 extern vmCvar_t ui_browserOnlyHumans;
 extern vmCvar_t	r_cardboardStereo;
 extern vmCvar_t	cl_natType;
+extern vmCvar_t	cl_publicIPv6;
 
 //
 // ui_qmenu.c

@@ -1804,7 +1804,7 @@ static void Controls_MenuInit( void )
 	s_controls.invertmouse.generic.type      = MTYPE_RADIOBUTTON;
 	s_controls.invertmouse.generic.flags	 = QMF_SMALLFONT;
 	s_controls.invertmouse.generic.x	     = SCREEN_WIDTH/2;
-	s_controls.invertmouse.generic.name	     = "invert gamepad aim";
+	s_controls.invertmouse.generic.name	     = "invert vertical aim";
 	s_controls.invertmouse.generic.id        = ID_INVERTMOUSE;
 	s_controls.invertmouse.generic.callback  = Controls_MenuEvent;
 	s_controls.invertmouse.generic.statusbar = Controls_StatusBar;

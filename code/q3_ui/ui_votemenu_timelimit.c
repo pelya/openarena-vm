@@ -99,43 +99,43 @@ static void VoteMenu_Timelimit_Event( void* ptr, int event )
                 switch(s_votemenu_Timelmit.selection) {
             */
                     case ID_10:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 10" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 10\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_15:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 15" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 15\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_20:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 20" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 20\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_30:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 30" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 30\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_40:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 40" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 40\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_50:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 50" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 50\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_INF:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 0" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote timelimit 0\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();

@@ -146,25 +146,25 @@ static void VoteMenu_Event( void* ptr, int event )
                 switch(s_votemenu.selection) {
             */
                     case ID_NEXTMAP:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote nextmap" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote nextmap\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_RESTART:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote map_restart" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote map_restart\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_DOWARMUP:
                         if(s_votemenu.g_doWarmupEnabled)
-                            trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_doWarmup 0" );
+                            trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_doWarmup 0\n" );
                         else
-                            trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_doWarmup 1" );
+                            trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_doWarmup 1\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                     case ID_SHUFFLE:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote shuffle" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote shuffle\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
@@ -435,7 +435,7 @@ void UI_VoteMenuMenuInternal( void )
         s_votemenu.bCustom.generic.y           = y;
         s_votemenu.bCustom.generic.id          = ID_CUSTOM;
         s_votemenu.bCustom.generic.callback    = VoteMenu_Event;
-        s_votemenu.bCustom.string              = "Custom vote";
+        s_votemenu.bCustom.string              = "!!!Custom vote!!!";
         s_votemenu.bCustom.style               = UI_CENTER|UI_SMALLFONT;
 
         y+=VOTEMENU_MENU_VERTICAL_SPACING;

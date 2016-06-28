@@ -121,73 +121,73 @@ static void VoteMenu_Gametype_Event( void* ptr, int event )
                 switch(s_votemenu_Gametype.selection) {
             */
                     case ID_FFA:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 0" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 0\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_Tourney:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 1" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 1\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_TDM:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 3" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 3\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_CTF:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 4" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 4\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_1FCTF:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 5" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 5\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_Overload:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 6" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 6\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_Harvester:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 7" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 7\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_Elimination:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 8" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 8\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_CTFe:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 9" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 9\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_LMS:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 10" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 10\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_DOUBLED:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 11" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 11\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();
                         break;
                         case ID_DOM:
-                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 12" );
+                        trap_Cmd_ExecuteText( EXEC_APPEND, "callvote g_gametype 12\n" );
                         UI_PopMenu();
                         UI_PopMenu();
                         UI_PopMenu();

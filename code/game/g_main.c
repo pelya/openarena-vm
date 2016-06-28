@@ -306,7 +306,7 @@ static cvarTable_t		gameCvarTable[] = {
         { &pmove_float, "pmove_float", "1", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qtrue},
 
 //unlagged - server options
-	{ &g_delagHitscan, "g_delagHitscan", "0", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qtrue },
+	{ &g_delagHitscan, "g_delagHitscan", "1", CVAR_ARCHIVE | CVAR_SERVERINFO, 0, qtrue },
 	{ &g_truePing, "g_truePing", "0", CVAR_ARCHIVE, 0, qtrue },
 	// it's CVAR_SYSTEMINFO so the client's sv_fps will be automagically set to its value
 	{ &sv_fps, "sv_fps", "20", CVAR_SYSTEMINFO | CVAR_ARCHIVE, 0, qfalse },

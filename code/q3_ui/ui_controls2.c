@@ -145,7 +145,7 @@ typedef struct
 #define ID_CARDBOARD_STEREO	61
 #define ID_STEREO_SEPARATION	62
 #define ID_STEREO_ANGLE	63
-
+#define ID_CAMERA_ROTATE_BUTTON	64
 
 #define ANIM_IDLE		0
 #define ANIM_RUN		1
@@ -232,6 +232,7 @@ typedef struct
 	menuslider_s		thirdpersonrange;
 	menuslider_s		camerasideshift;
 	menuradiobutton_s	widefov;
+	menuradiobutton_s	camerarotatebutton;
 	menuaction_s		centerview;
 	menuaction_s		zoomview;
 	menuaction_s		zoomviewbig;
@@ -376,6 +377,7 @@ static configcvar_t g_configcvars[] =
 	{"m_filter",		0,					0},
 	{"in_swapGamepadSticks",	0,					0},
 	{"cg_touchscreenControls",	0,			0},
+	{"cg_cameraRotateButton",	1,			1},
 	{"cg_thirdPersonConfigOptionInSettings",	1,	1},
 	{"cg_thirdPersonRange",	120,			120},
 	{"cg_cameraSideShift",	-30,			-30},
@@ -476,6 +478,7 @@ static menucommon_s *g_view_controls[] = {
 	(menucommon_s *)&s_controls.cardboardStereo,
 	(menucommon_s *)&s_controls.stereoSeparation,
 	(menucommon_s *)&s_controls.stereoAngle,
+	(menucommon_s *)&s_controls.camerarotatebutton,
 	NULL,
 };
 
@@ -996,6 +999,7 @@ static void Controls_GetConfig( void )
 	s_controls.cardboardStereo.curvalue = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "r_cardboardStereo" ) );
 	s_controls.stereoSeparation.curvalue = UI_ClampCvar( -16, 64, Controls_GetCvarValue( "r_stereoSeparation2" ) );
 	s_controls.stereoAngle.curvalue = UI_ClampCvar( -15, 45, Controls_GetCvarValue( "r_stereoAngle" ) );
+	s_controls.camerarotatebutton.curvalue = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_cameraRotateButton" ) );
 }
 
 /*
@@ -1057,6 +1061,8 @@ static void Controls_SetConfig( void )
 	trap_Cvar_SetValue( "r_cardboardStereo", s_controls.cardboardStereo.curvalue );
 	trap_Cvar_SetValue( "r_stereoSeparation2", s_controls.stereoSeparation.curvalue );
 	trap_Cvar_SetValue( "r_stereoAngle", s_controls.stereoAngle.curvalue );
+	trap_Cvar_SetValue( "cg_cameraRotateButton", s_controls.camerarotatebutton.curvalue );
+
 	trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
 }
 
@@ -1105,6 +1111,8 @@ static void Controls_SetDefaults( void )
 	s_controls.cardboardStereo.curvalue = Controls_GetCvarDefault( "r_cardboardStereo" );
 	s_controls.stereoSeparation.curvalue = Controls_GetCvarDefault( "r_stereoSeparation2" );
 	s_controls.stereoAngle.curvalue = Controls_GetCvarDefault( "r_stereoAngle" );
+	s_controls.camerarotatebutton.curvalue = Controls_GetCvarDefault( "cg_cameraRotateButton" );
+
 }
 
 /*
@@ -1352,6 +1360,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_SWIPEANGLE:
 		case ID_SWIPESENS:
 		case ID_WIDE_FOV:
+		case ID_CAMERA_ROTATE_BUTTON:
 		case ID_RAILAUTOZOOM:
 		case ID_CROSSHAIR_OFFSET:
 		case ID_CROSSHAIR_EDGES:
@@ -1771,6 +1780,14 @@ static void Controls_MenuInit( void )
 	s_controls.widefov.generic.callback		= Controls_MenuEvent;
 	s_controls.widefov.generic.statusbar	= Controls_StatusBar;
 
+	s_controls.camerarotatebutton.generic.type			= MTYPE_RADIOBUTTON;
+	s_controls.camerarotatebutton.generic.flags			= QMF_SMALLFONT;
+	s_controls.camerarotatebutton.generic.x				= SCREEN_WIDTH/2;
+	s_controls.camerarotatebutton.generic.name			= "camera rotate button";
+	s_controls.camerarotatebutton.generic.id			= ID_CAMERA_ROTATE_BUTTON;
+	s_controls.camerarotatebutton.generic.callback		= Controls_MenuEvent;
+	s_controls.camerarotatebutton.generic.statusbar		= Controls_StatusBar;
+
 	s_controls.centerview.generic.type	    = MTYPE_ACTION;
 	s_controls.centerview.generic.flags     = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_GRAYED|QMF_HIDDEN;
 	s_controls.centerview.generic.callback  = Controls_ActionEvent;
@@ -2065,6 +2082,7 @@ static void Controls_MenuInit( void )
 	Menu_AddItem( &s_controls.menu, &s_controls.cardboardStereo );
 	Menu_AddItem( &s_controls.menu, &s_controls.stereoSeparation );
 	Menu_AddItem( &s_controls.menu, &s_controls.stereoAngle );
+	Menu_AddItem( &s_controls.menu, &s_controls.camerarotatebutton );
 
 	Menu_AddItem( &s_controls.menu, &s_controls.back );
 

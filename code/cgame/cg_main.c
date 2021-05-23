@@ -287,6 +287,7 @@ vmCvar_t	cg_cameraSideShift;
 vmCvar_t	r_cardboardStereo;
 vmCvar_t	r_stereoSeparation;
 vmCvar_t	r_stereoAngle;
+vmCvar_t	cg_cameraRotateButton;
 
 typedef struct {
 	vmCvar_t	*vmCvar;
@@ -486,6 +487,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 	{ &cg_weaponBarAtBottom, "cg_weaponBarAtBottom", "0", CVAR_ARCHIVE },
 	{ &cg_holdingUsableItem, "cg_holdingUsableItem", "0", 0 },
 	{ &cg_touchscreenControls, "cg_touchscreenControls", "0", CVAR_ARCHIVE },
+	{ &cg_cameraRotateButton, "cg_cameraRotateButton", "1", CVAR_ARCHIVE },
 	{ &cg_thirdPersonConfigOptionInSettings, "cg_thirdPersonConfigOptionInSettings", "1", CVAR_ARCHIVE },
 	{ &cg_cameraSideShift, "cg_cameraSideShift", "-30", CVAR_ARCHIVE },
 	{ &r_cardboardStereo, "r_cardboardStereo", "0", CVAR_ARCHIVE },

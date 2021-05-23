@@ -1399,6 +1399,7 @@ extern vmCvar_t			cg_cameraSideShift;
 extern vmCvar_t			r_cardboardStereo;
 extern vmCvar_t			r_stereoSeparation;
 extern vmCvar_t			r_stereoAngle;
+extern vmCvar_t			cg_cameraRotateButton;
 
 //unlagged - cg_unlagged.c
 void CG_PredictWeaponEffects( centity_t *cent );
